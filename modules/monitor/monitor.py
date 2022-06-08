@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from agrobot.msg import Control, WheelAdjustment
+from agrobot.msg import Control
 from std_msgs.msg import String
 from agrobot_services.runtime_log import RuntimeLog
 from agrobot_services.log import Log
@@ -145,10 +145,6 @@ class Monitor:
         self.direction = str(data.data)
         live.update(self.generate_table())
 
-    def call_back_wheel_adjustment(self, data: WheelAdjustment, live: Live):
-        self.wheel_adjustment.wheel = data.wheel
-        self.wheel_adjustment.direction = data.direction
-        live.update(self.generate_table())
     
     def listen(self) -> None:
         with Live(self.generate_table(), refresh_per_second=4) as live:
@@ -156,7 +152,6 @@ class Monitor:
             rospy.Subscriber("/control_robot", Control, self.callback_control, live)
             rospy.Subscriber("/encoder", String, self.callback_encoder, live)
             rospy.Subscriber("/control_direction", String, self.callback_control_direction, live)
-            rospy.Subscriber("/wheel_adjustment", WheelAdjustment, self.call_back_wheel_adjustment, live)
             rospy.spin()
 
 if __name__ == "__main__":

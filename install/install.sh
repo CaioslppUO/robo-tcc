@@ -160,16 +160,6 @@ fi
     MODULES="0"
 }
 
-{
-    ## Specials
-    cd "$LOCAL_FOLDER/../special/" &&
-    chmod -R +x ./*/*.py && cp -r ./* "$AGROBOT/src/modules/" &&
-    SPECIALS="1"
-} || {
-    printf "${RED}SPECIALS ERROR${NC}"
-    SPECIALS="0"
-}
-
 
 ## Roslaunch
 cd $AGROBOT
@@ -186,19 +176,12 @@ do
     echo "    <node pkg='agrobot' type='$core_entry' name='$core_name' output='screen'/>" >> run.launch
 done
 
-## Modules files in roslaunch
-modules_files=$(basename -a $(ls $LOCAL_FOLDER/../modules/*/*.py))
-for module_entry in $modules_files
-do
-    module_name=$(echo "$module_entry" | cut -f 1 -d '.')
-    echo "    <node pkg='agrobot' type='$module_entry' name='$module_name' output='screen'/>" >> run.launch
-done
-
-## Special nodes in roslauch
-echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction_master' args='0' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1_master' args='7 13 encoder_1' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2_master' args='29 31 encoder_2' output='screen' />" >> run.launch
-echo "    <node pkg='agrobot' type='relay.py' name='relay_master' args='40' output='screen' />" >> run.launch
+## Modules config in roslauch
+echo "    <node pkg='agrobot' type='control_robot.py' name='control_robot' output='screen'/>" >> run.launch
+echo "    <node pkg='agrobot' type='control_direction.py' name='control_direction' args='0' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1' args='7 13 encoder_1' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2' args='29 31 encoder_2' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='screen' />" >> run.launch
 
 echo "</launch>" >> run.launch
 
@@ -211,10 +194,11 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     ## Ubuntu Linux
     AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages/agrobot
     mkdir -p "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
+    echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: $VIRTUAL_ENV_SITE_PACKAGES"
     cp -r "$AGROBOT_SITE_PACKAGES/"* "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
     SITE_PACKAGES="1"
 } || {
-    echo "${RED}SITE PACKAGES ERROR${NC}"
+    printf "${RED}SITE PACKAGES ERROR${NC}"
     SITE_PACKAGES="0"
 }
 
@@ -225,7 +209,7 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     echo "export ROS_IP=$ipv4" >> "$AGROBOT_ENV_BIN/activate" &&
     ROS_IP_AND_MASTER_URI=1
 } || {
-    echo "${RED}ROS_IP_AND_MASTER_URI ERROR${NC}"
+    printf "${RED}ROS_IP_AND_MASTER_URI ERROR${NC}"
     ROS_IP_AND_MASTER_URI=0
 }
 
@@ -234,11 +218,11 @@ sudo cp "$LOCAL_FOLDER/service/agrobot.service" /etc/systemd/system
 sudo cp "$LOCAL_FOLDER/service/start_agrobot.sh" /usr/bin
 sudo cp "$LOCAL_FOLDER/service/attach.sh" $HOME 
 
-if [ "$UBUNTU_DEPENDENCIES" == "1" ] && [ "$VIRTUAL_ENV" == "1" ] && [ "$CATKIN_INSTALL" == "1" ] && [ "$CONFIG" == "1" ] && [ "$CORE" == "1" ] && [ "$MODULES" == "1" ] && [ "$SPECIALS" == "1" ] && [ "$SERVICES" == "1" ] && [ "$MESSAGES" == "1" ] && [ "$SERVER" == "1" ] && [ "$SITE_PACKAGES" == "1" ] && [ "$ROS_IP_AND_MASTER_URI" == "1" ]
+if [ "$UBUNTU_DEPENDENCIES" == "1" ] && [ "$VIRTUAL_ENV" == "1" ] && [ "$CATKIN_INSTALL" == "1" ] && [ "$CONFIG" == "1" ] && [ "$CORE" == "1" ] && [ "$MODULES" == "1" ] && [ "$SERVICES" == "1" ] && [ "$MESSAGES" == "1" ] && [ "$SERVER" == "1" ] && [ "$SITE_PACKAGES" == "1" ] && [ "$ROS_IP_AND_MASTER_URI" == "1" ]
     then
         clear
 fi
-echo "                 Result                  "
+printf "\n                 Result                  \n"
 echo "-----------------------------------------"
 if [ "$UBUNTU_DEPENDENCIES" == "1" ] 
     then
@@ -276,12 +260,6 @@ if [ "$MODULES" == "1" ]
     else
         printf "| ${BLUE}Agrobot modules${NC}                    ${RED}NO |${NC}\n"
 fi
-if [ "$SPECIALS" == "1" ] 
-    then
-        printf "| ${BLUE}Agrobot special modules${NC}            ${GREEN}OK |${NC}\n"
-    else
-        printf "| ${BLUE}Agrobot special modules${NC}            ${RED}NO |${NC}\n"
-fi
 if [ "$SERVICES" == "1" ] 
     then
         printf "| ${BLUE}Agrobot services${NC}                   ${GREEN}OK |${NC}\n"
@@ -313,4 +291,4 @@ if [ "$ROS_IP_AND_MASTER_URI" == "1" ]
         printf "| ${BLUE}Ros IP and Master Uri${NC}              ${RED}NO |${NC}\n"
 fi
 echo "-----------------------------------------"
-printf "${GREEN}DONE${NC}\ | | | | | | | | | |n"
+printf "${GREEN}DONE${NC}\n"

@@ -7,7 +7,7 @@ Get control data from app server and send it to ROS server.
 
 import rospy,pathlib,traceback
 from agrobot_services.log import Log
-from agrobot.msg import Control, WheelAdjustment
+from agrobot.msg import Control
 from shutil import which
 from agrobot_services.runtime_log import RuntimeLog
 import socketio
@@ -43,16 +43,6 @@ def publish_command(command: Control) -> None:
         log.error(traceback.format_exc())
         runtime_log.error("Could not publish new command to /get_robot_commands")
 
-def publish_wheel_adjustment(data: WheelAdjustment) -> None:
-    """
-    Publish the command to wheel_adjustment topic.
-    """
-    try:
-        pub = rospy.Publisher("/wheel_adjustment", WheelAdjustment, queue_size=10)
-        pub.publish(data)
-    except Exception as e:
-        log.error(traceback.format_exc())
-        runtime_log.error("Could not publish new command to /wheel_adjustment")
 
 def publish_module_activated(command: Bool) -> None:
     """
@@ -93,23 +83,6 @@ def setup_command(command) -> None:
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup Control command")
-
-@sio.on("manual_wheel_adjustment_update_changed")
-def setup_wheel_command(command) -> None:
-    """
-    Separate and assemble the command to control the robot.
-
-    Parameters:
-    command -> Json content with speed and steer values.
-    """
-    try:
-        cm: WheelAdjustment = WheelAdjustment()
-        cm.wheel = int(command["wheel"])
-        cm.direction = float(command["direction"])
-        publish_wheel_adjustment(cm)
-    except Exception as e:
-        log.error(traceback.format_exc())
-        runtime_log.error("Could not setup WheelAdjustment command")
 
 @sio.on("module_activated_changed")
 def setup_module_activated(command) -> None:
