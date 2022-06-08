@@ -26,3 +26,8 @@ A divisão de pastas segue a seguinte estrutura:
 * server -> Servidor utilizado para comunicação com aplicações externas (controle e envio de missões).
 
 * services -> Serviços utilizados por outros códigos (logs, acesso à variáveis de ambiente).
+
+---
+## Instalação
+
+* Para instalar o código, basta rodar o script install.sh localizado na pasta ./install/
