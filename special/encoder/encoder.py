@@ -13,6 +13,7 @@ import traceback
 from encoder_reader import read, set_pins
 import multiprocessing as mp
 from threading import Thread
+import psutil
 
 # Log class
 log: Log = Log("encoder.py")
