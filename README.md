@@ -30,4 +30,4 @@ A divisão de pastas segue a seguinte estrutura:
 ---
 ## Instalação
 
-* Para instalar o código, basta rodar o script install.sh localizado na pasta ./install/
+* Para instalar o código, basta rodar o script install.sh localizado na pasta install/
