@@ -160,6 +160,15 @@ fi
     MODULES="0"
 }
 
+{
+    ## RPLidar Package
+    cd "$LOCAL_FOLDER/.." &&
+    cp -r "rplidar_ros/" "$CATKIN_SRC/"
+    RPLIDAR="1"
+} || {
+    printf "${RED}RPLIDAR ERROR${NC}"
+    RPLIDAR="0"
+}
 
 ## Roslaunch
 cd $AGROBOT
@@ -289,6 +298,12 @@ if [ "$ROS_IP_AND_MASTER_URI" == "1" ]
         printf "| ${BLUE}Ros IP and Master Uri${NC}              ${GREEN}OK |${NC}\n"
     else
         printf "| ${BLUE}Ros IP and Master Uri${NC}              ${RED}NO |${NC}\n"
+fi
+if [ "$RPLIDAR" == "1" ] 
+    then
+        printf "| ${BLUE}RPLidar${NC}                            ${GREEN}OK |${NC}\n"
+    else
+        printf "| ${BLUE}RPLidar${NC}                            ${RED}NO |${NC}\n"
 fi
 echo "-----------------------------------------"
 printf "${GREEN}DONE${NC}\n"
