@@ -13,12 +13,6 @@ class ControlMovement:
         """
         Return if the robot can or cannot move.
         """
-        if (
-            self.object_detector.has_object_in_front()
-            or
-            self.object_detector.has_object_in_left()
-            or
-            self.object_detector.has_object_in_right()
-        ):
+        if (self.object_detector.has_object_in_front()):
             return False
         return True

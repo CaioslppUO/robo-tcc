@@ -4,6 +4,7 @@ Interpret lidar data and send to the control_module if the robot can or can't mo
 """
 
 from control_movement import ControlMovement
+from process_lidar import ProcessLidar
 import rospy
 from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
@@ -15,7 +16,7 @@ from sensor_msgs.msg import LaserScan
 rospy.init_node('lidar', anonymous=True)
 
 # Publication topic of this node.
-pub = rospy.Publisher("/is_movement_allowed", String, queue_size=10)
+pub = rospy.Publisher("/is_movement_allowed_lidar", String, queue_size=10)
 
 # Log class
 log: Log = Log("encoder.py")
@@ -25,20 +26,26 @@ runtime_log: RuntimeLog = RuntimeLog("encoder.py")
 secure_distance = 45 # Minimum distance which the robot must keep from objects
 control_movement = ControlMovement(secure_distance)
 
+# ProcessLidar module
+process_lidar = ProcessLidar()
+
 # Publication value control.
 last_published_message = str(control_movement.can_move())
+
+# Detection Constants
+central_point = 0
+number_of_points = 16
 
 def callback_lidar_sensor(data) -> None:
     """
     Receive data from lidar sensor and update the ControleMovement module.
-    If the movement permission change, send it to the /is_movement_allowed topic.
+    If the movement permission change, send it to the /is_movement_allowed_lidar topic.
     """
-    left, front, right = 60, 60, 60 # Values from shortest distance of objects in left, front and right of the robot.
+    points = process_lidar.select_points(data.ranges, number_of_points, central_point)
+    distance = process_lidar.get_closest_distance(points) # Shortest distance object in front of the robot.
     
     # Update the object detector module
-    control_movement.object_detector.set_left(left)
-    control_movement.object_detector.set_left(front)
-    control_movement.object_detector.set_left(right)
+    control_movement.object_detector.set_distance(distance)
 
     # Verify if movement permission has changed
     is_movement_allowed = str(control_movement.can_move())
