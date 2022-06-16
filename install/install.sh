@@ -204,7 +204,6 @@ cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
     ## Ubuntu Linux
     AGROBOT_SITE_PACKAGES=$CATKIN_DEVEL/lib/$(ls $CATKIN_DEVEL/lib/ | grep python*)/dist-packages/agrobot
     mkdir -p "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
-    echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: $VIRTUAL_ENV_SITE_PACKAGES"
     cp -r "$AGROBOT_SITE_PACKAGES/"* "$VIRTUAL_ENV_SITE_PACKAGES/agrobot/" &&
     SITE_PACKAGES="1"
 } || {

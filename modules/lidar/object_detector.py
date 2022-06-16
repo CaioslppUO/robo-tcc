@@ -4,13 +4,13 @@ Manage the object detection.
 """
 
 class ObjectDetector:
-    INFINITE = 99999999999999999999999999999
+    INFINITE = 99999999999999999999999999999.0
 
-    def __init__(self, secure_distance: int) -> None:
+    def __init__(self, secure_distance: float) -> None:
         self.secure_distance = secure_distance
         self.distance = self.INFINITE
 
-    def set_distance(self, value: int) -> None:
+    def set_distance(self, value: float) -> None:
         """
         Update the value of the front attribute.
         """

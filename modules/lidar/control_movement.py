@@ -6,7 +6,7 @@ Manage the robot movement permission based on the lidar object detection.
 from object_detector import ObjectDetector
 
 class ControlMovement:
-    def __init__(self, secure_distance: int) -> None:
+    def __init__(self, secure_distance: float) -> None:
         self.object_detector = ObjectDetector(secure_distance)
 
     def can_move(self) -> bool:

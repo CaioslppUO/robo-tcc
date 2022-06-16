@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 @package lidar.py
 Interpret lidar data and send to the control_module if the robot can or can't move.
@@ -23,7 +24,7 @@ log: Log = Log("encoder.py")
 runtime_log: RuntimeLog = RuntimeLog("encoder.py")
 
 # ControlMovement module
-secure_distance = 45 # Minimum distance which the robot must keep from objects
+secure_distance = 0.35 # Minimum distance which the robot must keep from objects in centimeters
 control_movement = ControlMovement(secure_distance)
 
 # ProcessLidar module
@@ -41,6 +42,7 @@ def callback_lidar_sensor(data) -> None:
     Receive data from lidar sensor and update the ControleMovement module.
     If the movement permission change, send it to the /is_movement_allowed_lidar topic.
     """
+    global last_published_message
     points = process_lidar.select_points(data.ranges, number_of_points, central_point)
     distance = process_lidar.get_closest_distance(points) # Shortest distance object in front of the robot.
     
