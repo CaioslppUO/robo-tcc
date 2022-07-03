@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+"""
+@package mission.py
+Mission class.
+"""
+
+
+class _Location:
+    """
+    Represent a location with an action to be executed.
+    """
+
+    def __init__(self, latitude: float, longitude: float, action: str) -> None:
+        self.latitude = latitude
+        self.longitude = longitude
+        self.action = action
+
+
+class _Mission:
+    """
+    Represent an mission to be executed, with all its locations.
+    """
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.locations: list[_Location] = []
+
+    def add_location(self, latitude: float, longitude: float, order: int, action: str) -> None:
+        self.locations.insert(order, _Location(latitude, longitude, action))
+
+    def get_locations(self) -> "list[_Location]":
+        return self.locations
+
+    def get_location(self, index: int) -> _Location:
+        return self.locations[index]
+
+
+class Missions:
+    """
+    Represents all missions to be executed.
+    """
+
+    def __init__(self) -> None:
+        self.missions: list[_Mission] = []
+
+    def add_mission(self, name: str, order: int) -> None:
+        self.missions.insert(order, _Mission(name))
+
+    def get_missions(self) -> "list[_Mission]":
+        return self.missions
+
+    def get_mission(self, index: int) -> _Mission:
+        return self.missions[index]
