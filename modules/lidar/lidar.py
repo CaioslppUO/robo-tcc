@@ -20,8 +20,8 @@ rospy.init_node('lidar', anonymous=True)
 pub = rospy.Publisher("/is_movement_allowed_lidar", String, queue_size=10)
 
 # Log class
-log: Log = Log("encoder.py")
-runtime_log: RuntimeLog = RuntimeLog("encoder.py")
+log: Log = Log("lidar.py")
+runtime_log: RuntimeLog = RuntimeLog("lidar.py")
 
 # ControlMovement module
 secure_distance = 0.35 # Minimum distance which the robot must keep from objects in centimeters

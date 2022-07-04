@@ -3,7 +3,7 @@
 @package mission.py
 Mission class.
 """
-
+import json
 
 class _Location:
     """
@@ -51,3 +51,35 @@ class Missions:
 
     def get_mission(self, index: int) -> _Mission:
         return self.missions[index]
+
+    def show(self) -> None:
+        i = 0
+        for mission in self.missions:
+            print("name: {}".format(mission.name))
+            print("order: {}".format(i), end="\nLocations: \n    [\n")
+            j = 0
+            for location in self.missions[i].get_locations():
+                print("       {")
+                print("         latitude: {}".format(location.latitude))
+                print("         longitude: {}".format(location.longitude))
+                print("         order: {}".format(j))
+                print("\n       },")
+                j += 1
+            print("    ]")
+            i += 1
+            print("\n")
+
+    def load_mission_file(self) -> None:
+        with open('mission.json') as f:
+            data = json.load(f)
+            for entry in data:
+                mission_name = entry["name"]
+                mission_order = entry["order"]
+                locations = entry["locations"]
+                self.add_mission(mission_name, mission_order)
+                for location in locations:
+                    latitude = location["latitude"]
+                    longitude = location["longitude"]
+                    location_order = location["order"]
+                    action = location["action"]
+                    self.get_mission(mission_order).add_location(latitude, longitude, location_order, action)
