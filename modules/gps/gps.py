@@ -17,7 +17,7 @@ import traceback
 rospy.init_node('gps', anonymous=True)
 
 # Publication topic of this node.
-pub = rospy.Publisher("/lat_lng", Coords, queue_size=10)
+pub = rospy.Publisher("/gps", Coords, queue_size=10)
 
 # Log class
 log: Log = Log("gps.py")
@@ -31,10 +31,11 @@ def run(gps):
     try:
         cds: Coords = Coords()
         coords = gps.geo_coords()
-        cds.latitude = coords.latitude
-        cds.longitude = coords.longitude
-        pub.publisher(cds)
+        cds.latitude = coords.lat
+        cds.longitude = coords.lon
+        pub.publish(cds)
     except (ValueError, IOError) as err:
+        runtime_log.error("read gps failed.")
         log.error(err)
 
 
@@ -44,6 +45,5 @@ if __name__ == '__main__':
         gps = UbloxGps(port)
         while not rospy.is_shutdown():
             run(gps)
-        port.close()
     except:
         log.error(traceback.format_exc())

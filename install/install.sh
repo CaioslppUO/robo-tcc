@@ -88,11 +88,11 @@ fi
 # ROS
 {
 ## Catkin
-    cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 &&
+    cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -j2 &&
     echo "source $CATKIN_DEVEL/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
     echo "source $CATKIN_DEVEL/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
     cd $CATKIN_SRC && catkin_create_pkg agrobot std_msgs rospy roscpp message_generation message_runtime &&
-    cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 &&
+    cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -j2 &&
     CATKIN_INSTALL="1"
 } || {
     printf "${RED}CATKIN ERROR${NC}"
@@ -192,12 +192,13 @@ echo "    <node pkg='agrobot' type='encoder.py' name='encoder_1' args='7 13 enco
 echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2' args='29 31 encoder_2' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='lidar.py' name='lidar' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='gps.py' name='gps' output='screen' />" >> run.launch
 
 echo "</launch>" >> run.launch
 
 # Post install
 ## Catkin compilations
-cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
+cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -j2
 
 ## Install agrobot site packages from ROS into agrobot project
 {
