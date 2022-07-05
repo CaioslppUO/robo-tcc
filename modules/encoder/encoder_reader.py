@@ -97,6 +97,6 @@ def read() -> int:
     except Exception as e:
         if(not DETECT_READ_ERROR):
             log.error(traceback.format_exc())
-            runtime_log.error(traceback.format_exc())
+            runtime_log.error("Encoder Reader finished. Check logs")
             DETECT_READ_ERROR = True
         return 0

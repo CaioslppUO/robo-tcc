@@ -149,6 +149,6 @@ if __name__ == '__main__':
                 connect()
                 connected = True
             except Exception as e:
-                print("Tentando reconexão - get_robot_commands")
+                runtime_log.info("Tentando reconexão - get_robot_commands")
     except rospy.ROSInterruptException:
         log.warning("Roscore was interrupted.")

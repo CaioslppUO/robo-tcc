@@ -3,6 +3,13 @@
 import os
 from flask import Flask
 from flask_socketio import SocketIO, emit
+from agrobot_services.log import Log
+from agrobot_services.runtime_log import RuntimeLog
+import traceback
+
+# Log class
+log: Log = Log("start_server.py")
+runtime_log: RuntimeLog = RuntimeLog("start_server.py")
 
 # Flask Server
 app = Flask(__name__)
@@ -11,7 +18,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @socketio.on("connect")
 def on_connection():
-    print("New Connection")
+    runtime_log.info("New connection to socketio server")
 
 
 @socketio.on("control_update")
@@ -73,7 +80,7 @@ def close_port():
             os.system("kill -9 " + str(porta))
             os.remove("temp.txt")
     except:
-        print("Ninguém esta usando a porta 3000")
+        runtime_log.warning("Ninguém esta usando a porta 3000")
 
 
 if __name__ == "__main__":
@@ -81,4 +88,5 @@ if __name__ == "__main__":
         close_port()
         start_server()
     except Exception as e:
-        print(str(e))
+        log.error(traceback.format_exc())
+        runtime_log.error("Socketio server finished. Check logs.")
