@@ -16,8 +16,8 @@ from agrobot.msg import Coords
 rospy.init_node('auto_mode', anonymous=True)
 
 # Log class
-log: Log = Log("encoder.py")
-runtime_log: RuntimeLog = RuntimeLog("encoder.py")
+log: Log = Log("auto_mode.py")
+runtime_log: RuntimeLog = RuntimeLog("auto_mode.py")
 
 # Global control variables
 stop_mission = False
@@ -90,8 +90,7 @@ def verify_coordinates(location: _Location) -> bool:
     """
     Verify if the robot is in the correct position.
     """
-    if (location.latitude != robot_latitude
-            or location.longitude != robot_longitude):
+    if (location.latitude != robot_latitude or location.longitude != robot_longitude):
         return True
     return False
 
@@ -148,28 +147,3 @@ if __name__ == "__main__":
         rospy.spin()
     except:
         runtime_log.error("Auto Mode died. Check logs file.")
-
-    #     if(a <= b-3 or a >= b+3):
-    #   if(b >= 0 and b <= 90):
-    #     if(a <= 180 and a > b):
-    #       dir = esquerda()
-    #       print("1")
-    #     else:
-    #       dir = direita()
-    #       print("2")
-    #   elif(b > 90 and b <= 270):
-    #     if(a > b):
-    #       dir = esquerda()
-    #       print("3")
-    #     else:
-    #       print("4")
-    #       dir = direita()
-    #   else:
-    #     if(a >= 180 and a < b):
-    #       dir = direita()
-    #       print("5")
-    #     else:
-    #       print("6")
-    #       dir = direita()
-    # else:
-    #   dir = reto()

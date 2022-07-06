@@ -10,6 +10,7 @@ from serial import Serial
 import rospy
 from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
+from agrobot_services.param import Parameter
 from agrobot.msg import Coords
 import traceback
 
@@ -23,6 +24,19 @@ pub = rospy.Publisher("/gps", Coords, queue_size=10)
 log: Log = Log("gps.py")
 runtime_log: RuntimeLog = RuntimeLog("gps.py")
 
+# Global variables
+priorities: dict = {}
+
+# Parameter class
+param: Parameter = Parameter()
+
+def get_rosparam_priorities() -> None:
+    """
+    Get priorities from rosparam.
+    """
+    global priorities
+    priorities.update({"USB_PORT_GPS": param.get_param("USB_PORT_GPS")})
+
 
 def run(gps):
     '''
@@ -34,16 +48,19 @@ def run(gps):
         cds.latitude = coords.lat
         cds.longitude = coords.lon
         pub.publish(cds)
-    except (ValueError, IOError) as err:
+    except:
         runtime_log.error("read gps failed.")
-        log.error(err)
+        log.error(traceback.format_exc())
 
 
 if __name__ == '__main__':
     try:
-        port = Serial('/dev/ttyACM0', baudrate=9600, timeout=1)
+        get_rosparam_priorities()
+        port = Serial(priorities["USB_PORT_GPS"], baudrate=9600, timeout=1)
         gps = UbloxGps(port)
         while not rospy.is_shutdown():
             run(gps)
     except:
         log.error(traceback.format_exc())
+        runtime_log.error("gps.py terminated")
+
