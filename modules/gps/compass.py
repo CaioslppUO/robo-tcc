@@ -38,6 +38,7 @@ class MPU:
                 mfs=AK8963_BIT_16,
                 mode=AK8963_MODE_C100HZ
             )
+            self.mpu.configure()
         except:
             global COULD_SETUP_MPU
             COULD_SETUP_MPU = False
