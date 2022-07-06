@@ -24,8 +24,9 @@ parameters = {
     "LIDAR_PRIORITY": "999",
     "GUARANTEED_COMMANDS": "50",
     # Control
-    "USB_PORT_SABERTOOTH": "/dev/serial/by-path/platform-3f980000.usb-usb-0:1.1.3:1.1",
-    # esquerda baixo
+    "USB_PORT_GPS":"/dev/serial/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0",#esquerda cima
+    "USB_PORT_LIDAR":"/dev/serial/by-path/platform-3f980000.usb-usb-0:1.1.3.1:1.0-port0",#esquerda baixo (hub-direita)
+    "USB_PORT_SABERTOOTH": "/dev/serial/by-path/platform-3f980000.usb-usb-0:1.1.3.4:1.1",# esquerda baixo (hub-esquerda)
     "USB_PORT_VESC1": "/dev/serial/by-path/platform-3f980000.usb-usb-0:1.2:1.0",  # direita cima
     "USB_PORT_VESC2": "/dev/serial/by-path/platform-3f980000.usb-usb-0:1.3:1.0",  # direita baixo
     # Setup
