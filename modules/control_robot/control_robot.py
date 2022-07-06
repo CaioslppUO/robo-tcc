@@ -13,13 +13,15 @@ from agrobot_services.log import Log
 from agrobot_services.param import Parameter
 import traceback
 import paho.mqtt.client as paho
+from agrobot_services.runtime_log import RuntimeLog
 
 
 # Parameter class
 param: Parameter = Parameter()
 
-
+# Log
 log: Log = Log("control_robot.py")
+runtime_log = RuntimeLog("control_robot.py")
 
 user: str = str(pwd.getpwuid(os.getuid())[0])
 home: str = "/home/{0}/".format(user)
@@ -63,7 +65,7 @@ def startThreadMotor(port: str):
     global t_motor
     t_motor.append(threading.Thread(target=startMotor, args=[port]))
     t_motor[len(t_motor)-1].start()
-    print(port + " started instance.")
+    runtime_log.info(port + " started instance.")
 
 
 def startMotor(args):

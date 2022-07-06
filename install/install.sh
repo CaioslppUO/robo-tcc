@@ -59,7 +59,7 @@ mkdir -p $CATKIN/src/
     python3 -m venv $AGROBOT_ENV/
     python3 -m pip install empy==3.3.4
     source "$AGROBOT_ENV_BIN/activate"
-    packages=$(cat "$LOCAL_FOLDER/req")
+    packages=$(cat "$LOCAL_FOLDER/requirements.txt")
     for package in $packages
     do
         pip3 install $package
@@ -193,6 +193,7 @@ echo "    <node pkg='agrobot' type='encoder.py' name='encoder_2' args='29 31 enc
 echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='lidar.py' name='lidar' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='gps.py' name='gps' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='compass.py' name='compass' output='screen' />" >> run.launch
 
 echo "</launch>" >> run.launch
 

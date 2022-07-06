@@ -159,6 +159,5 @@ if __name__ == "__main__":
         m = Monitor()
         m.listen()  
     except Exception as e:
-        print(traceback.format_exc())
         log.error(traceback.format_exc())
-        runtime_log.error("control_direction.py terminated")
+        runtime_log.error("monitor.py terminated")

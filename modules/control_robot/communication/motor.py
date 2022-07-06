@@ -1,5 +1,12 @@
 import os
 import threading
+import traceback
+from agrobot_services.runtime_log import RuntimeLog
+from agrobot_services.log import Log
+
+# Log
+log: Log = Log("motor.py")
+runtime_log = RuntimeLog("motor.py")
 
 def startThreadMotor(port: str):
     global t_motor
@@ -21,4 +28,5 @@ try:
 except Exception as e:
     for u_motor in t_motor:
         u_motor.close()
-    print(str(e))
+    log.error(traceback.format_exc())
+    runtime_log.error("Motor finished. Check log file.")

@@ -1,5 +1,12 @@
 import socket
 import threading
+import traceback
+from agrobot_services.runtime_log import RuntimeLog
+from agrobot_services.log import Log
+
+# Logs
+runtime_log = RuntimeLog("internal_server.py")
+log = Log("internal_server.py")
 
 buffer: list = []
 attemptive: int = 0
@@ -12,9 +19,12 @@ def connect(server_ip: str, port: int):
     s.listen(1)
     return s
 
+# Log class
+
+
 def wait_for_connection(connection):
     conn, addr = connection.accept()
-    print("connection from: " + str(addr))
+    runtime_log.info("connection from: " + str(addr))
     return conn, addr
 
 def transmission_bug_detected() -> bool:
@@ -79,5 +89,6 @@ try:
     aux()
 except Exception as e:
     conn.close()
-    print(str(e))
+    log.error(traceback.format_exc())
+    runtime_log.error("Internal server finished. Check log file.")
 

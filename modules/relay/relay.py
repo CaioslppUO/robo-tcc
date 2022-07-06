@@ -23,8 +23,8 @@ try:
     GPIO.setwarnings(False)
     gpio_imported = True
 except Exception as e:
-    runtime_log.error(str(e))
-    print(str(e))
+    log.warning(traceback.format_exc())
+    runtime_log.warning("Could not import GPIO.")
 
 
 # Nó do relé.
@@ -51,8 +51,8 @@ def power_control_callback(data: Bool) -> None:
             else:
                 runtime_log.info("Relay Off without gpio")
     except Exception as e:
-        runtime_log.error(str(e))
-        print(str(e))
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not send signal to relay")
         
 
 
@@ -66,4 +66,4 @@ if __name__ == "__main__":
         listen_relay()
     except Exception as e:
         log.error(traceback.format_exc())
-        runtime_log.error("relay.py terminate");
+        runtime_log.error("relay.py terminate")

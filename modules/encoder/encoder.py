@@ -34,7 +34,6 @@ def publish_encoder(value: str) -> None:
     global last_published_value
     if(int(value) != int(last_published_value)):
         pub.publish(value)
-        print(value)
         last_published_value = value
 
 def convertToDegrees(value: int) -> str:
@@ -64,5 +63,5 @@ if __name__ == "__main__":
     try:
         Thread(target=main).start()
     except Exception as e:
-        print(traceback.format_exc())
-
+        log.error(traceback.format_exc())
+        runtime_log.error("Encoder finished. Check logs.")
