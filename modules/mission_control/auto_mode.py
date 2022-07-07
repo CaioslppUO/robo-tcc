@@ -4,6 +4,7 @@
 Control the automatic mode.
 """
 
+from tokenize import Number
 from sqlalchemy import Float, true
 import rospy
 from std_msgs.msg import String
@@ -11,6 +12,9 @@ from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
 from mission import Missions, _Location
 from agrobot.msg import Coords
+import auto_mode_calcs
+
+
 
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
@@ -24,42 +28,34 @@ stop_mission = False
 lidar_can_move: bool = True
 robot_latitude: float = 0.0
 robot_longitude: float = 0.0
-robot_compass = None
+robot_compass: float = 0.0
 
 
 def run(missions: Missions) -> None:
     """
     Execute the mission.
     """
+    direct_of_correct:int = 0
+
     while (not stop_mission):
         for mission in missions.get_missions():  # Execute every mission
-            if (stop_mission):
-                return
-
+            if (stop_mission): return
             for location in mission.get_locations():  # Execute every location
-                if (stop_mission):
-                    return
-
-                while verify_coordinates(
-                        location
-                ):  # Verifica se chegou ao destino da localização.
+                if (stop_mission): return
+                while verify_coordinates(location):  # Verifica se chegou ao destino da localização.
                     if (stop_mission):
                         return None
-
                     if (lidar_can_move):
-                        while need_to_correct_route(
-                                location
-                        ):  # Lógica para corrigir a direção do robô
+                        while direct_of_correct != 2:  # Lógica para corrigir a direção do robô
+                            direct_of_correct = need_to_correct_route(location)
                             if (stop_mission):
                                 return None
-
                         # Vai reto
                     else:
-                        runtime_log.info(
-                            "Can't move, object in front of robot (lidar).")
+                        runtime_log.info("Can't move, object in front of robot (lidar).")
 
 
-def need_to_correct_route(location: _Location) -> bool:
+def need_to_correct_route(location: _Location) -> int:
     global robot_compass
     """
     Verify if the robot needs to correct the route.
@@ -72,25 +68,46 @@ def need_to_correct_route(location: _Location) -> bool:
 
     if robot_latitude == 0 and robot_longitude == 0:
         runtime_log.warning("Robot cold not get GPS coordinates.")
-        return False
+        return 2
     if new_longitude < 0:  # Quadrante baixo
         if new_longitude < 0:  # Quadrante esquerda
-
-            return True
+            H = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_latitude, new_longitude)
+            co = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_robot_latitude, new_longitude)
+            Beta = 90- auto_mode_calcs.get_angle_asin(co,H)
+            Beta = Beta+180
+            if robot_compass >= Beta or robot_compass <= Beta-180:
+                return 0 #Virar esquerda
+            return 1 #Virar direita
         else:  # Quadrante direita
-            return False
+            H = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_latitude, new_longitude)
+            co = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_robot_latitude, new_longitude)
+            Beta = 90- auto_mode_calcs.get_angle_asin(co,H)
+            Beta = 180 - Beta
+            if robot_compass <= Beta or robot_compass >=  Beta+180:
+                return 1 #Virar Direita
+            return 0 #Virar esquerda
     else:  # Quadrante cima
         if new_longitude < 0:  # Quadrante esquerda
-            return True
+            H = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_latitude, new_longitude)
+            co = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_robot_latitude, new_longitude)
+            Beta = 90- auto_mode_calcs.get_angle_asin(co,H)
+            if 360-Beta >= robot_compass or robot_compass <= 180-Beta:
+                return 0 #Virar Esquerda
+            return 1 #Virar Direita
         else:  # Quadrante direita
-            return False
-
+            H = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_latitude, new_longitude)
+            co = auto_mode_calcs.dist_two_points(new_robot_latitude, new_robot_longitude, new_robot_latitude, new_longitude)
+            Beta = 90- auto_mode_calcs.get_angle_asin(co,H)
+            if robot_compass >= 360-Beta or robot_compass <= Beta:
+                return 1 #Virar Direita
+            return 0 #Virar Esquerda
+    return 2
 
 def verify_coordinates(location: _Location) -> bool:
     """
     Verify if the robot is in the correct position.
     """
-    if (location.latitude != robot_latitude or location.longitude != robot_longitude):
+    if (round(location.latitude,4) != round(robot_latitude,4) or round(location.longitude,4) != round(robot_longitude,4)):
         return True
     return False
 
