@@ -4,14 +4,12 @@
 Control the automatic mode.
 """
 
-from tokenize import Number
-from sqlalchemy import Float, true
 import rospy
 from std_msgs.msg import String
 from agrobot_services.log import Log
 from agrobot_services.runtime_log import RuntimeLog
 from mission import Missions, _Location
-from agrobot.msg import Coords
+from agrobot.msg import Coords,Control
 import auto_mode_calcs
 
 
@@ -19,12 +17,14 @@ import auto_mode_calcs
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
 
+pub = rospy.Publisher("/auto_mode", Control, queue_size=10)
+
 # Log class
 log: Log = Log("auto_mode.py")
 runtime_log: RuntimeLog = RuntimeLog("auto_mode.py")
 
 # Global control variables
-stop_mission = False
+stop_mission: bool = False
 lidar_can_move: bool = True
 robot_latitude: float = 0.0
 robot_longitude: float = 0.0
@@ -36,21 +36,58 @@ def run(missions: Missions) -> None:
     Execute the mission.
     """
     direct_of_correct:int = 0
-
+    control: Control = Control()
+    control.speed = 1
     while (not stop_mission):
         for mission in missions.get_missions():  # Execute every mission
             if (stop_mission): return
             for location in mission.get_locations():  # Execute every location
                 if (stop_mission): return
                 while verify_coordinates(location):  # Verifica se chegou ao destino da localização.
-                    if (stop_mission):
-                        return None
+                    if (stop_mission): return None
                     if (lidar_can_move):
                         while direct_of_correct != 2:  # Lógica para corrigir a direção do robô
                             direct_of_correct = need_to_correct_route(location)
-                            if (stop_mission):
-                                return None
-                        # Vai reto
+                            if direct_of_correct == 0:
+                                runtime_log.info("Virar esquerda")
+                                control.speed = 0.0
+                                control.steer = -0.5
+                                pub.publish(control)
+                                rospy.sleep(1)
+                                control.speed = 0.5
+                                control.steer = 0
+                                pub.publish(control)
+                                rospy.sleep(1)
+                                control.speed = 0.0
+                                control.steer = 0.5
+                                pub.publish(control)
+                                rospy.sleep(1)
+                                control.speed = 0.5
+                                control.steer = 0
+                                pub.publish(control)
+                                rospy.sleep(1)
+                            elif direct_of_correct == 1:
+                                runtime_log.info("Virar direita")
+                                control.speed = 0.0
+                                control.steer = 0.5
+                                pub.publish(control)
+                                rospy.sleep(1)
+                                control.speed = 0.5
+                                control.steer = 0
+                                pub.publish(control)
+                                rospy.sleep(1)
+                                control.speed = 0.0
+                                control.steer = -0.5
+                                pub.publish(control)
+                                rospy.sleep(1)
+                                control.speed = 0.5
+                                control.steer = 0
+                                pub.publish(control)
+                                rospy.sleep(1)
+                            if (stop_mission): return None
+                        control.speed = 0.8
+                        control.steer = 0
+                        pub.publish(control)
                     else:
                         runtime_log.info("Can't move, object in front of robot (lidar).")
 
