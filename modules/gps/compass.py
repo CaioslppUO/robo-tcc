@@ -17,7 +17,9 @@ import traceback
 # Log class
 log: Log = Log("compass.py")
 runtime_log: RuntimeLog = RuntimeLog("compass.py")
-COULD_SETUP_MPU = True
+COULD_NOT_SETUP_MPU_WARNING = False
+COULD_NOT_READ_COMPASS_WARNING = False
+COULD_NOT_PUBLISH_COMPASS = False
 
 # Encoder node
 rospy.init_node('compass', anonymous=True)
@@ -38,11 +40,13 @@ class MPU:
                 mfs=AK8963_BIT_16,
                 mode=AK8963_MODE_C100HZ
             )
+            self.mpu.configure()
         except:
-            global COULD_SETUP_MPU
-            COULD_SETUP_MPU = False
+            global COULD_NOT_SETUP_MPU_WARNING
             log.warning(traceback.format_exc())
-            runtime_log.warning("Could not setup MPU Compass Sensor")
+            if(not COULD_NOT_SETUP_MPU_WARNING):
+                runtime_log.warning("Could not setup MPU Compass Sensor")
+            COULD_NOT_SETUP_MPU_WARNING = True
     
     def get_angle(self) -> int:
         try:
@@ -53,9 +57,11 @@ class MPU:
                 heading = abs(heading+360)
             return heading
         except:
+            global COULD_NOT_READ_COMPASS_WARNING
             log.warning(traceback.format_exc())
-            if(COULD_SETUP_MPU):
+            if(not COULD_NOT_READ_COMPASS_WARNING):
                 runtime_log.warning("Could not read angle from MPU Compass Sensor.")
+            COULD_NOT_READ_COMPASS_WARNING = True
 
 def publish_compass(angle: int) -> None:
     """
@@ -64,9 +70,11 @@ def publish_compass(angle: int) -> None:
     try:
         pub.publish(str(angle))
     except:
+        global COULD_NOT_PUBLISH_COMPASS
         log.warning(traceback.format_exc())
-        if(COULD_SETUP_MPU):
+        if(not COULD_NOT_PUBLISH_COMPASS):
             runtime_log.warning("Could not publish compass data to /compass.")
+        COULD_NOT_PUBLISH_COMPASS = True
 
 if __name__ == "__main__":
     try:

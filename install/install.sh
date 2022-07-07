@@ -46,6 +46,8 @@ CATKIN_DEVEL=$CATKIN/devel
 AGROBOT=$CATKIN_SRC/agrobot
 AGROBOT_SRC=$AGROBOT/src
 AGROBOT_MSG=$AGROBOT/msg
+LIDAR=$CATKIN_SRC/rplidar_ros
+LIDAR_LAUNCHER=$LIDAR/launch/rplidar.launch
 
 # Folders
 rm -rf $AGROBOT_FOLDER
@@ -194,7 +196,7 @@ echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='scr
 echo "    <node pkg='agrobot' type='lidar.py' name='lidar' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='gps.py' name='gps' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='compass.py' name='compass' output='screen' />" >> run.launch
-
+echo "    <include file='$LIDAR_LAUNCHER' />" >> run.launch
 echo "</launch>" >> run.launch
 
 # Post install
