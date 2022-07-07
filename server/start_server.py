@@ -24,6 +24,7 @@ def on_connection():
 @socketio.on("control_update")
 def on_control_update(data):
     emit("control_update_changed", data, broadcast=True)
+    emit("stop_mission", broadcast=True)
 
 
 @socketio.on("power_motor")

@@ -135,7 +135,17 @@ def setup_mission_changed(mission) -> None:
         "modules/mission_control/mission.json")
     with open(mission_file, "w") as file:
         json.dump(mission, file)
+    
+    pub = rospy.Publisher("/start_mission", String, queue_size=10)
+    pub.publish("start")
 
+@sio.on("stop_mission")
+def stop_auto_mission() -> None:
+    """
+    Stop the auto mode mission.
+    """
+    pub = rospy.Publisher("/stop_mission", String, queue_size=10)
+    pub.publish("stop")
 
 def connect():
     sio.connect('http://localhost:3000')
