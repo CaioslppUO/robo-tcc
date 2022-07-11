@@ -66,6 +66,10 @@ def control_mode_update(data):
 def mission_update(data):
     emit("mission_changed", data, broadcast=True)
 
+@socketio.on("compass_update")
+def compass_update(data):
+    emit("compass_changed", data, broadcast=True)
+
 
 def start_server():
     socketio.run(app, host="0.0.0.0", port=3000)

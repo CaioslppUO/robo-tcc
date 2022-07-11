@@ -76,6 +76,18 @@ def publish_mode_changed(mode: str) -> None:
         runtime_log.error("Could not publish new command to /change_mode")
 
 
+def publish_compass(data: str) -> None:
+    """
+    Publish compass data from smartphone.
+    """
+    try:
+        pub = rospy.Publisher("/compass", String, queue_size=10)
+        pub.publish(data)
+    except:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not publish compass data")
+
+
 @sio.on("control_update_changed")
 def setup_command(command) -> None:
     """
@@ -146,6 +158,15 @@ def stop_auto_mission() -> None:
     """
     pub = rospy.Publisher("/stop_mission", String, queue_size=10)
     pub.publish("stop")
+
+@sio.on("compass_changed")
+def compass_changed(data):
+    try:
+        publish_compass(str(data))
+    except:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not setup compass data")
+
 
 def connect():
     sio.connect('http://localhost:3000')
