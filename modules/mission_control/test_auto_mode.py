@@ -40,3 +40,8 @@ class TestAutoMode():
         assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 90) == "left"
         assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 180) == "left"
         assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 270) == "right"
+
+        # Erros
+        assert need_to_correct_route(_Location(-24.9999, -55.9999, ""), 0, -56.0000, 0) == "error"
+        assert need_to_correct_route(_Location(-24.9999, -55.9999, ""), -25.0000, 0, 0) == "error"
+        assert need_to_correct_route(_Location(-24.9999, -55.9999, ""), 0, 0, 0) == "error"
