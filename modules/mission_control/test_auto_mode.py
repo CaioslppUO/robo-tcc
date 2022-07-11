@@ -2,7 +2,6 @@ from auto_mode_calcs import *
 from mission import _Location
 import math
 
-
 class TestAutoMode():
 
     def test_should_calculate_distance_between_two_points(self):
@@ -17,29 +16,29 @@ class TestAutoMode():
         assert rad_to_deg(math.pi / 4) == 45
 
     def test_should_return_correct_turn_direction(self):
-        # Down left quadrant
-        assert need_to_correct_route(_Location(-25.0001, -56.0001, ""), -25.0000, -56.0000, 0) == "left"
-        assert need_to_correct_route(_Location(-24.9999, -56.0001, ""), -25.0000, -56.0000, 90) == "right"
-        assert need_to_correct_route(_Location(-25.0001, -56.0001, ""), -25.0000, -56.0000, 180) == "right"
-        assert need_to_correct_route(_Location(-25.0001, -56.0001, ""), -25.0000, -56.0000, 270) == "left"
-
-        # Down right quadrant
-        assert need_to_correct_route(_Location(-24.9999, -56.0001, ""), -25.0000, -56.0000, 0) == "right"
-        assert need_to_correct_route(_Location(-24.9999, -56.0001, ""), -25.0000, -56.0000, 90) == "right"
-        assert need_to_correct_route(_Location(-24.9999, -56.0001, ""), -25.0000, -56.0000, 180) == "left"
-        assert need_to_correct_route(_Location(-24.9999, -56.0001, ""), -25.0000, -56.0000, 270) == "left"
+        # Up right quadrant
+        assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 0) == "right"
+        assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 90) == "left"
+        assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 180) == "left"
+        assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 270) == "right"
 
         # Up left quadrant
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 0) == "left"
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 90) == "left"
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 180) == "right"
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 270) == "right"
+        assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 0) == "left"
+        assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 90) == "left"
+        assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 180) == "right"
+        assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 270) == "right"
 
-        # Up right quadrant
-        assert need_to_correct_route(_Location(-24.9999, -55.9999, ""), -25.0000, -56.0000, 0) == "right"
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 90) == "left"
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 180) == "left"
-        assert need_to_correct_route(_Location(-25.0001, -55.9999, ""), -25.0000, -56.0000, 270) == "right"
+        # Down right quadrant
+        assert need_to_correct_route(_Location(-24.5000, -57.0000, ""), -25.0000, -56.0000, 0) == "right"
+        assert need_to_correct_route(_Location(-24.5000, -57.0000, ""), -25.0000, -56.0000, 90) == "right"
+        assert need_to_correct_route(_Location(-24.5000, -57.0000, ""), -25.0000, -56.0000, 190) == "left"
+        assert need_to_correct_route(_Location(-24.5000, -57.0000, ""), -25.0000, -56.0000, 270) == "left"
+
+        # Down left quadrant
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "left"
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "right"
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "right"
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "left"
 
         # Erros
         assert need_to_correct_route(_Location(-24.9999, -55.9999, ""), 0, -56.0000, 0) == "error"
