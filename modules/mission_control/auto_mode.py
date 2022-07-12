@@ -71,19 +71,20 @@ def run(missions: Missions) -> None:
     """
     Execute the mission.
     """
-    direction_of_correct: str = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
     while (not stop_mission):
         for mission in missions.get_missions():  # Execute every mission
             if (stop_mission): return
 
             for location in mission.get_locations():  # Execute every location
                 if (stop_mission): return
+                direction_of_correct: str = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
 
                 while verify_coordinates(location):  # Verifica se chegou ao destino da localização.
                     if (stop_mission): return
 
                     if (lidar_can_move):
                         while direction_of_correct != "left" and direction_of_correct != "right":  # Lógica para corrigir a direção do robô
+                            
                             if (stop_mission): return None
                             
                             direction_of_correct = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
