@@ -55,10 +55,10 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
             return "left" #Virar esquerda
     else:  # Quadrante cima
         if mission_lat < 0:  # Quadrante esquerda
-            if 360-Beta >= compass or compass <= 180-Beta:
-                return "left" #Virar Esquerda
-            return "right" #Virar Direita
+            if (compass >= 0 and compass <= 180-Beta) or (compass >= 360-Beta):
+                return "left"
+            return "right"
         else:  # Quadrante direita
-            if compass >= 360-Beta or compass <= Beta:
-                return "right" #Virar Direita
-            return "left" #Virar Esquerda
+            if (compass <= 180+Beta and compass >= 90) or (compass > Beta and compass <= 90):
+                return "left"
+            return "right"
