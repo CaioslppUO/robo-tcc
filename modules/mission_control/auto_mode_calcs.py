@@ -47,8 +47,9 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
     if mission_lon < 0:  # Quadrante baixo
         if mission_lat < 0:  # Quadrante esquerda
             Beta = Beta + 180
+            print("Compass: {:.4f}, Beta: {:.4f}".format(round(compass, 4), round(Beta, 4)))
 
-            if(compass <= Beta + margin and compass >= Beta + margin):
+            if(compass <= Beta + margin and compass >= Beta - margin):
                 return "forward"
 
             if compass >= Beta or compass <= Beta-180:
@@ -57,7 +58,7 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
         else:  # Quadrante direita
             Beta = 180 - Beta
 
-            if(compass <= Beta + margin and compass >= Beta + margin):
+            if(compass <= Beta + margin and compass >= Beta - margin):
                 return "forward"
 
             if compass <= Beta or compass >=  Beta+180:
@@ -65,7 +66,6 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
             return "left" #Virar esquerda
     else:  # Quadrante cima
         if mission_lat < 0:  # Quadrante esquerda
-            print("Compass: {:.4f}, Beta: {:.4f}".format(round(compass, 4), round(Beta, 4)))
             dif = 360 - Beta
             if(compass >= dif - margin and compass <= dif + margin ):
                 return "forward"
