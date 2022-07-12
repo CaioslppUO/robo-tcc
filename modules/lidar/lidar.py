@@ -48,13 +48,12 @@ def callback_lidar_sensor(data) -> None:
     
     # Update the object detector module
     control_movement.object_detector.set_distance(distance)
-
+    
     # Verify if movement permission has changed
     is_movement_allowed = str(control_movement.can_move())
     if(last_published_message != is_movement_allowed):
         pub.publish(is_movement_allowed)
         last_published_message = is_movement_allowed
-
 if __name__ == "__main__":
     try:
         rospy.Subscriber('/scan', LaserScan, callback_lidar_sensor)

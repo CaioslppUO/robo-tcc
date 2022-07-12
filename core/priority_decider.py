@@ -36,7 +36,7 @@ def get_rosparam_priorities() -> None:
     """
     global priorities
     priorities.update({"APP_PRIORITY": param.get_param("APP_PRIORITY")})
-    priorities.update({"LIDAR_PRIORITY": param.get_param("LIDAR_PRIORITY")})
+    priorities.update({"AUTO_PRIORITY": param.get_param("LIDAR_PRIORITY")})
     priorities.update(
         {"GUARANTEED_COMMANDS": param.get_param("GUARANTEED_COMMANDS")})
 
@@ -97,7 +97,7 @@ def add_listeners_and_listen() -> None:
     global current_command
     topics: dict = {
         "get_robot_commands": priorities["APP_PRIORITY"],
-        "control_lidar": priorities["LIDAR_PRIORITY"]
+        "auto_control": priorities["AUTO_PRIORITY"]
     }
     for key in topics:
         listen(str(key), int(topics[key]))

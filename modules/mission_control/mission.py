@@ -3,7 +3,8 @@
 @package mission.py
 Mission class.
 """
-import json
+import json,sys
+from pathlib import Path
 
 class _Location:
     """
@@ -70,7 +71,12 @@ class Missions:
             print("\n")
 
     def load_mission_file(self) -> None:
-        with open('mission.json') as f:
+        aux = sys.argv[0].split("/")[0:-1]
+        pth = ""
+        for i in aux:
+            pth += i + "/"
+        mission_file = Path(pth).absolute().joinpath("mission.json")
+        with open(mission_file,"r") as f:
             data = json.load(f)
             for entry in data:
                 mission_name = entry["name"]
@@ -83,3 +89,4 @@ class Missions:
                     location_order = location["order"]
                     action = location["action"]
                     self.get_mission(mission_order).add_location(latitude, longitude, location_order, action)
+        print("Carregou o arquivo")
