@@ -22,11 +22,31 @@ class TestAutoMode():
         assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 180) == "left"
         assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 270) == "right"
 
+        ## Near 0
+        assert need_to_correct_route(_Location(-24.9200, -55.5000, ""), -25.0000, -56.0000, 0) == "forward"
+        assert need_to_correct_route(_Location(-24.9550, -55.5000, ""), -25.0000, -56.0000, 356) == "forward"
+        ## Near 45
+        assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 36) == "forward"
+        assert need_to_correct_route(_Location(-24.5000, -55.5000, ""), -25.0000, -56.0000, 55) == "forward"
+        ## Near 90
+        assert need_to_correct_route(_Location(-24.5000, -55.9150, ""), -25.0000, -56.0000, 90) == "forward"
+        assert need_to_correct_route(_Location(-24.5000, -56.0000, ""), -25.0000, -56.0000, 100) == "forward"
+
         # Up left quadrant
         assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 0) == "left"
         assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 90) == "left"
         assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 180) == "right"
         assert need_to_correct_route(_Location(-26.0000, -55.5000, ""), -25.0000, -56.0000, 270) == "right"
+
+        ## Near 0
+        assert need_to_correct_route(_Location(-25.0400, -55.5000, ""), -25.0000, -56.0000, 5) == "forward"
+        assert need_to_correct_route(_Location(-25.0400, -55.5000, ""), -25.0000, -56.0000, 346) == "forward"
+        ## Near 315
+        assert need_to_correct_route(_Location(-25.5000, -55.5000, ""), -25.0000, -56.0000, 305) == "forward"
+        assert need_to_correct_route(_Location(-25.5000, -55.5000, ""), -25.0000, -56.0000, 325) == "forward"
+        ## Near 270
+        assert need_to_correct_route(_Location(-31.0000, -55.5000, ""), -25.0000, -56.0000, 265) == "forward"
+        assert need_to_correct_route(_Location(-31.0000, -55.5000, ""), -25.0000, -56.0000, 284) == "forward"
 
         # Down right quadrant
         assert need_to_correct_route(_Location(-24.5000, -57.0000, ""), -25.0000, -56.0000, 0) == "right"
