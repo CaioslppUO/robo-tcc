@@ -36,9 +36,9 @@ class TestAutoMode():
 
         # Down left quadrant
         assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "left"
-        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "right"
-        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "right"
-        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 0) == "left"
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 90) == "right"
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 180) == "right"
+        assert need_to_correct_route(_Location(-26.0000, -57.0000, ""), -25.0000, -56.0000, 270) == "left"
 
         # Erros
         assert need_to_correct_route(_Location(-24.9999, -55.9999, ""), 0, -56.0000, 0) == "error"

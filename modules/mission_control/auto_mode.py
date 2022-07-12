@@ -83,13 +83,13 @@ def run(missions: Missions) -> None:
                     if (stop_mission): return
 
                     if (lidar_can_move):
-                        while direct_of_correction != "left" and direct_of_correction != "right":  # Lógica para corrigir a direção do robô
+                        while direction_of_correct != "left" and direction_of_correct != "right":  # Lógica para corrigir a direção do robô
                             if (stop_mission): return None
                             
-                            direct_of_correction = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
-                            if direct_of_correction == "left":
+                            direction_of_correct = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
+                            if direction_of_correct == "left":
                                 turn_left()
-                            elif direct_of_correction == "right":
+                            elif direction_of_correct == "right":
                                 turn_right()
 
                         go_forward()
