@@ -1,5 +1,6 @@
 import math
 from mission import _Location
+import time
 
 def rad_to_deg(rad: float) -> float:
     """
@@ -51,6 +52,8 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
             if(compass <= Beta + margin and compass >= Beta - margin):
                 return "forward"
 
+            print("ANGULO: {}".format(180+Beta))
+            time.sleep(2.5)
             if compass >= Beta or compass <= Beta-180:
                 return "left" #Virar esquerda
             return "right" #Virar direita
@@ -60,6 +63,8 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
             if(compass <= Beta + margin and compass >= Beta - margin):
                 return "forward"
 
+            print("ANGULO: {}".format(180-Beta))
+            time.sleep(2.5)
             if compass <= Beta or compass >=  Beta+180:
                 return "right" #Virar Direita
             return "left" #Virar esquerda
@@ -71,6 +76,8 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
             elif((dif + margin > 360 and compass <= dif + margin - 360)):
                 return "forward"
 
+            print("ANGULO: {}".format(360-Beta))
+            time.sleep(2.5)
             if (compass >= 0 and compass <= 180-Beta) or (compass >= 360-Beta):
                 return "left"
             return "right"
@@ -81,6 +88,8 @@ def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: floa
             elif(Beta - margin < 0 and compass >= 360 + (Beta - margin)):
                 return "forward"
 
+            print("ANGULO: {}".format(Beta))
+            time.sleep(2.5)
             if (compass <= 180+Beta and compass >= 90) or (compass > Beta and compass <= 90):
                 return "left"
             return "right"
