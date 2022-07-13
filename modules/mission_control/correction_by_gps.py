@@ -18,6 +18,10 @@ class GPSCorrection:
         fig = plt.figure()
         ax = plt.axes()
 
+        plt.get_current_fig_manager().window.attributes('-zoomed', True)
+
+        plt.subplots_adjust(left=0.3, right=0.95, top=0.9, bottom=0.1)
+
         plt.title(title)
 
         plt.scatter(vet_lon[0:-1], vet_lat[0:-1], label="Pontos da missão")
@@ -33,14 +37,19 @@ class GPSCorrection:
         plt.xlabel("LON")
         plt.ylabel("LAT")
 
-        plt.figtext(0.77, 0.8, "Intervalo: {:10.5f}".format(self.points_interval), fontsize=10)
-        plt.figtext(0.77, 0.75, "Coeficiente Angular: {:10.5f}".format(slope), fontsize=10)
-        plt.figtext(0.77, 0.70, "Distância Total: {:10.5f}".format(total_distance), fontsize=10)
-        plt.figtext(0.77, 0.65, "Total de Pontos: {:10}".format(total_points), fontsize=10)
-        plt.figtext(0.77, 0.60, "Ponto mais próximo do robô: {}".format(closest_point.id), fontsize=10)
+        x_sup_limit = abs(max(vet_lon, key=abs))*1.5
+        y_sup_limit = abs(max(vet_lat, key=abs))*1.5
 
-        x_sup_limit = max(vet_lon)*1.5
-        y_sup_limit = max(vet_lat)*1.5
+        plt.figtext(x_sup_limit, y_sup_limit+0.80, "Intervalo: {:10.5f}".format(self.points_interval), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.75, "Coeficiente Angular: {:10.5f}".format(slope), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.70, "Distância Total: {:10.5f}".format(total_distance), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.65, "Total de Pontos: {:10}".format(total_points), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.60, "Ponto mais próximo do robô: {}".format(closest_point.id), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.55, "Ponto inicial: ({:10.5f}, {:10.5f})".format(vet_lat[0], vet_lon[0]), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.50, "Ponto final: ({:10.5f}, {:10.5f})".format(vet_lat[-1], vet_lon[-1]), fontsize=10)
+        plt.figtext(x_sup_limit, y_sup_limit+0.45, "Localização atual do robô: ({:10.5f}, {:10.5f})".format(robot_point.latitude, robot_point.longitude), fontsize=10)
+
+
 
         plt.xlim(-x_sup_limit, x_sup_limit)
         plt.ylim(-y_sup_limit, y_sup_limit)
@@ -62,6 +71,7 @@ class GPSCorrection:
         vet_lon: "list[float]" = []
 
         dist = dist_two_points(robot_lat, robot_lon, mission_lat, mission_lon)
+
         n_of_points = int(dist / self.points_interval)
 
         longitudes = 0
@@ -72,7 +82,8 @@ class GPSCorrection:
             vet_lat.append(round(latitude, 6))
 
             if(dist_two_points(vet_lat[-1], longitudes, mission_lat, mission_lon) > dist):
-                break
+                #break
+                pass
 
             if(mission_lat < 0):
                 longitudes -= self.points_interval
@@ -121,15 +132,15 @@ def test_all_quadrants() -> None:
     ]
     robot_position_1 = Point(0.00020, 0.00003, 0)
     robot_position_2 = Point(0.00008, 0.00009, 0)
-    #test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da direita")
+    test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da direita")
 
     # Up Left
     original_points = [
         -25.43548, -54.59701, # Start (lat, lon)
-        -25.43550, -54.59685 # End (lat, lon)
+        -25.43555, -54.59685 # End (lat, lon)
     ]
-    robot_position_1 = Point(0.00020, 0.00003, 0)
-    robot_position_2 = Point(0.00008, 0.00009, 0)
+    robot_position_1 = Point(0.00002, -0.00003, 0)
+    robot_position_2 = Point(0.00001, -0.00009, 0)
     test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da esquerda")
 
 
