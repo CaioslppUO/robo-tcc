@@ -135,7 +135,7 @@ def setup_module_activated(command) -> None:
 
 
 @sio.on("control_mode_changed")
-def setup_module_activated(mode: str) -> None:
+def setup_module_changed(mode: str) -> None:
     """
     Update in which mode the robot should turn (A, B, C).
 
