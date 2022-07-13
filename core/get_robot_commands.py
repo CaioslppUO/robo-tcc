@@ -88,6 +88,18 @@ def publish_compass(data: str) -> None:
         runtime_log.error("Could not publish compass data")
 
 
+def publish_gyroscope(data: str) -> None:
+    """
+    Publish gyroscope data from smartphone.
+    """
+    try:
+        pub = rospy.Publisher("/gyroscope", String, queue_size=10)
+        pub.publish(data)
+    except:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not publish gyroscope data")
+
+
 @sio.on("control_update_changed")
 def setup_command(command) -> None:
     """
@@ -163,6 +175,15 @@ def stop_auto_mission() -> None:
 def compass_changed(data):
     try:
         publish_compass(str(data))
+    except:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not setup compass data")
+
+
+@sio.on("gyroscope_changed")
+def gyroscope_changed(data):
+    try:
+        publish_gyroscope(str(data))
     except:
         log.error(traceback.format_exc())
         runtime_log.error("Could not setup compass data")
