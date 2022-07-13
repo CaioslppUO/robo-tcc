@@ -66,9 +66,15 @@ def control_mode_update(data):
 def mission_update(data):
     emit("mission_changed", data, broadcast=True)
 
+
 @socketio.on("compass_update")
 def compass_update(data):
     emit("compass_changed", data, broadcast=True)
+
+
+@socketio.on("gyroscope_update")
+def gyroscope_update(data):
+    emit("gyroscope_changed", data, broadcast=True)
 
 
 def start_server():
