@@ -50,7 +50,6 @@ class GPSCorrection:
         plt.figtext(x_sup_limit, y_sup_limit+0.45, "Localização atual do robô: ({:10.5f}, {:10.5f})".format(robot_point.latitude, robot_point.longitude), fontsize=10)
 
 
-
         plt.xlim(-x_sup_limit, x_sup_limit)
         plt.ylim(-y_sup_limit, y_sup_limit)
 
@@ -114,9 +113,15 @@ def test(points_interval: float, mission_start: Point, mission_end: Point, robot
 
 def test_quadrant(points_interval: float, original_mission_points: "tuple[float, float, float, float]",
         robot_position_1: Point, robot_position_2: Point, quadrant: str) -> None:
-    mission_start = Point(0, 0, 0)
-    mission_end = Point(round(original_mission_points[2] - original_mission_points[0], 6), round(original_mission_points[3] - original_mission_points[1], 6), 0)
 
+    mission_start = Point(0, 0, 0)
+
+    mission_end = Point(
+        round(original_mission_points[2] - original_mission_points[0], 5), 
+        round(original_mission_points[3] - original_mission_points[1], 5), 
+        0
+    )
+    
     test(points_interval, mission_start, mission_end, robot_position_1, "Simulação 1 - Quadrante {} - robô acima da linha".format(quadrant))
     
     test(points_interval, mission_start, mission_end, robot_position_2, "Simulação 2 - Quadrante {} - robô abaixo da linha".format(quadrant))
@@ -132,7 +137,7 @@ def test_all_quadrants() -> None:
     ]
     robot_position_1 = Point(0.00020, 0.00003, 0)
     robot_position_2 = Point(0.00008, 0.00009, 0)
-    test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da direita")
+    #test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da direita")
 
     # Up Left
     original_points = [
@@ -141,7 +146,16 @@ def test_all_quadrants() -> None:
     ]
     robot_position_1 = Point(0.00002, -0.00003, 0)
     robot_position_2 = Point(0.00001, -0.00009, 0)
-    test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da esquerda")
+    #test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da esquerda")
+
+    # Down Left
+    original_points = [
+        -25.43548, -54.59701, # Start (lat, lon)
+        -25.43532, -54.59709 # End (lat, lon)
+    ]
+    robot_position_1 = Point(0.00002, -0.00003, 0)
+    robot_position_2 = Point(0.00001, -0.00009, 0)
+    test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "inferior da esquerda")
 
 
 test_all_quadrants()
