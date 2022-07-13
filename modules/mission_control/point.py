@@ -52,7 +52,7 @@ def generate_info_log(
     print("Número de pontos: {}".format(n_of_points))
     print("-" * 50)
 
-def plot(x_vet: "list[float]", y_vet: "list[float]", interval: float, n_of_points: int) -> None:
+def plot(x_vet: "list[float]", y_vet: "list[float]", interval: float, n_of_points: int, robot_now_lat: float, robot_now_lon: float, selected_5_point_lat: float, selected_5_point_lon: float, selected_point_lat: float, selected_point_lon: float) -> None:
     fig = plt.figure()
     ax = plt.axes()
 
@@ -67,6 +67,12 @@ def plot(x_vet: "list[float]", y_vet: "list[float]", interval: float, n_of_point
 
     plt.axvline(x=0, c="red", label="x=0")
     plt.axhline(y=0, c="yellow", label="y=0")
+
+
+    plt.plot([robot_now_lon], [robot_now_lat], marker="o", markeredgecolor="green", markerfacecolor="green")
+    plt.plot([selected_point_lon], [selected_point_lat], marker="o", markeredgecolor="red", markerfacecolor="red")
+    plt.plot([selected_5_point_lon], [selected_5_point_lat], marker="o", markeredgecolor="orange", markerfacecolor="orange")
+
 
     plt.show()
 
@@ -144,7 +150,7 @@ def test_quad_1() -> None:
     print("Corrigir para o proximo (5pontos): ({:10.6f}, {:10.6f})".format(proximo_5.latitude, proximo_5.longitude))
 
     should_turn_to(r_la, r_lo, proximo_5.latitude, proximo_5.longitude)
-    plot(vet_x, vet_y, space_between_points, n_of_points)
+    plot(vet_x, vet_y, space_between_points, n_of_points, r_la, r_lo, proximo_5.latitude, proximo_5.longitude, menor_ponto.latitude, menor_ponto.longitude)
 
 def test_quad_4() -> None:
     space_between_points = 0.000003
@@ -184,7 +190,7 @@ def test_quad_4() -> None:
 
     should_turn_to(r_la, r_lo, proximo_5.latitude, proximo_5.longitude)
     
-    plot(vet_x, vet_y, space_between_points, n_of_points)
+    plot(vet_x, vet_y, space_between_points, n_of_points, r_la, r_lo, proximo_5.latitude, proximo_5.longitude, menor_ponto.latitude, menor_ponto.longitude)
 
 def test_quad_2() -> None:
     space_between_points = 0.000003
@@ -224,8 +230,49 @@ def test_quad_2() -> None:
 
     should_turn_to(r_la, r_lo, proximo_5.latitude, proximo_5.longitude)
     
-    plot(vet_x, vet_y, space_between_points, n_of_points)
+    plot(vet_x, vet_y, space_between_points, n_of_points, r_la, r_lo, proximo_5.latitude, proximo_5.longitude, menor_ponto.latitude, menor_ponto.longitude)
+
+def test_quad_3() -> None:
+    space_between_points = 0.000003
+
+    robot_lat_original = -25.43548
+    robot_lon_original = -54.59701
+
+    mission_lat_original = -25.43560
+    mission_lon_original = -54.59709
+
+    mission_lat = round(mission_lat_original - robot_lat_original, 6)
+    mission_lon = round(mission_lon_original - robot_lon_original, 6)
+
+    robot_lat, robot_lon = 0, 0
+
+    vet_x, vet_y, n_of_points, dist_between = get_points_between(space_between_points, robot_lat, robot_lon, mission_lat, mission_lon)
+
+    generate_info_log(robot_lat_original, robot_lon_original, mission_lat_original, mission_lon_original, 
+                    robot_lat, robot_lon, mission_lat, mission_lon, dist_between, n_of_points, space_between_points)
+
+    # Mission points
+    p = Points()
+    for i in range(0, len(vet_x)):
+        p.add_point(vet_x[i], vet_y[i])
+
+    # Simulating Robot Position
+    r_la, r_lo = -0.00012, -0.00007
+    vet_x.append(r_la)
+    vet_y.append(r_lo)
+
+    print("Ponto do robô: ({:10.6f}, {:10.6f})".format(r_la, r_lo))
+    menor_ponto = p.get_order_by_distance(r_la, r_lo)
+    print("Menor Ponto: {}".format(menor_ponto.id))
+    print("Deveria estar em: ({:10.6f}, {:10.6f})".format(menor_ponto.latitude, menor_ponto.longitude))
+    proximo_5: Point = p.points[menor_ponto.id + 5]
+    print("Corrigir para o proximo (5pontos): ({:10.6f}, {:10.6f})".format(proximo_5.latitude, proximo_5.longitude))
+
+    should_turn_to(r_la, r_lo, proximo_5.latitude, proximo_5.longitude)
+    
+    plot(vet_x, vet_y, space_between_points, n_of_points, r_la, r_lo, proximo_5.latitude, proximo_5.longitude, menor_ponto.latitude, menor_ponto.longitude)
 
 #test_1()
 #test_2()
-test_quad_2()
+#test_quad_2()
+test_quad_3()
