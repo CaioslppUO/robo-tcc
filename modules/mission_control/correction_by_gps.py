@@ -12,13 +12,15 @@ class GPSCorrection:
     def plot(
             self, vet_lon: "list[float]", vet_lat: "list[float]",
             slope: float, total_distance: float, total_points: int,
-            robot_point: Point, closest_point: Point, correction_point: Point
+            robot_point: Point, closest_point: Point, correction_point: Point,
+            title: str
         ) -> None:
         fig = plt.figure()
         ax = plt.axes()
 
+        plt.title(title)
+
         plt.scatter(vet_lon[0:-1], vet_lat[0:-1], label="Pontos da missão")
-        #plt.arrow(vet_lon[-1], vet_lat[-1], self.points_interval, self.points_interval, width=self.points_interval/2, label="Direção da missão")
         
         ax.annotate("",
             xy=(vet_lon[-1], vet_lat[-1]),
@@ -79,40 +81,56 @@ class GPSCorrection:
 
         return vet_lat, vet_lon, len(vet_lat), dist, slope
 
-def test() -> None:
-    points_interval = 0.00003
-
-    original_points = [
-        -25.43548, # Robot lat
-        -54.59701, # Robot lon
-        -25.43516, # Mission lat
-        -54.59685 # Mission lon
-    ]
-
-    correct_points = [
-        0, # Robot lat
-        0, # Robot lon
-        round(original_points[2] - original_points[0], 6), # Mission lat
-        round(original_points[3] - original_points[1], 6) # Mission lon
-    ]
-
-    robot_position = Point(0.00012, 0.00003, 0)
-
+def test(points_interval: float, mission_start: Point, mission_end: Point, robot_position: Point, title: str) -> None:
     g = GPSCorrection(points_interval)
 
-    # Calculating the points between
+    # Calculating the points between start and end
     vet_lat, vet_lon, n_of_points, total_distance, slope = g.get_points_between(
-        correct_points[0],
-        correct_points[1],
-        correct_points[2],
-        correct_points[3]
+        mission_start.latitude,
+        mission_start.longitude,
+        mission_end.latitude,
+        mission_end.longitude
     )
-
+    
+    # Adding calculated points to points array
     g.points.add_points(vet_lat, vet_lon)
 
     # Calculating closest point
     closest_point, correction_point = g.points.get_order_by_distance(robot_position)
 
-    g.plot(vet_lon, vet_lat, slope, total_distance, n_of_points, robot_position, closest_point, correction_point)
+    # Ploting graphic
+    g.plot(vet_lon, vet_lat, slope, total_distance, n_of_points, robot_position, closest_point, correction_point, title)
 
-test()
+def test_quadrant(points_interval: float, original_mission_points: "tuple[float, float, float, float]",
+        robot_position_1: Point, robot_position_2: Point, quadrant: str) -> None:
+    mission_start = Point(0, 0, 0)
+    mission_end = Point(round(original_mission_points[2] - original_mission_points[0], 6), round(original_mission_points[3] - original_mission_points[1], 6), 0)
+
+    test(points_interval, mission_start, mission_end, robot_position_1, "Simulação 1 - Quadrante {} - robô acima da linha".format(quadrant))
+    
+    test(points_interval, mission_start, mission_end, robot_position_2, "Simulação 2 - Quadrante {} - robô abaixo da linha".format(quadrant))
+
+
+def test_all_quadrants() -> None:
+    points_interval = 0.00003
+
+    # Up Right
+    original_points = [
+        -25.43548, -54.59701, # Start (lat, lon)
+        -25.43516, -54.59685 # End (lat, lon)
+    ]
+    robot_position_1 = Point(0.00020, 0.00003, 0)
+    robot_position_2 = Point(0.00008, 0.00009, 0)
+    #test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da direita")
+
+    # Up Left
+    original_points = [
+        -25.43548, -54.59701, # Start (lat, lon)
+        -25.43550, -54.59685 # End (lat, lon)
+    ]
+    robot_position_1 = Point(0.00020, 0.00003, 0)
+    robot_position_2 = Point(0.00008, 0.00009, 0)
+    test_quadrant(points_interval, original_points, robot_position_1, robot_position_2, "superior da esquerda")
+
+
+test_all_quadrants()
