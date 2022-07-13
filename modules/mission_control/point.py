@@ -28,7 +28,6 @@ class Points:
         return self.points[minIndex]
 
     
-
 def get_y(x: float, y2: float, x2: float) -> float:
     return y2/x2 * x
 

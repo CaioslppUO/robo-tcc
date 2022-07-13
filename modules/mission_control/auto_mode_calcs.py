@@ -1,6 +1,5 @@
-import math
+import math, time
 from mission import _Location
-import time
 
 def rad_to_deg(rad: float) -> float:
     """
@@ -21,6 +20,14 @@ def get_angle_asin(opposite_side:float, hypotenuse:float) -> float:
     Calculate the angle between two sides.
     """
     return rad_to_deg(math.asin(opposite_side / hypotenuse))
+
+def calculate_y_by_line_equation(x: float, x2: float, y2: float) -> "tuple[float, float]":
+    """
+    Calculate the y position given the x, with line equation: y = y2/x2 * x.
+    Return y position and the slope.
+    """
+    return y2/x2 * x, y2/x2
+    
 
 def need_to_correct_route(location: _Location, robot_lat: float, robot_lon: float, compass: float) -> str:
     """
