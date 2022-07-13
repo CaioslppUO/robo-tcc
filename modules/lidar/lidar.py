@@ -17,7 +17,7 @@ from sensor_msgs.msg import LaserScan
 rospy.init_node('lidar', anonymous=True)
 
 # Publication topic of this node.
-pub = rospy.Publisher("/is_movement_allowed_lidar", String, queue_size=10)
+pub = rospy.Publisher("/lidar", String, queue_size=10)
 
 # Log class
 log: Log = Log("lidar.py")
