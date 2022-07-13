@@ -100,9 +100,9 @@ def get_points_between(interval: float,
 
 def should_turn_to(p1_lat: float, p1_lon: float, p2_lat: float, p2_lon: float) -> str:
     if(p2_lat > p1_lat):
-        print("subir")
+        print("reto")
     elif(p2_lat < p1_lat):
-        print("descer")
+        print("reto")
     else:
         print("Subir/Descer: nenhum")
     
@@ -138,7 +138,11 @@ def test_quad_1() -> None:
         p.add_point(vet_x[i], vet_y[i])
 
     # Simulating Robot Position
+    # Simulating Robot Position
+    # Em cima da reta
     r_la, r_lo = 0.00012, 0.00003
+    # A baixo da reta
+    #r_la, r_lo = 0.00004, 0.00003
     vet_x.append(r_la)
     vet_y.append(r_lo)
 
@@ -177,7 +181,11 @@ def test_quad_4() -> None:
         p.add_point(vet_x[i], vet_y[i])
 
     # Simulating Robot Position
+    # Em cima da reta
     r_la, r_lo = 0.00012, -0.00002
+    # A baixo da reta
+    #r_la, r_lo = 0.00012, -0.00009
+    
     vet_x.append(r_la)
     vet_y.append(r_lo)
 
@@ -217,7 +225,10 @@ def test_quad_2() -> None:
         p.add_point(vet_x[i], vet_y[i])
 
     # Simulating Robot Position
-    r_la, r_lo = -0.00002, 0.00014
+    # Em cima da reta
+    #r_la, r_lo = -0.00001, 0.00005
+    # A baixo da reta
+    r_la, r_lo = -0.00009, 0.00014
     vet_x.append(r_la)
     vet_y.append(r_lo)
 
@@ -257,7 +268,10 @@ def test_quad_3() -> None:
         p.add_point(vet_x[i], vet_y[i])
 
     # Simulating Robot Position
-    r_la, r_lo = -0.00012, -0.00007
+    # Em cima da reta
+    #r_la, r_lo = -0.00012, -0.00007
+    # A baixo da reta
+    r_la, r_lo = -0.00002, -0.00002
     vet_x.append(r_la)
     vet_y.append(r_lo)
 
@@ -272,7 +286,7 @@ def test_quad_3() -> None:
     
     plot(vet_x, vet_y, space_between_points, n_of_points, r_la, r_lo, proximo_5.latitude, proximo_5.longitude, menor_ponto.latitude, menor_ponto.longitude)
 
-#test_1()
-#test_2()
+#test_quad_1()
 #test_quad_2()
+#test_quad_4()
 test_quad_3()
