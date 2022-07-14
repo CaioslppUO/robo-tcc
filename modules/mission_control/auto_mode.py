@@ -4,6 +4,7 @@
 Control the automatic mode.
 """
 
+from modules.mission_control.point import Point
 import rospy, time
 from std_msgs.msg import String
 from agrobot_services.log import Log
@@ -11,6 +12,7 @@ from agrobot_services.runtime_log import RuntimeLog
 from mission import Missions, _Location
 from agrobot.msg import Coords, Control
 import auto_mode_calcs
+from path_correction import PathCorrection
 
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
@@ -42,35 +44,32 @@ def verify_coordinates(location: _Location) -> bool:
     time.sleep(5)
     return True
 
-def send_control_command(speed: float, steer: float, timeout: float) -> None:
+def send_control_command(speed: float, steer: float, timeout: int) -> None:
     control: Control = Control()
     control.speed = speed
     control.steer = steer
-    pub.publish(control)
-    time.sleep(timeout)
+    for _ in range(0, timeout):
+        pub.publish(control)
 
 def turn_left() -> None:
-    turn_left_timeout = 0.5
-    runtime_log.info("Turn Left")
-    send_control_command(0.0, -0.5, turn_left_timeout)
-    send_control_command(0.5, 0.0, turn_left_timeout)
-    send_control_command(0.0, 0.5, turn_left_timeout)
-    send_control_command(0.5, 0.0, turn_left_timeout)
-    send_control_command(0.0, 0.0, 0.0)
+    turn_left_timeout = 50
+    speed = 0.2
+    steer = 0.2
+    send_control_command(speed, steer, turn_left_timeout)
+    send_control_command(speed, 0.0, turn_left_timeout)
+    
+    
 
 def turn_right() -> None:
-    turn_right_timeout = 0.5
-    runtime_log.info("Turn Right")
-    send_control_command(0.0, 0.5, turn_right_timeout)
-    send_control_command(0.5, 0.0, turn_right_timeout)
-    send_control_command(0.0, -0.5, turn_right_timeout)
-    send_control_command(0.5, 0.0, turn_right_timeout)
-    send_control_command(0.0, 0.0, 0.0)
+    turn_right_timeout = 50
+    speed = 0.2
+    steer = 0.2
+    send_control_command(speed, steer, turn_right_timeout)
+    send_control_command(speed, 0.0, turn_right_timeout)
 
 def go_forward() -> None:
-    go_forward_timeout = 0.0
-    speed = 0.22
-    #runtime_log.info("Go Forward")
+    go_forward_timeout = 50
+    speed = 0.2
     send_control_command(speed, 0.0, go_forward_timeout)
 
 def run(missions: Missions) -> None:
@@ -78,35 +77,71 @@ def run(missions: Missions) -> None:
     Execute the mission.
     """
     global stop_mission
-    print("Entrou no run auto_mode")
     for mission in missions.get_missions():  # Execute every mission
         if (stop_mission): return
-        print("Executou missao: {}".format(mission.name))
+        print("Executando missao: {}".format(mission.name))
 
         for location in mission.get_locations():  # Execute every location
+            # Defin mission constants
+            correction_point_distance = 4
+            number_of_points = 16
+            robot_location = Point(robot_latitude, robot_longitude)
+            next_location = Point(location.latitude, location.longitude)
+
+            # Mission Path
+            path = PathCorrection(robot_location, next_location, number_of_points)
+            points_to_reach, n_of_points = path.get_points_between()
+            closest_point, correction_point = points_to_reach.get_closest_points(
+                robot_location,
+                correction_point_distance
+            )
+
+            # Path to the closest point
+            path_closest = PathCorrection(
+                robot_location,
+                closest_point,
+                1
+            )
+            # Direction to go back to mission
+            direction_of_correct: str = robot_location.get_correction_direction(
+                closest_point.latitude, 
+                closest_point.longitude, 
+                path_closest.angular_coff
+            )
+
             if (stop_mission): return
-            direction_of_correct: str = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
             print("Executando localizacao: {}, {}".format(location.latitude,location.longitude))
             print("Correcao direcao: {}".format(direction_of_correct))
 
             while not verify_coordinates(location):  # Verifica se chegou ao destino da localização.
-                print("Tentando chegar em {}, {} MAS está em {}, {}".format(location.latitude, location.longitude, robot_latitude, robot_longitude))
                 if (stop_mission): return
 
                 if (lidar_can_move):
-                    while direction_of_correct != "left" and direction_of_correct != "right":  # Lógica para corrigir a direção do robô
-                        print("Precisa corrigir para {}, {}".format(direction_of_correct)) 
-                        if (stop_mission): return None
-                            
-                        direction_of_correct = auto_mode_calcs.need_to_correct_route(location, robot_latitude, robot_longitude, robot_compass)
-                        if direction_of_correct == "left":
-                            turn_left()
-                        elif direction_of_correct == "right":
-                            turn_right()
+                    if(direction_of_correct == "direita"):
+                        turn_right()
+                    elif(direction_of_correct == "esquerda"):
+                        turn_left()
 
                     go_forward()
                 else:
                     runtime_log.info("Can't move, object in front of robot (lidar).")
+                
+                # Calculating robot position and correction to next itertion
+                robot_location = Point(robot_latitude, robot_longitude)
+                closest_point, correction_point = points_to_reach.get_closest_points(
+                    robot_location,
+                    correction_point_distance
+                )
+
+                # Path to the closest point
+                path_closest = PathCorrection(robot_location, closest_point, 1)
+
+                # Direction to go back to mission
+                direction_of_correct: str = robot_location.get_correction_direction(
+                    closest_point.latitude, 
+                    closest_point.longitude, 
+                    path_closest.angular_coff
+                )
     print("Finalizou a missão")
 
 def callback_lidar(dt: String):

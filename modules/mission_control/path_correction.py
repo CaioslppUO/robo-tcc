@@ -60,7 +60,7 @@ class PathCorrection:
 
     def get_points_between(self) -> "tuple[Points, int]":
         """
-        Return distance / points_interval points between mission_start and mission_end.
+        Return distance / points_interval points between mission_start and mission_end and the amount of selected points.
         """
         points = Points()
         
@@ -227,11 +227,11 @@ def test_lon_0_up():
 
     test(mission_start, mission_end, robot_pos_1, robot_pos_2)
 
-test_up_right()
-test_up_left()
-test_down_right()
-test_down_left()
-test_lat_0_left()
-test_lat_0_right()
-test_lon_0_down()
-test_lon_0_up()
+#test_up_right()
+#test_up_left()
+#test_down_right()
+#test_down_left()
+#test_lat_0_left()
+#test_lat_0_right()
+#test_lon_0_down()
+#test_lon_0_up()
