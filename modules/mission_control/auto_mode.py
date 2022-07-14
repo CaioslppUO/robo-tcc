@@ -29,6 +29,7 @@ lidar_can_move: bool = True
 robot_latitude: float = 0.0
 robot_longitude: float = 0.0
 robot_compass: float = 0.0
+last_correction_command: str = ""
 
 def send_control_command(speed: float, steer: float, timeout: int) -> None:
     control: Control = Control()
@@ -75,7 +76,7 @@ def run(missions: Missions) -> None:
     """
     Execute the mission.
     """
-    global stop_mission
+    global stop_mission, last_correction_command
     for mission in missions.get_missions():  # Execute every mission
         if (stop_mission): return
         print("Executando missao: {}".format(mission.name))
@@ -113,6 +114,10 @@ def run(missions: Missions) -> None:
             print("Correcao direcao: {}".format(direction_of_correct))
 
             while not verify_coordinates(location):  # Verifica se chegou ao destino da localização.
+                if(direction_of_correct != last_correction_command):
+                    print("Mandou fazer: {}".format(direction_of_correct))
+                    last_correction_command = direction_of_correct
+                    
                 if (stop_mission): return
 
                 if (lidar_can_move):
