@@ -106,18 +106,46 @@ def test(mission_start: Point, mission_end: Point, robot_pos_1: Point, robot_pos
     print("Coeficiente Angular: {:10.10f}".format(p.angular_coff))
     print("Coeficiente Linear:  {:10.10f}\n".format(p.linear_coff))
     print("Distância:           {:10.10f}".format(p.total_distance))
-    print("Número de pontos:    {:10}".format(number))
+    print("Número de pontos:    {:10}\n".format(number))
 
     #print(points.get_latitudes())
     #print(points.get_longitudes())
 
     # Execution Simulation - Above line
     closest_point, correction_point = points.get_closest_points(robot_pos_1, correction_point_distance)
-    plot(points, robot_pos_1, closest_point, correction_point)
+    print("robot_pos_1:         ({:10.10f}, {:10.10f})".format(robot_pos_1.latitude, robot_pos_1.longitude))
+    print("closest_1:           ({:10.10f}, {:10.10f})".format(closest_point.latitude, closest_point.longitude))
+    print("correction_1:        ({:10.10f}, {:10.10f})".format(correction_point.latitude, correction_point.longitude))
+    
+    dif_lat, dif_lon = robot_pos_1.dif(correction_point.latitude, correction_point.longitude)
+    print("dif robotXcorrec.:   ({:10.10f}, {:10.10f})".format(dif_lat, dif_lon))
+    
+    p1_closest = PathCorrection(robot_pos_1, correction_point, 1)
+    p1_correction = PathCorrection(robot_pos_1, correction_point, 1)
+    print("robot_1_angular_cof: ({:10.10f})".format(p1_correction.angular_coff))
+
+    correction_direction = robot_pos_1.get_correction_direction(closest_point.latitude, closest_point.longitude, p1_closest.angular_coff)
+    print("Correction direction pos_1: {}".format(correction_direction))
+    
+    plot(points, robot_pos_1, closest_point, correction_point, correction_direction)
 
     # Execution Simulation - Under line
     closest_point, correction_point = points.get_closest_points(robot_pos_2, correction_point_distance)
-    plot(points, robot_pos_2, closest_point, correction_point)
+    print("\nrobot_pos_2:         ({:10.10f}, {:10.10f})".format(robot_pos_2.latitude, robot_pos_2.longitude))
+    print("closest_2:           ({:10.10f}, {:10.10f})".format(closest_point.latitude, closest_point.longitude))
+    print("correction_2:        ({:10.10f}, {:10.10f})".format(correction_point.latitude, correction_point.longitude))
+    
+    dif_lat, dif_lon = robot_pos_2.dif(correction_point.latitude, correction_point.longitude)
+    print("dif robotXcorrec.:   ({:10.10f}, {:10.10f})".format(dif_lat, dif_lon))
+    
+    p2_closest = PathCorrection(robot_pos_2, correction_point, 1)
+    p2_correction = PathCorrection(robot_pos_2, correction_point, 1)
+    print("robot_2_angular_cof: ({:10.10f})".format(p2_correction.angular_coff))
+
+    correction_direction = robot_pos_2.get_correction_direction(closest_point.latitude, closest_point.longitude, p2_closest.angular_coff)
+    print("Correction direction pos_2: {}".format(correction_direction))
+
+    plot(points, robot_pos_2, closest_point, correction_point, correction_direction)
 
 def test_up_right():
     # Mission
@@ -200,10 +228,10 @@ def test_lon_0_up():
     test(mission_start, mission_end, robot_pos_1, robot_pos_2)
 
 test_up_right()
-test_up_left()
-test_down_right()
-test_down_left()
-test_lat_0_left()
-test_lat_0_right()
-test_lon_0_down()
-test_lon_0_up()
+#test_up_left()
+#test_down_right()
+#test_down_left()
+#test_lat_0_left()
+#test_lat_0_right()
+#test_lon_0_down()
+#test_lon_0_up()

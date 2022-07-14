@@ -4,6 +4,22 @@ class Point():
         self.latitude = latitude
         self.longitude = longitude
         self.id = 0
+    
+    def dif(self, latitude: float, longitude: float) -> "tuple[float, float]":
+        lat = latitude - self.latitude
+        lon = longitude - self.longitude
+        return (lat, lon)
+
+    def get_correction_direction(self, latitude: float, longitude: float, angular_coefficient: float) -> str:
+        if(longitude > self.longitude and angular_coefficient > 0):
+            return "direita"
+        elif(longitude > self.longitude and angular_coefficient < 0):
+            return "esquerda"
+        elif(longitude < self.longitude and angular_coefficient > 0):
+            return "esquerda"
+        elif(longitude < self.longitude and angular_coefficient < 0):
+            return "direita"
+        return "reto"
 
 class Points():
     def __init__(self) -> None:
@@ -24,7 +40,7 @@ class Points():
             longitudes.append(point.longitude)
         return longitudes
 
-    def get_closest_points(self, point: Point, correction_point_distance: int) -> Point:
+    def get_closest_points(self, point: Point, correction_point_distance: int) -> "tuple[Point, Point]":
         dist:"list[float]" = []
         minDist = -1
         minIndex = 0
@@ -41,4 +57,4 @@ class Points():
         while (correction_point >= len(dist)):
             correction_point -= 1
 
-        return self.__points[minIndex], self.__points[correction_point] 
+        return self.__points[minIndex], self.__points[correction_point]

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
 from point import Point, Points
 
-def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None) -> None:
+def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None) -> None:
     fig = plt.figure()
     ax = plt.axes()
 
@@ -29,6 +29,15 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
             arrowprops={"arrowstyle": "-|>", "lw": 0.5},
             label="Direção da missão")
 
+    ## Plotting correction direction
+    #ax.annotate("direção de correção: {}".format(correction_direction),
+    #        xy=(0, points.get_latitudes()[-1]),
+    #        xytext=(0, points.get_latitudes()[-1]),
+    #        va="center",
+    #        ha="right",
+    #        arrowprops={"arrowstyle": "-", "lw": 0},
+    #        label="-")
+
     # Graph limits
     x_sup_limit = round(abs(max(points.get_longitudes(), key=abs))*1.1, 5)
     y_sup_limit = round(abs(max(points.get_latitudes(), key=abs))*1.1, 5)
@@ -51,6 +60,10 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     
     if(correction_point != None):
         plt.plot([correction_point.longitude], [correction_point.latitude], marker="o", markeredgecolor="orange", markerfacecolor="orange", label="Ponto utilizado para correção")
+
+    if(correction_direction != None): # Add correction_direction to the legend
+        plt.plot([0], [0], markersize=0.1 , marker="o", markeredgecolor="green", markerfacecolor="green", label="Direção de correção: {}".format(correction_direction))
+
 
     plt.legend(loc="upper left")
     plt.show()
