@@ -30,20 +30,6 @@ robot_latitude: float = 0.0
 robot_longitude: float = 0.0
 robot_compass: float = 0.0
 
-def verify_coordinates(location: _Location) -> bool:
-    """
-    Verify if the robot is in the correct position.
-    """
-    #print("robot: {}, {} || mission: {}, {}".format())
-    error = 0.00005
-    lat = robot_latitude < location.latitude - error or robot_latitude > location.latitude + error
-    lon = robot_longitude < location.longitude - error or robot_longitude > location.longitude + error
-    if (lat or lon):
-        return False
-    print("Chegou no ponto {}, {}".format(location.latitude, location.longitude)) 
-    time.sleep(5)
-    return True
-
 def send_control_command(speed: float, steer: float, timeout: int) -> None:
     control: Control = Control()
     control.speed = speed
@@ -57,8 +43,6 @@ def turn_left() -> None:
     steer = 0.2
     send_control_command(speed, steer, turn_left_timeout)
     send_control_command(speed, 0.0, turn_left_timeout)
-    
-    
 
 def turn_right() -> None:
     turn_right_timeout = 50
@@ -71,6 +55,21 @@ def go_forward() -> None:
     go_forward_timeout = 50
     speed = 0.2
     send_control_command(speed, 0.0, go_forward_timeout)
+
+def verify_coordinates(location: _Location) -> bool:
+    """
+    Verify if the robot is in the correct position.
+    """
+    #print("robot: {}, {} || mission: {}, {}".format())
+    error = 0.00005
+    lat = robot_latitude < location.latitude - error or robot_latitude > location.latitude + error
+    lon = robot_longitude < location.longitude - error or robot_longitude > location.longitude + error
+    if (lat or lon):
+        return False
+    send_control_command(0.0, 0.0, 50)
+    print("Chegou no ponto {}, {}".format(location.latitude, location.longitude)) 
+    time.sleep(5)
+    return True
 
 def run(missions: Missions) -> None:
     """
