@@ -27,8 +27,8 @@ def plot(points: Points) -> None:
             label="Direção da missão")
 
     # Graph limits
-    x_sup_limit = abs(max(points.get_longitudes(), key=abs))*1.1
-    y_sup_limit = abs(max(points.get_latitudes(), key=abs))*1.1
+    x_sup_limit = round(abs(max(points.get_longitudes(), key=abs))*1.1, 5)
+    y_sup_limit = round(abs(max(points.get_latitudes(), key=abs))*1.1, 5)
 
     if(x_sup_limit == 0):
         x_sup_limit = y_sup_limit

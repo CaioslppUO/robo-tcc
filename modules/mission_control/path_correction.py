@@ -20,7 +20,6 @@ class PathCorrection:
         self.linear_coff: float = round(self.__calculate_linear_coefficient(), approx_value)
 
         self.total_distance: float = round(dist_two_points(self.start.latitude, self.start.longitude, self.end.latitude, self.end.longitude), approx_value)
-        self.number_of_points: int = 1 + int(math.floor(self.total_distance / self.points_interval))
 
     def __calculate_angular_coefficient(self) -> float:
         """
@@ -44,22 +43,29 @@ class PathCorrection:
         """
         return self.angular_coff * lon + self.linear_coff
 
-    def get_points_between(self) -> Points:
+    def get_points_between(self) -> "tuple[Points, int]":
         """
         Return distance / points_interval points between mission_start and mission_end.
         """
         points = Points()
         
         longitude = 0
-        for _ in range(0, self.number_of_points - 1):
+        for _ in range(0, int(self.total_distance / self.points_interval)):
             longitude = round(longitude, 5)
             latitude = self.line_equation(longitude)
 
             if(self.angular_coff != 0):
+                if(abs(round(latitude, 5)) > abs(self.end.latitude) or abs(longitude) > abs(self.end.longitude)):
+                    print(longitude)
+                    break
                 points.add_point(round(latitude, 5), longitude)
             elif(self.end.longitude == 0):
+                if(abs(longitude) > abs(self.end.latitude)):
+                    break
                 points.add_point(longitude, 0)
             else:
+                if(abs(longitude) > abs(self.end.longitude)):
+                    break
                 points.add_point(0, longitude)
 
             if((self.end.latitude > 0 and self.end.longitude < 0) or (self.end.latitude < 0 and self.end.longitude < 0)):
@@ -67,14 +73,14 @@ class PathCorrection:
             else:
                 longitude += self.points_interval
 
-        points.add_point(self.end.latitude, self.end.longitude)
+        points.add_point(round(self.end.latitude, 5), round(self.end.longitude, 5))
 
-        return points
+        return points, len(points.get_latitudes())
 
 def test() -> None:
-    points_interval = 0.3
-    mission_start = Point(2, 2)
-    mission_end = Point(3, 1)
+    points_interval = 0.00003
+    mission_start = Point(-25.43548, -54.59701)
+    mission_end = Point(-25.43555, -54.59709)
 
     p = PathCorrection(points_interval, mission_start, mission_end)
 
@@ -85,9 +91,10 @@ def test() -> None:
     print("Coeficiente Angular: {:10.5f}".format(p.angular_coff))
     print("Coeficiente Linear: {:10.5f}".format(p.linear_coff))
     print("Distância: {:10.5f}".format(p.total_distance))
-    print("Total de pontos: {:10}".format(p.number_of_points))
-    print(p.get_points_between().get_latitudes())
-    print(p.get_points_between().get_longitudes())
-    plot(p.get_points_between())
+    points, number =  p.get_points_between()
+    print("Número de pontos: {:10}".format(number))
+    print(points.get_latitudes())
+    print(points.get_longitudes())
+    plot(points)
 
 test()
