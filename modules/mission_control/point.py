@@ -11,14 +11,38 @@ class Point():
         return (lat, lon)
 
     def get_correction_direction(self, latitude: float, longitude: float, angular_coefficient: float) -> str:
-        if(longitude > self.longitude and angular_coefficient > 0):
+        if(angular_coefficient > 0 and latitude > self.latitude and longitude > self.longitude and latitude > 0 and longitude > 0):
             return "direita"
-        elif(longitude > self.longitude and angular_coefficient < 0):
+        elif(angular_coefficient > 0 and latitude < self.latitude and longitude < self.longitude and latitude > 0 and longitude > 0):
             return "esquerda"
-        elif(longitude < self.longitude and angular_coefficient > 0):
+        elif(angular_coefficient < 0 and latitude < self.latitude and longitude < self.longitude and latitude > 0 and longitude < 0):
             return "esquerda"
-        elif(longitude < self.longitude and angular_coefficient < 0):
+        elif(angular_coefficient < 0 and latitude > self.latitude and longitude > self.longitude and latitude > 0 and longitude < 0):
             return "direita"
+        elif(angular_coefficient < 0 and latitude < self.latitude and longitude < self.longitude and latitude < 0 and longitude > 0):
+            return "direita"
+        elif(angular_coefficient < 0 and latitude > self.latitude and longitude > self.longitude and latitude < 0 and longitude > 0):
+            return "esquerda"
+        elif(angular_coefficient > 0 and latitude < self.latitude and longitude > self.longitude and latitude < 0 and longitude < 0):
+            return "esquerda"
+        elif(angular_coefficient > 0 and latitude > self.latitude and longitude < self.longitude and latitude < 0 and longitude < 0):
+            return "direita"
+        elif(latitude == 0 and self.latitude < 0 and longitude < 0):
+            return "direita"
+        elif(latitude == 0 and self.latitude > 0 and longitude < 0):
+            return "esquerda"
+        elif(latitude == 0 and self.latitude < 0 and longitude > 0):
+            return "esquerda"
+        elif(latitude == 0 and self.latitude > 0 and longitude > 0):
+            return "direita"
+        elif(longitude == 0 and self.longitude < 0 and latitude < 0):
+            return "esquerda"
+        elif(longitude == 0 and self.longitude > 0 and latitude < 0):
+            return "direita"
+        elif(longitude == 0 and self.longitude < 0 and latitude > 0):
+            return "direita"
+        elif(longitude == 0 and self.longitude > 0 and latitude > 0):
+            return "esquerda"
         return "reto"
 
 class Points():
