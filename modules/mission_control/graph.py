@@ -2,9 +2,12 @@ import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
 from point import Point, Points
 
-def plot(points: Points) -> None:
+def plot(points: Points, robot: Point, closest_point: Point, correction_point: Point) -> None:
     fig = plt.figure()
     ax = plt.axes()
+
+    # Maximized Window
+    plt.get_current_fig_manager().window.attributes('-zoomed', True)
 
     # Axis labels
     plt.xlabel("LON")
@@ -30,6 +33,7 @@ def plot(points: Points) -> None:
     x_sup_limit = round(abs(max(points.get_longitudes(), key=abs))*1.1, 5)
     y_sup_limit = round(abs(max(points.get_latitudes(), key=abs))*1.1, 5)
 
+
     if(x_sup_limit == 0):
         x_sup_limit = y_sup_limit
     elif(y_sup_limit == 0):
@@ -38,6 +42,12 @@ def plot(points: Points) -> None:
     plt.xlim(-x_sup_limit, x_sup_limit)
     plt.ylim(-y_sup_limit, y_sup_limit)
 
+    # Plotting robot, closest point and correction point
+    plt.plot([robot.longitude], [robot.latitude], marker="o", markeredgecolor="green", markerfacecolor="green", label="Robô")
+    plt.plot([closest_point.longitude], [closest_point.latitude], marker="o", markeredgecolor="red", markerfacecolor="red", label="Ponto mais próximo do robô")
+    plt.plot([correction_point.longitude], [correction_point.latitude], marker="o", markeredgecolor="orange", markerfacecolor="orange", label="Ponto utilizado para correção")
+
+    plt.legend(loc="upper left")
     plt.show()
 
 def test() -> None:

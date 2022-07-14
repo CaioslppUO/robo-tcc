@@ -78,11 +78,14 @@ class PathCorrection:
         return points, len(points.get_latitudes())
 
 def test() -> None:
-    points_interval = 0.00003
+    # Mission
+    points_interval = 0.00001
     mission_start = Point(-25.43548, -54.59701)
-    mission_end = Point(-25.43555, -54.59709)
+    mission_end = Point(-25.43532, -54.59695)
 
     p = PathCorrection(points_interval, mission_start, mission_end)
+
+    
 
     print("Original start: ({:10.5f}, {:10.5f})".format(p.mission_start.latitude, p.mission_start.longitude))
     print("Original end: ({:10.5f}, {:10.5f})".format(p.mission_end.latitude, p.mission_end.longitude))
@@ -92,9 +95,14 @@ def test() -> None:
     print("Coeficiente Linear: {:10.5f}".format(p.linear_coff))
     print("Distância: {:10.5f}".format(p.total_distance))
     points, number =  p.get_points_between()
+
+    # Execution Simulation
+    robot_location = Point(0.00010, 0.00002)
+    closest_point, correction_point = points.get_closest_points(robot_location)
+
     print("Número de pontos: {:10}".format(number))
     print(points.get_latitudes())
     print(points.get_longitudes())
-    plot(points)
+    plot(points, robot_location, closest_point, correction_point)
 
 test()
