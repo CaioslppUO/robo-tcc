@@ -29,6 +29,12 @@ def plot(points: Points) -> None:
     # Graph limits
     x_sup_limit = abs(max(points.get_longitudes(), key=abs))*1.1
     y_sup_limit = abs(max(points.get_latitudes(), key=abs))*1.1
+
+    if(x_sup_limit == 0):
+        x_sup_limit = y_sup_limit
+    elif(y_sup_limit == 0):
+        y_sup_limit = x_sup_limit
+
     plt.xlim(-x_sup_limit, x_sup_limit)
     plt.ylim(-y_sup_limit, y_sup_limit)
 
