@@ -24,11 +24,10 @@ class Points():
             longitudes.append(point.longitude)
         return longitudes
 
-    def get_closest_points(self, point: Point) -> Point:
+    def get_closest_points(self, point: Point, correction_point_distance: int) -> Point:
         dist:"list[float]" = []
         minDist = -1
         minIndex = 0
-        correction_point_distance = 2
 
         for i in self.__points:
             dist.append(dist_two_points(point.latitude, point.longitude, i.latitude, i.longitude))
