@@ -16,10 +16,12 @@ class PathCorrection:
         )
         
         # Use the smaller value to set the increment between each point
-        if(self.end.latitude > self.end.longitude):
+        if(self.end.latitude > self.end.longitude and self.end.longitude != 0):
             self.points_interval = self.end.longitude / number_of_points
-        else:
+        elif(self.end.latitude != 0):
             self.points_interval = self.end.latitude / number_of_points
+        else:
+            self.points_interval = self.end.longitude / number_of_points
         # Update the scale due to how many points were requested
         self.scale = len(str(self.points_interval))
 
@@ -157,7 +159,51 @@ def test_down_left():
 
     test(mission_start, mission_end, robot_pos_1, robot_pos_2)
 
-#test_up_right()
-#test_up_left()
-#test_down_right()
-#test_down_left()
+def test_lat_0_left():
+    # Mission
+    mission_start = Point(-25.43548, -54.59701)
+    mission_end = Point(-25.43548, -54.59709)
+
+    robot_pos_1 = Point(-0.00001, -0.00002)
+    robot_pos_2 = Point(0.00001, -0.00002)
+
+    test(mission_start, mission_end, robot_pos_1, robot_pos_2)
+
+def test_lat_0_right():
+    # Mission
+    mission_start = Point(-25.43548, -54.59701)
+    mission_end = Point(-25.43548, -54.59695)
+
+    robot_pos_1 = Point(-0.00001, 0.00002)
+    robot_pos_2 = Point(0.00001, 0.00002)
+
+    test(mission_start, mission_end, robot_pos_1, robot_pos_2)
+
+def test_lon_0_down():
+    # Mission
+    mission_start = Point(-25.43548, -54.59701)
+    mission_end = Point(-25.43555, -54.59701)
+
+    robot_pos_1 = Point(-0.00001, -0.00001)
+    robot_pos_2 = Point(-0.00001, 0.00001)
+
+    test(mission_start, mission_end, robot_pos_1, robot_pos_2)
+
+def test_lon_0_up():
+    # Mission
+    mission_start = Point(-25.43548, -54.59701)
+    mission_end = Point(-25.43512, -54.59701)
+
+    robot_pos_1 = Point(0.00002, -0.00002)
+    robot_pos_2 = Point(0.00002, 0.00002)
+
+    test(mission_start, mission_end, robot_pos_1, robot_pos_2)
+
+test_up_right()
+test_up_left()
+test_down_right()
+test_down_left()
+test_lat_0_left()
+test_lat_0_right()
+test_lon_0_down()
+test_lon_0_up()
