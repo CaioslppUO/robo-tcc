@@ -17,10 +17,10 @@ tmux send-keys -t 0 C-c
 if [ ! -z "$2" ] && [ $2 == "--ubuntu" ] 
     then
         SYSTEM="ubuntu"
-        CORES=""
+        CATIN_CORES=""
     else
         SYSTEM="rasp"
-        CORES="-j2"
+        CATIN_CORES="-j2"
 fi
 
 # Dependencies
@@ -227,7 +227,7 @@ echo "</launch>" >> run.launch
 
 # Post install
 ## Catkin compilations
-cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 "$CORES"
+cd $CATKIN && catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 $CATIN_CORES
 
 ## Install agrobot site packages from ROS into agrobot project
 {
