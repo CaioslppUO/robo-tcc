@@ -11,10 +11,13 @@ NC='\033[0m'
 UBUNTU_DEPENDENCIES="0"
 SITE_PACKAGES="0"
 
+# Stopping running instances of agrobot
+tmux send-keys -t 0 C-c
+
 # Dependencies
 if [ ! -z "$1" ] && [ $1 == "--no-dependency" ] 
     then
-        echo "skipping dependency install."
+        echo "skipping system dependency install"
         UBUNTU_DEPENDENCIES="1"
     else
         { ## Ubuntu
@@ -56,25 +59,38 @@ mkdir $AGROBOT_FOLDER/
 mkdir $AGROBOT_ENV
 mkdir -p $CATKIN/src/
 
-{
-    # Virtual Env
-    python3 -m venv $AGROBOT_ENV/
-    python3 -m pip install empy==3.3.4
-    source "$AGROBOT_ENV_BIN/activate"
-    packages=$(cat "$LOCAL_FOLDER/requirements.txt")
-    for package in $packages
-    do
-        pip3 install $package
-    done
-    deactivate
-    echo "source /opt/ros/noetic/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
-    echo "source /opt/ros/noetic/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
-    echo "alias agrobot=exit" >> $AGROBOT_ENV_BIN/activate &&
-    VIRTUAL_ENV="1"
-} || {
-    printf "${RED}VIRTUAL ENV ERROR${NC}"
-    VIRTUAL_ENV="0"
-}
+if [ ! -z "$1" ] && [ $1 == "--no-dependency" ] 
+    then
+        echo "using pre-downloaded dependency to pip install"
+        python3 -m venv $AGROBOT_ENV/
+        source "$AGROBOT_ENV_BIN/activate"
+        cd "$LOCAL_FOLDER/dependencies" && pip install wheel-0.37.1-py2.py3-none-any.whl -f ./ --no-index
+        cd "$LOCAL_FOLDER/dependencies" && pip install * -f ./ --no-index
+        deactivate
+        echo "source /opt/ros/noetic/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
+        echo "source /opt/ros/noetic/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
+        echo "alias agrobot=exit" >> $AGROBOT_ENV_BIN/activate &&
+        VIRTUAL_ENV="1"
+    else
+        {
+            # Virtual Env
+            python3 -m venv $AGROBOT_ENV/
+            source "$AGROBOT_ENV_BIN/activate"
+            packages=$(cat "$LOCAL_FOLDER/requirements.txt")
+            for package in $packages
+            do
+                pip3 install $package
+            done
+            deactivate
+            echo "source /opt/ros/noetic/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
+            echo "source /opt/ros/noetic/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
+            echo "alias agrobot=exit" >> $AGROBOT_ENV_BIN/activate &&
+            VIRTUAL_ENV="1"
+        } || {
+            printf "${RED}VIRTUAL ENV ERROR${NC}"
+            VIRTUAL_ENV="0"
+        }
+fi
 
 AGROBOT_ALIAS="alias agrobot='source $AGROBOT_ENV_BIN/activate'"
 AGROBOT_ALIAS_GREP="$(grep 'alias agrobot' $BASHRC)"
