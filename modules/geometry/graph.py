@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
-from point import Point, Points
+from point import Point
+from points import Points
 
 def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None) -> None:
     fig = plt.figure()
