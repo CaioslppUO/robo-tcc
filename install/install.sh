@@ -14,6 +14,13 @@ SITE_PACKAGES="0"
 # Stopping running instances of agrobot
 tmux send-keys -t 0 C-c
 
+if [ ! -z "$2" ] && [ $2 == "--ubuntu" ] 
+    then
+        SYSTEM="ubuntu"
+    else
+        SYSTEM="rasp"
+fi
+
 # Dependencies
 if [ ! -z "$1" ] && [ $1 == "--no-dependency" ] 
     then
@@ -61,11 +68,11 @@ mkdir -p $CATKIN/src/
 
 if [ ! -z "$1" ] && [ $1 == "--no-dependency" ] 
     then
-        echo "using pre-downloaded dependency to pip install"
+        echo "using pre-downloaded dependency to pip install on SYSTEM $SYSTEM"
         python3 -m venv $AGROBOT_ENV/
         source "$AGROBOT_ENV_BIN/activate"
-        cd "$LOCAL_FOLDER/dependencies" && pip install wheel-0.37.1-py2.py3-none-any.whl -f ./ --no-index
-        cd "$LOCAL_FOLDER/dependencies" && pip install * -f ./ --no-index
+        cd "$LOCAL_FOLDER/dependencies_$SYSTEM" && pip install wheel-0.37.1-py2.py3-none-any.whl -f ./ --no-index
+        cd "$LOCAL_FOLDER/dependencies_$SYSTEM" && pip install * -f ./ --no-index
         deactivate
         echo "source /opt/ros/noetic/setup.zsh 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
         echo "source /opt/ros/noetic/setup.bash 2>/dev/null" >> $AGROBOT_ENV_BIN/activate &&
