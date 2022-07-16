@@ -61,7 +61,7 @@ class Monitor:
         self.control = Control_robot()
         self.encoder = Encoder()
         self.direction = "stop"
-        self.wheel_adjustment = Wheel_Adjustment();
+        self.wheel_adjustment = Wheel_Adjustment()
 
     def generate_table(self) -> Table:
         table = Table()

@@ -4,8 +4,8 @@
 Auto mode for the robot. Execute pre-defined missions.
 """
 
-import rospy
-from control import ControlRobot
+import rospy, time
+from control.control import ControlRobot
 from agrobot.msg import Control
 from agrobot_services.runtime_log import RuntimeLog
 from agrobot_services.log import Log
@@ -13,8 +13,10 @@ from agrobot_services.log import Log
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
 
-# Topic to publis control commands
+# Topic to publish control commands
 pub = rospy.Publisher("/control_robot", Control, queue_size=10)
+
+time.sleep(1) # Wait for publishers to be registered.
 
 # Log class
 log: Log = Log("auto_mode.py")
@@ -24,6 +26,7 @@ if __name__ == "__main__":
     try:
         control_robot = ControlRobot(pub)
         while not rospy.is_shutdown():
-            control_robot.stop()
+            pass
+            #control_robot.stop()
     except:
         runtime_log.error("Auto Mode died. Check logs file.")
