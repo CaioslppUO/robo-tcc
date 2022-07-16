@@ -18,3 +18,4 @@ spidev
 sparkfun-ublox-gps
 mpu9250-jmdev
 smbus2
+matplotlib

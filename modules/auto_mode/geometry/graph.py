@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
+from matplotlib import ticker
 plt.style.use('seaborn-whitegrid')
 from point import Point
 from points import Points
+import numpy as np
 
 def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None) -> None:
     fig = plt.figure()
@@ -15,8 +17,8 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     plt.ylabel("LAT")
 
     # X and Y axis on 0
-    plt.axvline(x=0, c="red", label="x=0")
-    plt.axhline(y=0, c="yellow", label="y=0")
+    #plt.axvline(x=0, c="red", label="x=0")
+    #plt.axhline(y=0, c="yellow", label="y=0")
 
     # Plotting mission points
     plt.scatter(x=points.get_longitudes(), y=points.get_latitudes())
@@ -24,7 +26,7 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     # Plotting mission direction
     ax.annotate("",
             xy=(points.get_longitudes()[-1], points.get_latitudes()[-1]),
-            xytext=(0, 0),
+            xytext=(points.get_longitudes()[0], points.get_latitudes()[0]),
             va="center",
             ha="right",
             arrowprops={"arrowstyle": "-|>", "lw": 0.5},
@@ -40,17 +42,25 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     #        label="-")
 
     # Graph limits
-    x_sup_limit = round(abs(max(points.get_longitudes(), key=abs))*1.1, 5)
-    y_sup_limit = round(abs(max(points.get_latitudes(), key=abs))*1.1, 5)
+    #x_sup_limit = round(abs(max(points.get_longitudes(), key=abs))*1.1, 5)
+    #y_sup_limit = round(abs(max(points.get_latitudes(), key=abs))*1.1, 5)
+#
+#
+    #if(x_sup_limit == 0):
+    #    x_sup_limit = y_sup_limit
+    #elif(y_sup_limit == 0):
+    #    y_sup_limit = x_sup_limit
 
+    min_x = min([points.get_longitudes()[0], points.get_longitudes()[-1]])
+    max_x = max([points.get_longitudes()[0], points.get_longitudes()[-1]])
 
-    if(x_sup_limit == 0):
-        x_sup_limit = y_sup_limit
-    elif(y_sup_limit == 0):
-        y_sup_limit = x_sup_limit
+    min_y = min([points.get_latitudes()[0], points.get_latitudes()[-1]])
+    max_y = max([points.get_latitudes()[0], points.get_latitudes()[-1]])
+    plt.xlim(min_x - 0.0000002, max_x + 0.0000002)
+    plt.ylim(min_y - 0.0000002, max_y + 0.0000002)
 
-    plt.xlim(-x_sup_limit, x_sup_limit)
-    plt.ylim(-y_sup_limit, y_sup_limit)
+    plt.xticks(points.get_longitudes())
+    plt.yticks(points.get_latitudes())
 
     # Plotting robot, closest point and correction point
     if(robot != None):
@@ -65,33 +75,32 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     if(correction_direction != None): # Add correction_direction to the legend
         plt.plot([0], [0], markersize=0.1 , marker="o", markeredgecolor="green", markerfacecolor="green", label="Direção de correção: {}".format(correction_direction))
 
-
     plt.legend(loc="upper left")
     plt.show()
 
 def test() -> None:
-    points = Points()
+    points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(1.0, 1.0)
     points.add_point(2.0, 2.0)
 
     plot(points)
 
-    points = Points()
+    points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(-1.0, -1.0)
     points.add_point(-2.0, -2.0)
 
     plot(points)
 
-    points = Points()
+    points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(1.0, -1.0)
     points.add_point(2.0, -2.0)
 
     plot(points)
 
-    points = Points()
+    points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(-1.0, 1.0)
     points.add_point(-2.0, 2.0)
