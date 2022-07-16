@@ -231,12 +231,12 @@ class Monitor:
                     while True:
                         self.update_table(live)
 
-if __name__ == "__main__":
-    try:
-        m = Monitor()
-        Thread(target=m.run).start()
-        time.sleep(3)
-        m.robot_point.latitude = -0.00012
-        m.robot_point.longitude = 0.01010
-    except Exception as e:
-        print(traceback.format_exc())
+#if __name__ == "__main__":
+#    try:
+#        m = Monitor()
+#        Thread(target=m.run).start()
+#        time.sleep(3)
+#        m.robot_point.latitude = -0.00012
+#        m.robot_point.longitude = 0.01010
+#    except Exception as e:
+#        print(traceback.format_exc())
