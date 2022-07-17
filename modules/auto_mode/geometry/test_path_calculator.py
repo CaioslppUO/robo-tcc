@@ -3,11 +3,10 @@ from path_calculator import PathCalculator, Point, Points
 
 class TestPathCalculator:
     def test_should_create_5_points_up_right(self):
-        decimals = 7
-        start = Point(-25.435348, -54.596970, decimals)
-        end = Point(-25.435324, -54.596960, decimals)
+        start = Point(-25.435348, -54.596970)
+        end = Point(-25.435324, -54.596960)
 
-        path = PathCalculator(decimals, start, end, 5)
+        path = PathCalculator(start, end, 5)
         points = path.get_points_between()
 
         longitudes = points.get_longitudes()

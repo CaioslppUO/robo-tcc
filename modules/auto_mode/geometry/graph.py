@@ -5,7 +5,7 @@ from point import Point
 from points import Points
 import numpy as np
 
-def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None) -> None:
+def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None, robot_points: Points = None) -> None:
     fig = plt.figure()
     ax = plt.axes()
 
@@ -59,13 +59,28 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     plt.xlim(min_x - 0.0000002, max_x + 0.0000002)
     plt.ylim(min_y - 0.0000002, max_y + 0.0000002)
 
-    plt.xticks(points.get_longitudes())
-    plt.yticks(points.get_latitudes())
+    x_values: "list[float]" = []
+    for l in points.get_longitudes():
+        x_values.append(l)
+    if(robot != None):
+        x_values.append(robot.longitude)
+
+    y_values: "list[float]" = []
+    for l in points.get_latitudes():
+        y_values.append(l)
+    if(robot != None):
+        y_values.append(robot.latitude)
+
+    plt.xticks(x_values)
+    plt.yticks(y_values)
 
     # Plotting robot, closest point and correction point
-    if(robot != None):
+    if(robot != None and robot_points == None):
         plt.plot([robot.longitude], [robot.latitude], marker="o", markeredgecolor="green", markerfacecolor="green", label="Robô")
-    
+    elif(robot_points != None and robot == None):
+        for r_point in robot_points.get_points():
+            plt.plot([r_point.longitude], [r_point.latitude], marker="o", markeredgecolor="green", markerfacecolor="green")
+            
     if(closest_point != None):
         plt.plot([closest_point.longitude], [closest_point.latitude], marker="o", markeredgecolor="red", markerfacecolor="red", label="Ponto mais próximo do robô")
     

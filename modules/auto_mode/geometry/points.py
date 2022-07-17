@@ -1,7 +1,7 @@
 from point import Point
 
 class Points:
-    def __init__(self, decimals: int) -> None:
+    def __init__(self, decimals: int = 7) -> None:
         self.__points: "list[Point]" = []
         self.__decimals = decimals
 
@@ -28,6 +28,18 @@ class Points:
         for point in self.__points:
             lon.append(point.longitude)
         return lon
+
+    def get_points(self) -> "list[Point]":
+        """
+        Return the list of points.
+        """
+        return self.__points
+
+    def get_point(self, index: int) -> Point:
+        """
+        Return a point.
+        """
+        return self.__points[index]
 
     def get_closest_points(self, test_point: Point, correction_point_distance: int) -> "tuple[Point, Point]":
         """
