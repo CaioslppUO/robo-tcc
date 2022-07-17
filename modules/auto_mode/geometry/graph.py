@@ -5,7 +5,7 @@ from point import Point
 from points import Points
 import numpy as np
 
-def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None, robot_points: Points = None) -> None:
+def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None, robot_points: Points = None, mission_quadrant: int = None) -> None:
     fig = plt.figure()
     ax = plt.axes()
 
@@ -90,7 +90,17 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     if(correction_direction != None): # Add correction_direction to the legend
         plt.plot([0], [0], markersize=0.1 , marker="o", markeredgecolor="green", markerfacecolor="green", label="Direção de correção: {}".format(correction_direction))
 
-    plt.legend(loc="upper left")
+    if(mission_quadrant != None):
+        if(mission_quadrant == 1):
+            plt.legend(loc="upper left")
+        elif(mission_quadrant == 2):
+            plt.legend(loc="upper right")
+        elif(mission_quadrant == 3):
+            plt.legend(loc="upper left")
+        elif(mission_quadrant == 4):
+            plt.legend(loc="upper right")
+    else:
+        plt.legend(loc="upper left")
     plt.show()
 
 def test() -> None:

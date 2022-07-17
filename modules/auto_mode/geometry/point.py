@@ -27,13 +27,13 @@ class Point:
         Calculate the slope from the self to the point.
         """
         if(end_point.longitude - self.longitude == 0):
-            return 0
+            return float("inf")
         return round((end_point.latitude - self.latitude) / (end_point.longitude - self.longitude), self.__decimals)
 
     def get_linear_coefficient(self, angular_coefficient: float) -> float:
         return round(self.latitude - self.longitude * angular_coefficient, self.__decimals)
 
-    def get_correction_direction(self, start_point: Point, initial_angular_coefficient: float, mission_quadrant: int) -> str:
+    def get_correction_direction(self, start_point: Point, initial_angular_coefficient: float, mission_quadrant: int, closest_point: Point) -> str:
         """
         Return the correction direction based on the quadrant and angular_coefficient.
         """
@@ -44,14 +44,19 @@ class Point:
         quadrant_3 = mission_quadrant == 3
         quadrant_4 = mission_quadrant == 4
         bigger_angular = angular_coefficient != 0 and angular_coefficient > initial_angular_coefficient
-        smaller_angular = angular_coefficient != 0 and angular_coefficient < initial_angular_coefficient
+        lat_diff = self.latitude - closest_point.latitude
+        lon_diff = self.longitude - closest_point.longitude
 
-        if(angular_coefficient == 0 or angular_coefficient == initial_angular_coefficient):
-            return "forward"
-        elif(quadrant_1 and bigger_angular):
-            return "right"
-        elif(quadrant_1 and smaller_angular):
-            return "left"
+        if(angular_coefficient == float("inf")): # Only axis y
+            if(lon_diff == 0): # Is in the point
+                return "forward"
+            elif(quadrant_1):
+                if(lon_diff > 0): # Is on the left of the point
+                    return "right"
+                else: # Is on the right of the point
+                    return "left"
+        elif(angular_coefficient == 0): # Only axis x
+            pass
         
 
     #def get_correction_direction(self, latitude: float, longitude: float, angular_coefficient: float) -> str:
