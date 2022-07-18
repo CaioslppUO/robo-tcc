@@ -63,7 +63,6 @@ class PathCalculator:
             if(self.__end.longitude > self.__start.longitude):
                 longitude += self.__interval
             else:
-                print("subtraiu")
                 longitude -= self.__interval
 
         points.add_point(self.__end.latitude, self.__end.longitude)
