@@ -71,6 +71,7 @@ class Simulation:
         """
         Execute the simulation.
         """
+        last_correction_point = "forward"
         for r_point in self.robot_points.get_points():
             print("Ponto: {}".format(r_point.id))
             _a, _b = self.points.get_closest_points(r_point, 3)
@@ -78,6 +79,10 @@ class Simulation:
             correction_point = Point(_b.latitude, _b.longitude)
         
             correction_direction = r_point.get_correction_direction(self.start, self.path.get_angular_coefficient(), self.path.get_mission_quadrant())
+            if(last_correction_point != correction_direction):
+                last_correction_point = correction_direction
+            else:
+                correction_direction = "forward"
             new_point = self.get_new_point(correction_direction, self.robot_points.get_points()[-1])
             if(new_point != None):
                 self.robot_points.add_point(new_point.latitude, new_point.longitude)
