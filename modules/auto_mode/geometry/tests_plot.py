@@ -114,8 +114,38 @@ def test_robot_quadrant_3() -> None:
         correction_direction = r_point.get_correction_direction(start, path.get_angular_coefficient(), path.get_mission_quadrant())
         plot(points, robot=r_point, closest_point=closest_point, correction_point=correction_point, correction_direction=correction_direction, mission_quadrant=path.get_mission_quadrant())
 
+def test_robot_quadrant_4() -> None:
+    """
+    Test the robot plot with the closest point in quadrant_1.
+    """
+    start = Point(-25.435348, -54.596970)
+    end = Point(-25.435324, -54.5969705)
+    path = PathCalculator(start, end, 15)
+    points = path.get_points_between()
+
+    robot_points = Points()
+    robot_points.add_point(-25.435348, -54.596970)
+    robot_points.add_point(-25.435348, -54.5969701)
+    robot_points.add_point(-25.435347, -54.5969700)
+    robot_points.add_point(-25.435347, -54.5969701)
+    robot_points.add_point(-25.435345, -54.5969701)
+    robot_points.add_point(-25.435343, -54.5969702)
+    robot_points.add_point(-25.435336, -54.5969703)
+    robot_points.add_point(-25.435330, -54.5969703)
+    robot_points.add_point(-25.435326, -54.5969704)
+    robot_points.add_point(-25.435324, -54.5969705)
+
+    for r_point in robot_points.get_points():
+        _a, _b = points.get_closest_points(r_point, 3)
+        closest_point = Point(_a.latitude, _a.longitude)
+        correction_point = Point(_b.latitude, _b.longitude)
+
+        correction_direction = r_point.get_correction_direction(start, path.get_angular_coefficient(), path.get_mission_quadrant())
+        plot(points, robot=r_point, closest_point=closest_point, correction_point=correction_point, correction_direction=correction_direction, mission_quadrant=path.get_mission_quadrant())
+
 #test_1()
 
 #test_robot_quadrant_1()
 #test_robot_quadrant_2()
-test_robot_quadrant_3()
+#test_robot_quadrant_3()
+#test_robot_quadrant_4()
