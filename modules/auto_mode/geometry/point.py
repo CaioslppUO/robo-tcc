@@ -8,6 +8,14 @@ class Point:
         self.longitude = longitude
         self.id = id
 
+    def equals(self, other: Point, error: float = 0.000001) -> bool:
+        """
+        Return True if both points are the same.
+        """
+        c1 = self.latitude >= other.latitude - error and self.latitude <= other.latitude + error
+        c2 = self.longitude >= other.longitude - error and self.longitude <= other.longitude + error
+        return c1 and c2
+
     def get_difference(self, end_point: Point) -> Point:
         """
         Calculate the difference between self and point.
@@ -33,7 +41,7 @@ class Point:
     def get_linear_coefficient(self, angular_coefficient: float) -> float:
         return round(self.latitude - self.longitude * angular_coefficient, self.__decimals)
 
-    def get_correction_direction(self, start_point: Point, initial_angular_coefficient: float, mission_quadrant: int) -> str:
+    def get_correction_direction(self, start_point: Point, initial_angular_coefficient: float, mission_quadrant: int, closest_point: Point) -> str:
         """
         Return the correction direction based on the quadrant and angular_coefficient.
         """
@@ -76,6 +84,7 @@ class Point:
             return "forward"
         else: # Both X and Y axis movement
             if(angular_coefficient == initial_angular_coefficient):
+                print("bla")
                 return "forward"
             if((quadrant_1 or quadrant_3) and bigger_angular):
                 return "right"
@@ -86,38 +95,3 @@ class Point:
             elif((quadrant_2 or quadrant_4) and bigger_angular):
                 return "right"
             return "forward"
-
-    #def get_correction_direction(self, latitude: float, longitude: float, angular_coefficient: float) -> str:
-    #    if(angular_coefficient > 0 and latitude > self.latitude and longitude > self.longitude and latitude > 0 and longitude > 0):
-    #        return "right"
-    #    elif(angular_coefficient > 0 and latitude < self.latitude and longitude < self.longitude and latitude > 0 and longitude > 0):
-    #        return "left"
-    #    elif(angular_coefficient < 0 and latitude < self.latitude and longitude < self.longitude and latitude > 0 and longitude < 0):
-    #        return "left"
-    #    elif(angular_coefficient < 0 and latitude > self.latitude and longitude > self.longitude and latitude > 0 and longitude < 0):
-    #        return "right"
-    #    elif(angular_coefficient < 0 and latitude < self.latitude and longitude < self.longitude and latitude < 0 and longitude > 0):
-    #        return "right"
-    #    elif(angular_coefficient < 0 and latitude > self.latitude and longitude > self.longitude and latitude < 0 and longitude > 0):
-    #        return "left"
-    #    elif(angular_coefficient > 0 and latitude < self.latitude and longitude > self.longitude and latitude < 0 and longitude < 0):
-    #        return "left"
-    #    elif(angular_coefficient > 0 and latitude > self.latitude and longitude < self.longitude and latitude < 0 and longitude < 0):
-    #        return "right"
-    #    elif(latitude == 0 and self.latitude < 0 and longitude < 0):
-    #        return "right"
-    #    elif(latitude == 0 and self.latitude > 0 and longitude < 0):
-    #        return "left"
-    #    elif(latitude == 0 and self.latitude < 0 and longitude > 0):
-    #        return "left"
-    #    elif(latitude == 0 and self.latitude > 0 and longitude > 0):
-    #        return "right"
-    #    elif(longitude == 0 and self.longitude < 0 and latitude < 0):
-    #        return "left"
-    #    elif(longitude == 0 and self.longitude > 0 and latitude < 0):
-    #        return "right"
-    #    elif(longitude == 0 and self.longitude < 0 and latitude > 0):
-    #        return "right"
-    #    elif(longitude == 0 and self.longitude > 0 and latitude > 0):
-    #        return "left"
-    #    return "forward"

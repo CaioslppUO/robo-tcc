@@ -80,7 +80,7 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     elif(robot_points != None and robot == None):
         for r_point in robot_points.get_points():
             plt.plot([r_point.longitude], [r_point.latitude], marker="o", markeredgecolor="green", markerfacecolor="green")
-            
+
     if(closest_point != None):
         plt.plot([closest_point.longitude], [closest_point.latitude], marker="o", markeredgecolor="red", markerfacecolor="red", label="Ponto mais próximo do robô")
     
