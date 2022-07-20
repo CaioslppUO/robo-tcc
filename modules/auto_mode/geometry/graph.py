@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
-from matplotlib import ticker
 plt.style.use('seaborn-whitegrid')
 from point import Point
 from points import Points
-import numpy as np
 
 def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None, robot_points: Points = None, mission_quadrant: int = None) -> None:
     fig = plt.figure()
