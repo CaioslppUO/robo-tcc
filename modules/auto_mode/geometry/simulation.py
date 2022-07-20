@@ -21,28 +21,37 @@ class Simulation:
         self.move_factor = 0.000001
         self.move_factor_randomizer = 0.0000005
 
-        self.robot = Robot(-25.435348, -54.596970, -25.4353465, -54.596969)
+        self.robot = Robot(-25.435348, -54.596970, -25.4353477, -54.596969)
 
         self.robot_points = Points()
         # Up Right
         #self.robot_points.add_point(-25.435348, -54.596970)
-        print(-25.4353465, -54.596969)
-        self.robot_points.add_point(-25.4353465, -54.596969)
+        print(-25.4353477, -54.596969)
+        self.robot_points.add_point(-25.4353477, -54.596969)
 
     def get_new_point(self, direction: str, last_point: Point, mission_quadrant: int) -> Point:
         """
         Calculate the new robot point.
         """
+        much_smaller_slope = self.robot.slope < self.path.get_angular_coefficient()/2
+        much_bigger_slope = self.robot.slope > self.path.get_angular_coefficient()*2
+        perfect_slope = self.robot.slope >= self.path.get_angular_coefficient() - 0.3 and self.robot.slope <= self.path.get_angular_coefficient() + 0.3
+        if(much_smaller_slope or much_bigger_slope):
+            turn_angle = 10
+        elif(perfect_slope):
+            turn_angle = 3
+        else:
+            turn_angle = None
         if(direction == "forward"):
             lat, lon = self.robot.forward(last_point.longitude, mission_quadrant)
             print(lat, lon)
             return Point(lat, lon)
         elif(direction == "right"):
-            lat, lon = self.robot.turn_right(last_point.longitude, mission_quadrant)
+            lat, lon = self.robot.turn_right(last_point.longitude, mission_quadrant, turn_angle)
             print(lat, lon)
             return Point(lat, lon)
         elif(direction == "left"):
-            lat, lon = self.robot.turn_left(last_point.longitude, mission_quadrant)
+            lat, lon = self.robot.turn_left(last_point.longitude, mission_quadrant, turn_angle)
             print(lat, lon)
             return Point(lat, lon)
 
@@ -53,7 +62,8 @@ class Simulation:
         reached_the_end = False
         for r_point in self.robot_points.get_points():
             print("Ponto: {}".format(r_point.id))
-            print("Graus: ", self.robot.slope_degrees)
+            print("cof_ang_robo: ", self.robot.slope)
+
             _a, _b = self.points.get_closest_points(r_point, 3)
             closest_point = Point(_a.latitude, _a.longitude)
             correction_point = Point(_b.latitude, _b.longitude)
@@ -90,7 +100,7 @@ class Simulation:
                 reached_the_end, dist_to_end = self.end.equals(new_point, 0.00000150)
             else:
                 print("Nao tem mais pontos")
-
+        print("Pontos: ", len(self.robot_points.get_points()))
         plot(self.points, robot_points=self.robot_points, mission_quadrant=self.path.get_mission_quadrant())
 
 

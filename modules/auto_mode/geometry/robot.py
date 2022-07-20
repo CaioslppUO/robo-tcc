@@ -69,33 +69,35 @@ class Robot:
         new_y = self.get_y(new_x)
         return new_y, new_x
 
-    def turn_left(self, last_lon: float, mission_quadrant: int, force_no_slope_update: bool = False) -> "tuple[float, float]":
+    def turn_left(self, last_lon: float, mission_quadrant: int, turn_angle: int = None) -> "tuple[float, float]":
         """
         Turn the robot to the left by 5 degrees.
         """
+        if(turn_angle == None):
+            turn_angle = self.turn_angle
         # Update the line angular coefficient
-        if(not force_no_slope_update):
-            if(mission_quadrant == 1 or mission_quadrant == 3):
-                self.update_slope(self.slope_degrees + self.turn_angle)
-            elif(mission_quadrant == 2 or mission_quadrant == 4):
-                self.update_slope(self.slope_degrees - self.turn_angle)            
-            else: # infinite
-                self.update_slope(self.slope_degrees + self.turn_angle)
+        if(mission_quadrant == 1 or mission_quadrant == 3):
+            self.update_slope(self.slope_degrees + turn_angle)
+        elif(mission_quadrant == 2 or mission_quadrant == 4):
+            self.update_slope(self.slope_degrees - turn_angle)            
+        else: # infinite
+            self.update_slope(self.slope_degrees - turn_angle)
 
         return self.forward(last_lon, mission_quadrant)
 
-    def turn_right(self, last_lon: float, mission_quadrant: int, force_no_slope_update: bool = False) -> "tuple[float, float]":
+    def turn_right(self, last_lon: float, mission_quadrant: int, turn_angle: int = None) -> "tuple[float, float]":
         """
         Turn the robot to the right by 5 degrees.
         """
-        if(not force_no_slope_update):
-            # Update the line angular coefficient
-            if(mission_quadrant == 1 or mission_quadrant == 3):
-                self.update_slope(self.slope_degrees - self.turn_angle)
-            elif(mission_quadrant == 2 or mission_quadrant == 4):
-                self.update_slope(self.slope_degrees + self.turn_angle)            
-            else: # infinite
-                self.update_slope(self.slope_degrees + self.turn_angle)
+        if(turn_angle == None):
+            turn_angle = self.turn_angle
+        # Update the line angular coefficient
+        if(mission_quadrant == 1 or mission_quadrant == 3):
+            self.update_slope(self.slope_degrees - turn_angle)
+        elif(mission_quadrant == 2 or mission_quadrant == 4):
+            self.update_slope(self.slope_degrees + turn_angle)            
+        else: # infinite
+            self.update_slope(self.slope_degrees - turn_angle)
 
         return self.forward(last_lon, mission_quadrant)
 
