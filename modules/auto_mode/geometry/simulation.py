@@ -50,23 +50,50 @@ class Simulation:
         """
         Execute the simulation.
         """
+        reached_the_end = False
         for r_point in self.robot_points.get_points():
             print("Ponto: {}".format(r_point.id))
             print("Graus: ", self.robot.slope_degrees)
             _a, _b = self.points.get_closest_points(r_point, 3)
             closest_point = Point(_a.latitude, _a.longitude)
             correction_point = Point(_b.latitude, _b.longitude)
-        
+            if(reached_the_end):
+                plot(self.points, robot=r_point, closest_point=closest_point, correction_point=correction_point, correction_direction=correction_direction, mission_quadrant=self.path.get_mission_quadrant())
+                break
             correction_direction = r_point.get_correction_direction(self.start, self.path.get_angular_coefficient(), self.path.get_mission_quadrant(), closest_point)
             new_point = self.get_new_point(correction_direction, r_point, self.path.get_mission_quadrant())
             if(new_point != None):
                 self.robot_points.add_point(new_point.latitude, new_point.longitude)
-                if(self.end.equals(new_point, 0.0000001)):
-                    break
+                reached_the_end, dist_to_end = self.end.equals(new_point, 0.00000150)
             else:
                 print("Nao tem mais pontos")
+
             plot(self.points, robot=r_point, closest_point=closest_point, correction_point=correction_point, correction_direction=correction_direction, mission_quadrant=self.path.get_mission_quadrant())
+
+    def run_2(self, random_start_direction: bool = False, random_movement_factor: bool = False) -> None:
+        """
+        Execute the simulation.
+        """
+        reached_the_end = False
+        for r_point in self.robot_points.get_points():
+            #print("Ponto: {}".format(r_point.id))
+            #print("Graus: ", self.robot.slope_degrees)
+            _a, _b = self.points.get_closest_points(r_point, 3)
+            closest_point = Point(_a.latitude, _a.longitude)
+            correction_point = Point(_b.latitude, _b.longitude)
+            if(reached_the_end):
+                break
+            correction_direction = r_point.get_correction_direction(self.start, self.path.get_angular_coefficient(), self.path.get_mission_quadrant(), closest_point)
+            new_point = self.get_new_point(correction_direction, r_point, self.path.get_mission_quadrant())
+            if(new_point != None):
+                self.robot_points.add_point(new_point.latitude, new_point.longitude)
+                reached_the_end, dist_to_end = self.end.equals(new_point, 0.00000150)
+            else:
+                print("Nao tem mais pontos")
+
+        plot(self.points, robot_points=self.robot_points, mission_quadrant=self.path.get_mission_quadrant())
+
 
 s = Simulation()
 
-s.run()
+s.run_2()

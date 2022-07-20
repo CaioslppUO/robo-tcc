@@ -11,7 +11,7 @@ class Robot:
     def __init__(self, latitude_0: float = 0.0, longitude_0: float = 0.0, latitude_1: float = 0.0, longitude_1: float = 0.0) -> None:
         # Factors
         self.decimals = 8
-        self.turn_angle = 5
+        self.turn_angle = 3
 
         # Localization
         ## First robot point
@@ -27,6 +27,7 @@ class Robot:
 
         self.slope = self.delta_y / self.delta_x
         self.linear_coefficient = self.robot_point_0_latitude - self.robot_point_0_longitude * self.slope
+        self.distance_in_longitude_between_points = self.delta_x/2
 
         self.slope_degrees_with_signal = round(math.degrees(math.atan2(self.delta_y, self.delta_x)), 1)
         self.__get_quadrant()
@@ -62,9 +63,9 @@ class Robot:
         Move the robot forward.
         """
         if(mission_quadrant == 1 or mission_quadrant == 2):
-            new_x = round(last_lon + self.delta_x, self.decimals)
+            new_x = round(last_lon + self.distance_in_longitude_between_points, self.decimals)
         else:
-            new_x = round(last_lon - self.delta_x/2, self.decimals)
+            new_x = round(last_lon - self.distance_in_longitude_between_points, self.decimals)
         new_y = self.get_y(new_x)
         return new_y, new_x
 

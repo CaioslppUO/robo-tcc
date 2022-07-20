@@ -8,13 +8,11 @@ class Point:
         self.longitude = longitude
         self.id = id
 
-    def equals(self, other: Point, error: float = 0.000001) -> bool:
+    def equals(self, other: Point, dist: float = 0.0000015) -> bool:
         """
         Return True if both points are the same.
         """
-        c1 = self.latitude >= other.latitude - error and self.latitude <= other.latitude + error
-        c2 = self.longitude >= other.longitude - error and self.longitude <= other.longitude + error
-        return c1 and c2
+        return self.get_distance(other) <= dist, self.get_distance(other)
 
     def get_difference(self, end_point: Point) -> Point:
         """
