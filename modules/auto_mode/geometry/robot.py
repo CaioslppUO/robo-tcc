@@ -9,6 +9,10 @@ plt.style.use('seaborn-whitegrid')
 
 class Robot:
     def __init__(self, latitude_0: float = 0.0, longitude_0: float = 0.0, latitude_1: float = 0.0, longitude_1: float = 0.0) -> None:
+        # Factors
+        self.decimals = 8
+        self.turn_angle = 5
+
         # Localization
         ## First robot point
         self.robot_point_0_latitude: float = latitude_0
@@ -51,52 +55,54 @@ class Robot:
         """
         Line equation.
         """
-        return round(self.slope * x + self.linear_coefficient, 5)
+        return round(self.slope * x + self.linear_coefficient, self.decimals)
 
-    def forward(self, last_lon: float) -> "tuple[float, float]":
+    def forward(self, last_lon: float, mission_quadrant) -> "tuple[float, float]":
         """
         Move the robot forward.
         """
-        if(self.quadrant == 1 or self.quadrant == 2):
-            new_x = round(last_lon + self.delta_x, 5)
+        if(mission_quadrant == 1 or mission_quadrant == 2):
+            new_x = round(last_lon + self.delta_x, self.decimals)
         else:
-            new_x = round(last_lon - self.delta_x, 5)
+            new_x = round(last_lon - self.delta_x/2, self.decimals)
         new_y = self.get_y(new_x)
         return new_y, new_x
 
-    def turn_left(self, last_lon: float) -> "tuple[float, float]":
+    def turn_left(self, last_lon: float, mission_quadrant: int, force_no_slope_update: bool = False) -> "tuple[float, float]":
         """
         Turn the robot to the left by 5 degrees.
         """
         # Update the line angular coefficient
-        if(self.quadrant == 1 or self.quadrant == 3):
-            self.update_slope(self.slope_degrees - 5)
-        elif(self.quadrant == 2 or self.quadrant == 4):
-            self.update_slope(self.slope_degrees + 5)            
-        else: # infinite
-            self.update_slope(self.slope_degrees + 5)
+        if(not force_no_slope_update):
+            if(mission_quadrant == 1 or mission_quadrant == 3):
+                self.update_slope(self.slope_degrees + self.turn_angle)
+            elif(mission_quadrant == 2 or mission_quadrant == 4):
+                self.update_slope(self.slope_degrees - self.turn_angle)            
+            else: # infinite
+                self.update_slope(self.slope_degrees + self.turn_angle)
 
-        return self.forward(last_lon)
+        return self.forward(last_lon, mission_quadrant)
 
-    def turn_right(self, last_lon: float) -> "tuple[float, float]":
+    def turn_right(self, last_lon: float, mission_quadrant: int, force_no_slope_update: bool = False) -> "tuple[float, float]":
         """
         Turn the robot to the right by 5 degrees.
         """
-        # Update the line angular coefficient
-        if(self.quadrant == 1 or self.quadrant == 3):
-            self.update_slope(self.slope_degrees + 5)
-        elif(self.quadrant == 2 or self.quadrant == 4):
-            self.update_slope(self.slope_degrees - 5)            
-        else: # infinite
-            self.update_slope(self.slope_degrees + 5)
+        if(not force_no_slope_update):
+            # Update the line angular coefficient
+            if(mission_quadrant == 1 or mission_quadrant == 3):
+                self.update_slope(self.slope_degrees - self.turn_angle)
+            elif(mission_quadrant == 2 or mission_quadrant == 4):
+                self.update_slope(self.slope_degrees + self.turn_angle)            
+            else: # infinite
+                self.update_slope(self.slope_degrees + self.turn_angle)
 
-        return self.forward(last_lon)
+        return self.forward(last_lon, mission_quadrant)
 
     def update_slope(self, new_slope_in_degrees: float) -> None:
         """
         Update the line to the new slope.
         """
-        self.slope = round(math.tan(math.radians(new_slope_in_degrees)), 5)
+        self.slope = round(math.tan(math.radians(new_slope_in_degrees)), self.decimals)
         self.linear_coefficient = self.robot_point_0_latitude - self.robot_point_0_longitude * self.slope
 
         self.slope_degrees_with_signal = round(math.degrees(math.atan(self.slope)), 1)
@@ -107,23 +113,23 @@ class Robot:
         else:
             self.slope_degrees = self.slope_degrees_with_signal
 
-r = Robot(-25.43548, -54.59671, -25.43545, -54.59669)
-
-print(-25.43548, -54.59671)
-print(-25.43545, -54.59669)
-
-new_lat, new_lon = r.forward(-54.59669)
-print(new_lat, new_lon, r.slope, r.slope_degrees)
-new_lat, new_lon = r.turn_left(new_lon)
-print(new_lat, new_lon, r.slope, r.slope_degrees)
-new_lat, new_lon = r.turn_right(new_lon)
-print(new_lat, new_lon, r.slope, r.slope_degrees)
-new_lat, new_lon = r.forward(new_lon)
-print(new_lat, new_lon, r.slope, r.slope_degrees)
-#new_lat, new_lon = r.turn_right(new_lon)
+#r = Robot(-25.435348, -54.596970, -25.43545, -54.596969)
+#print(r.slope)
+#print(-25.43548, -54.59671)
+#print(-25.43545, -54.59669)
+#
+#new_lat, new_lon = r.forward(-54.59669)
+#print(new_lat, new_lon, r.slope, r.slope_degrees)
+#new_lat, new_lon = r.turn_left(new_lon)
 #print(new_lat, new_lon, r.slope, r.slope_degrees)
 #new_lat, new_lon = r.turn_right(new_lon)
 #print(new_lat, new_lon, r.slope, r.slope_degrees)
+#new_lat, new_lon = r.forward(new_lon)
+#print(new_lat, new_lon, r.slope, r.slope_degrees)
+##new_lat, new_lon = r.turn_right(new_lon)
+##print(new_lat, new_lon, r.slope, r.slope_degrees)
+##new_lat, new_lon = r.turn_right(new_lon)
+##print(new_lat, new_lon, r.slope, r.slope_degrees)
 
 
 
