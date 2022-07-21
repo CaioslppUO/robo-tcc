@@ -11,7 +11,7 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
     global fig,ax
 
     # Maximized Window
-    # plt.get_current_fig_manager().window.attributes('-zoomed', True)
+    plt.get_current_fig_manager().window.attributes('-zoomed', True)
 
     # Axis labels
     plt.xlabel("LON")
@@ -92,21 +92,20 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
 
 
 
-    if(mission_quadrant != None):
-        if(mission_quadrant == 1):
-            plt.legend(loc="upper left")
-        elif(mission_quadrant == 2):
-            plt.legend(loc="upper right")
-        elif(mission_quadrant == 3):
-            plt.legend(loc="upper left")
-        elif(mission_quadrant == 4):
-            plt.legend(loc="upper right")
-    else:
-        plt.legend(loc="upper left")
+    #if(mission_quadrant != None):
+    #    if(mission_quadrant == 1):
+    #        plt.legend(loc="upper left")
+    #    elif(mission_quadrant == 2):
+    #        plt.legend(loc="upper right")
+    #    elif(mission_quadrant == 3):
+    #        plt.legend(loc="upper left")
+    #    elif(mission_quadrant == 4):
+    #        plt.legend(loc="upper right")
+    #else:
+    #    plt.legend(loc="upper left")
 
     fig.show()
-    plt.pause(2)
-
+    plt.pause(0.5)
 
 
 
@@ -135,4 +134,4 @@ def test() -> None:
     points.add_point(-2.0, 2.0)
     plot(points)
 
-test()
+#test()

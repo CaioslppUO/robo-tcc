@@ -24,8 +24,8 @@ class Simulation:
         # Down right
         #self.start = Point(-25.435348, -54.596970)
         #self.end = Point(-25.435355, -54.596960)
-        #self.robot = Robot(-25.435348, -54.596970, -25.435349, -54.596969)
-        #self.robot_points.add_point(-25.435370, -54.596969)
+        #self.robot = Robot(-25.435348, -54.596970, -25.435346, -54.596969)
+        #self.robot_points.add_point(-25.435346, -54.596969)
 
         # Path calculator
         self.path = PathCalculator(self.start, self.end, 34)
@@ -40,15 +40,17 @@ class Simulation:
         print("Initial Robot Slope (Degrees): {}°".format(self.robot.slope_degrees))
         print("initial Direction Quadrant:    {}".format(self.robot.get_quadrant()))
 
-    def get_new_point(self, direction: str, last_point: Point, mission_quadrant: int) -> Point:
+    def get_new_point(self, direction: str, last_point: Point, mission_quadrant: int, closest_mission_point: Point) -> Point:
         """
         Calculate the new robot point.
         """
         much_smaller_slope = self.robot.slope < self.path.get_angular_coefficient()/2
         much_bigger_slope = self.robot.slope > self.path.get_angular_coefficient()*2
         perfect_slope = self.robot.slope >= self.path.get_angular_coefficient() - 0.3 and self.robot.slope <= self.path.get_angular_coefficient() + 0.3
-        
-        if(much_smaller_slope or much_bigger_slope):
+        is_distant = last_point.get_distance(closest_mission_point) >= 0.000001
+
+
+        if(much_bigger_slope and is_distant):
             turn_angle = 10
         elif(perfect_slope):
             turn_angle = 3
@@ -89,7 +91,7 @@ class Simulation:
             print("Robot Slope (Degrees):    {}°".format(self.robot.slope_degrees))
             print("Robot Next Direction:     {}".format(correction_direction))
             
-            new_point = self.get_new_point(correction_direction, r_point, self.path.get_mission_quadrant())
+            new_point = self.get_new_point(correction_direction, r_point, self.path.get_mission_quadrant(), closest_point)
             
             # Adding the next point to points list
             if(new_point != None):

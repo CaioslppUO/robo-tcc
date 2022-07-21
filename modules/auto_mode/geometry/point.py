@@ -82,7 +82,6 @@ class Point:
             return "forward"
         else: # Both X and Y axis movement
             if(angular_coefficient == initial_angular_coefficient):
-                print("bla")
                 return "forward"
             if((quadrant_1 or quadrant_3) and bigger_angular):
                 return "right"
