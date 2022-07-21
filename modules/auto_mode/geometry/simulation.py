@@ -16,16 +16,18 @@ class Simulation:
         self.robot_points = Points()
 
         ## Up right
-        self.start = Point(-25.435348, -54.596970)
-        self.end = Point(-25.435324, -54.596960)
-        self.robot = Robot(-25.435348, -54.596970, -25.4353477, -54.596969)
-        self.robot_points.add_point(-25.435348, -54.596970)
+        #r_a, r_e , r_2 = Point(-25.435348, -54.596970), Point(-25.435324, -54.596960), Point(-25.4353477, -54.596969)
+        #self.start = r_a
+        #self.end = r_e
+        #self.robot = Robot(r_a.latitude, r_a.longitude, r_2.latitude, r_2.longitude)
+        #self.robot_points.add_point(r_2.latitude, r_2.longitude)
 
         # Down right
-        #self.start = Point(-25.435348, -54.596970)
-        #self.end = Point(-25.435355, -54.596960)
-        #self.robot = Robot(-25.435348, -54.596970, -25.435346, -54.596969)
-        #self.robot_points.add_point(-25.435346, -54.596969)
+        r_a, r_e, r_2 = Point(-25.435348, -54.596970), Point(-25.435355, -54.596960), Point(-25.435348, -54.596969)
+        self.start = r_a
+        self.end = r_e
+        self.robot = Robot(r_a.latitude, r_a.longitude, r_2.latitude, r_2.longitude)
+        self.robot_points.add_point(r_2.latitude, r_2.longitude)
 
         # Path calculator
         self.path = PathCalculator(self.start, self.end, 34)
