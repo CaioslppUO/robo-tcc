@@ -227,16 +227,12 @@ class Monitor:
         live.update(self.generate_table())
     
     def run(self) -> None:
+        try:
             with Live(self.generate_table(), refresh_per_second=4) as live:
                     while True:
-                        self.update_table(live)
-
-#if __name__ == "__main__":
-#    try:
-#        m = Monitor()
-#        Thread(target=m.run).start()
-#        time.sleep(3)
-#        m.robot_point.latitude = -0.00012
-#        m.robot_point.longitude = 0.01010
-#    except Exception as e:
-#        print(traceback.format_exc())
+                        try:
+                            self.update_table(live)
+                        except KeyboardInterrupt:
+                            exit(0)
+        except KeyboardInterrupt:
+            exit(0)

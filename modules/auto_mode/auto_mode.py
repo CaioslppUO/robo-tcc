@@ -30,8 +30,22 @@ runtime_log: RuntimeLog = RuntimeLog("auto_mode.py")
 if __name__ == "__main__":
     try:
         control_robot = ControlRobot(pub)
-        Thread(target=monitor.run).start()
-        while not rospy.is_shutdown():
-            pass
+        Thread(target=control_robot.run).start()
+        #Thread(target=monitor.run).start()
+        #control_robot.run_test()
+        #while not rospy.is_shutdown():
+        #    pass
+        while True:
+            inpt = input("ação: (fd, lt, rt, st)")
+            if(inpt == "fd"):
+                control_robot.forward()
+            elif(inpt == "lt"):
+                control_robot.left()
+            elif(inpt == "rt"):
+                control_robot.right()
+            else:
+                control_robot.stop()
+    except KeyboardInterrupt:
+        exit(0)
     except:
         runtime_log.error("Auto Mode died. Check logs file.")
