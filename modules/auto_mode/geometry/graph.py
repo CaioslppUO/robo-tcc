@@ -3,12 +3,15 @@ plt.style.use('seaborn-whitegrid')
 from point import Point
 from points import Points
 
+
+fig = plt.figure()
+ax = plt.axes()
+
 def plot(points: Points, robot: Point = None, closest_point: Point = None, correction_point: Point = None, correction_direction: str = None, robot_points: Points = None, mission_quadrant: int = None) -> None:
-    fig = plt.figure()
-    ax = plt.axes()
+    global fig,ax
 
     # Maximized Window
-    plt.get_current_fig_manager().window.attributes('-zoomed', True)
+    # plt.get_current_fig_manager().window.attributes('-zoomed', True)
 
     # Axis labels
     plt.xlabel("LON")
@@ -100,35 +103,36 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
             plt.legend(loc="upper right")
     else:
         plt.legend(loc="upper left")
-    plt.show()
+
+    fig.show()
+    plt.pause(2)
+
+
+
 
 def test() -> None:
     points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(1.0, 1.0)
     points.add_point(2.0, 2.0)
-
     plot(points)
 
     points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(-1.0, -1.0)
     points.add_point(-2.0, -2.0)
-
     plot(points)
 
     points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(1.0, -1.0)
     points.add_point(2.0, -2.0)
-
     plot(points)
 
     points = Points(10)
     points.add_point(0.0, 0.0)
     points.add_point(-1.0, 1.0)
     points.add_point(-2.0, 2.0)
-
     plot(points)
 
-#test()
+test()
