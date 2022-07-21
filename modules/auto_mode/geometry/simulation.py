@@ -23,7 +23,21 @@ class Simulation:
         #self.robot_points.add_point(r_2.latitude, r_2.longitude)
 
         # Down right
-        r_a, r_e, r_2 = Point(-25.435348, -54.596970), Point(-25.435355, -54.596960), Point(-25.435348, -54.596969)
+        #r_a, r_e, r_2 = Point(-25.435348, -54.596970), Point(-25.435355, -54.596960), Point(-25.435348, -54.596969)
+        #self.start = r_a
+        #self.end = r_e
+        #self.robot = Robot(r_a.latitude, r_a.longitude, r_2.latitude, r_2.longitude)
+        #self.robot_points.add_point(r_2.latitude, r_2.longitude)
+
+        # Up left
+        #r_a, r_e, r_2 = Point(-25.435348, -54.596970), Point(-25.435324, -54.5969705), Point(-25.435347, -54.5969701)
+        #self.start = r_a
+        #self.end = r_e
+        #self.robot = Robot(r_a.latitude, r_a.longitude, r_2.latitude, r_2.longitude)
+        #self.robot_points.add_point(r_2.latitude, r_2.longitude)
+
+        # Down left
+        r_a, r_e, r_2 = Point(-25.435348, -54.596970), Point(-25.435355, -54.5969705), Point(-25.435348, -54.5969701)
         self.start = r_a
         self.end = r_e
         self.robot = Robot(r_a.latitude, r_a.longitude, r_2.latitude, r_2.longitude)
@@ -46,27 +60,30 @@ class Simulation:
         """
         Calculate the new robot point.
         """
-        much_smaller_slope = self.robot.slope < self.path.get_angular_coefficient()/2
+        much_smaller_slope = self.robot.slope < self.path.get_angular_coefficient()*2
         much_bigger_slope = self.robot.slope > self.path.get_angular_coefficient()*2
         perfect_slope = self.robot.slope >= self.path.get_angular_coefficient() - 0.3 and self.robot.slope <= self.path.get_angular_coefficient() + 0.3
-        is_distant = last_point.get_distance(closest_mission_point) >= 0.000001
+        is_distant = last_point.get_distance(closest_mission_point) >= 0.0000001
 
+        lat, lon = 0, 0
 
-        if(much_bigger_slope and is_distant):
-            turn_angle = 10
+        print(is_distant)
+        if((much_bigger_slope or much_smaller_slope) and is_distant):
+            turn_angle = 11
         elif(perfect_slope):
             turn_angle = 3
         else:
             turn_angle = None
         if(direction == "forward"):
             lat, lon = self.robot.forward(last_point.longitude)
-            return Point(lat, lon)
         elif(direction == "right"):
             lat, lon = self.robot.turn_right(last_point, turn_angle)
-            return Point(lat, lon)
         elif(direction == "left"):
             lat, lon = self.robot.turn_left(last_point, turn_angle)
-            return Point(lat, lon)
+
+        if(abs(lat) < 25 or abs(lat) > 26 or abs(lon) < 54 or abs(lon) > 55):
+            return last_point
+        return Point(lat, lon)
 
     def run(self, random_start_direction: bool = False, random_movement_factor: bool = False) -> None:
         """

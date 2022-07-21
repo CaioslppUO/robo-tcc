@@ -70,10 +70,10 @@ class Robot:
         """
         if(self.__quadrant == 1 or self.__quadrant == 2):
             print("Longitude Operation: +")
-            new_x = round(last_lon + self.distance_in_longitude_between_points, self.decimals)
+            new_x = round(last_lon + abs(self.distance_in_longitude_between_points), self.decimals)
         else:
             print("Longitude Operation: -")
-            new_x = round(last_lon - self.distance_in_longitude_between_points, self.decimals)
+            new_x = round(last_lon - abs(self.distance_in_longitude_between_points), self.decimals)
         new_y = self.get_y(new_x)
         return new_y, new_x
 
@@ -88,9 +88,12 @@ class Robot:
         if(self.__quadrant == 1 or self.__quadrant == 3):
             print("Angle Operation: +")
             self.update_slope(self.slope_degrees + turn_angle, last_point=last_point)
-        elif(self.__quadrant == 2 or self.__quadrant == 4):
-            print("Angle Operation: _")
-            self.update_slope(self.slope_degrees + turn_angle, last_point=last_point)            
+        elif(self.__quadrant == 2):
+            print("Angle Operation: +")
+            self.update_slope(self.slope_degrees + turn_angle, last_point=last_point)  
+        elif(self.__quadrant == 4):    
+            print("Angle Operation: -")
+            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)       
         else: # infinite
             print("Angle Operation: - (inf)")
             self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)
@@ -110,7 +113,7 @@ class Robot:
             self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)
         elif(self.__quadrant == 2 or self.__quadrant == 4):
             print("Angle Operation: -")
-            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)            
+            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)        
         else: # infinite
             print("Angle Operation: - (inf)")
             self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)
