@@ -71,14 +71,6 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
 
     plt.xticks(x_values)
     plt.yticks(y_values)
-
-    # Plotting robot, closest point and correction point
-    if(robot != None and robot_points == None):
-        plt.plot([robot.longitude], [robot.latitude], marker="o", markeredgecolor="green", markerfacecolor="green", label="Robô")
-    elif(robot_points != None and robot == None):
-        for r_point in robot_points.get_points():
-            plt.plot([r_point.longitude], [r_point.latitude], marker="o", markeredgecolor="green", markerfacecolor="green")
-
     if(closest_point != None):
         plt.plot([closest_point.longitude], [closest_point.latitude], marker="o", markeredgecolor="red", markerfacecolor="red", label="Ponto mais próximo do robô")
     
@@ -87,6 +79,15 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
 
     if(correction_direction != None): # Add correction_direction to the legend
         plt.plot([0], [0], markersize=0.1 , marker="o", markeredgecolor="green", markerfacecolor="green", label="Direção de correção: {}".format(correction_direction))
+
+    # Plotting robot, closest point and correction point
+    if(robot != None and robot_points == None):
+        plt.plot([robot.longitude], [robot.latitude], marker="o", markeredgecolor="green", markerfacecolor="green", label="Robô")
+    elif(robot_points != None and robot == None):
+        for r_point in robot_points.get_points():
+            plt.plot([r_point.longitude], [r_point.latitude], marker="o", markeredgecolor="green", markerfacecolor="green")
+
+
 
     if(mission_quadrant != None):
         if(mission_quadrant == 1):

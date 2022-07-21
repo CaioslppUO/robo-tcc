@@ -5,6 +5,8 @@ Simulation of the robot itself and its attributes.
 
 import math
 import matplotlib.pyplot as plt
+
+from point import Point
 plt.style.use('seaborn-whitegrid')
 
 class Robot:
@@ -12,6 +14,7 @@ class Robot:
         # Factors
         self.decimals = 8
         self.turn_angle = 3
+        self.turn_bigger_angle = 10
 
         # Localization
         ## First robot point
@@ -30,27 +33,30 @@ class Robot:
         self.distance_in_longitude_between_points = self.delta_x/2
 
         self.slope_degrees_with_signal = round(math.degrees(math.atan2(self.delta_y, self.delta_x)), 1)
-        self.__get_quadrant()
+        self.__quadrant = self.__calculate_quadrant(Point(latitude_0, longitude_0), Point(latitude_1, longitude_1))
 
         if(self.slope_degrees_with_signal < 0):
             self.slope_degrees =  self.slope_degrees_with_signal + 180
         else:
             self.slope_degrees = self.slope_degrees_with_signal
 
-    def __get_quadrant(self) -> None:
+    def __calculate_quadrant(self, p1: Point, p2: Point) -> None:
         """
         Update the quadrant of the movement.
         """
-        if(self.slope_degrees_with_signal > 0 and self.slope_degrees_with_signal < 90):
-            self.quadrant = 1
-        elif(self.slope_degrees_with_signal < 0 and self.slope_degrees_with_signal > -90):
-            self.quadrant = 2
-        elif(self.slope_degrees_with_signal < -90 and self.slope_degrees_with_signal > -180):
-            self.quadrant = 3
-        elif(self.slope_degrees_with_signal == 0 or self.slope_degrees_with_signal == 180 or self.slope_degrees_with_signal == -180):
-            self.quadrant = None
+        if(p2.latitude > p1.latitude):
+            if(p2.longitude > p1.longitude):
+                return 1
+            else:
+                return 4
         else:
-            self.quadrant = 4
+            if(p2.longitude > p1.longitude):
+                return 2
+            else:
+                return 3
+
+    def get_quadrant(self) -> int:
+        return self.__quadrant
 
     def get_y(self, x: float) -> float:
         """
@@ -58,118 +64,97 @@ class Robot:
         """
         return round(self.slope * x + self.linear_coefficient, self.decimals)
 
-    def forward(self, last_lon: float, mission_quadrant) -> "tuple[float, float]":
+    def forward(self, last_lon: float) -> "tuple[float, float]":
         """
         Move the robot forward.
         """
-        if(mission_quadrant == 1 or mission_quadrant == 2):
+        if(self.__quadrant == 1 or self.__quadrant == 2):
+            print("Longitude Operation: +")
             new_x = round(last_lon + self.distance_in_longitude_between_points, self.decimals)
         else:
+            print("Longitude Operation: -")
             new_x = round(last_lon - self.distance_in_longitude_between_points, self.decimals)
         new_y = self.get_y(new_x)
+        print("QUADRANTE: ", self.__quadrant)
         return new_y, new_x
 
-    def turn_left(self, last_lon: float, mission_quadrant: int, turn_angle: int = None) -> "tuple[float, float]":
+    def turn_left(self, last_point: Point, turn_angle: int = None) -> "tuple[float, float]":
         """
         Turn the robot to the left by 5 degrees.
         """
         if(turn_angle == None):
             turn_angle = self.turn_angle
+
         # Update the line angular coefficient
-        if(mission_quadrant == 1 or mission_quadrant == 3):
-            self.update_slope(self.slope_degrees + turn_angle)
-        elif(mission_quadrant == 2 or mission_quadrant == 4):
-            self.update_slope(self.slope_degrees - turn_angle)            
+        if(self.__quadrant == 1 or self.__quadrant == 3):
+            print("Angle Operation: +")
+            self.update_slope(self.slope_degrees + turn_angle, last_point=last_point)
+        elif(self.__quadrant == 2 or self.__quadrant == 4):
+            print("Angle Operation: -")
+            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)            
         else: # infinite
-            self.update_slope(self.slope_degrees - turn_angle)
+            print("Angle Operation: - (inf)")
+            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)
 
-        return self.forward(last_lon, mission_quadrant)
+        return self.forward(last_point.longitude)
 
-    def turn_right(self, last_lon: float, mission_quadrant: int, turn_angle: int = None) -> "tuple[float, float]":
+    def turn_right(self, last_point: Point, turn_angle: int = None) -> "tuple[float, float]":
         """
         Turn the robot to the right by 5 degrees.
         """
         if(turn_angle == None):
             turn_angle = self.turn_angle
+
         # Update the line angular coefficient
-        if(mission_quadrant == 1 or mission_quadrant == 3):
-            self.update_slope(self.slope_degrees - turn_angle)
-        elif(mission_quadrant == 2 or mission_quadrant == 4):
-            self.update_slope(self.slope_degrees + turn_angle)            
+        if(self.__quadrant == 1 or self.__quadrant == 3):
+            print("Angle Operation: -")
+            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)
+        elif(self.__quadrant == 2 or self.__quadrant == 4):
+            print("Angle Operation: -")
+            self.update_slope(self.slope_degrees + turn_angle, last_point=last_point)            
         else: # infinite
-            self.update_slope(self.slope_degrees - turn_angle)
+            print("Angle Operation: - (inf)")
+            self.update_slope(self.slope_degrees - turn_angle, last_point=last_point)
 
-        return self.forward(last_lon, mission_quadrant)
+        return self.forward(last_point.longitude)
 
-    def update_slope(self, new_slope_in_degrees: float) -> None:
+    def update_slope(self, new_slope_in_degrees: float, last_point: Point) -> None:
         """
         Update the line to the new slope.
         """
         self.slope = round(math.tan(math.radians(new_slope_in_degrees)), self.decimals)
         self.linear_coefficient = self.robot_point_0_latitude - self.robot_point_0_longitude * self.slope
-
         self.slope_degrees_with_signal = round(math.degrees(math.atan(self.slope)), 1)
-        self.__get_quadrant()
 
         if(self.slope_degrees_with_signal < 0):
             self.slope_degrees =  self.slope_degrees_with_signal + 180
         else:
             self.slope_degrees = self.slope_degrees_with_signal
 
-#r = Robot(-25.435348, -54.596970, -25.43545, -54.596969)
-#print(r.slope)
-#print(-25.43548, -54.59671)
-#print(-25.43545, -54.59669)
-#
-#new_lat, new_lon = r.forward(-54.59669)
-#print(new_lat, new_lon, r.slope, r.slope_degrees)
-#new_lat, new_lon = r.turn_left(new_lon)
-#print(new_lat, new_lon, r.slope, r.slope_degrees)
-#new_lat, new_lon = r.turn_right(new_lon)
-#print(new_lat, new_lon, r.slope, r.slope_degrees)
-#new_lat, new_lon = r.forward(new_lon)
-#print(new_lat, new_lon, r.slope, r.slope_degrees)
-##new_lat, new_lon = r.turn_right(new_lon)
-##print(new_lat, new_lon, r.slope, r.slope_degrees)
-##new_lat, new_lon = r.turn_right(new_lon)
-##print(new_lat, new_lon, r.slope, r.slope_degrees)
+        print("New slope with signal", self.slope_degrees_with_signal)
 
+        if(self.__quadrant == 1):
+            if(self.slope_degrees_with_signal <= 0 and self.slope_degrees_with_signal >= -self.turn_bigger_angle):
+                self.__quadrant = 2
+            elif(self.slope_degrees_with_signal <= 0 and self.slope_degrees_with_signal >= -90 + self.turn_bigger_angle):
+                self.__quadrant = 4
+        elif(self.__quadrant == 2):
+            if(self.slope_degrees_with_signal >= 0 and self.slope_degrees_with_signal <= self.turn_bigger_angle):
+                self.__quadrant = 1
+            elif(self.slope_degrees_with_signal >= 0 and self.slope_degrees_with_signal <= 90 - self.turn_bigger_angle):
+                self.__quadrant = 3
+        elif(self.__quadrant == 3):
+            if(self.slope_degrees_with_signal <= 0 and self.slope_degrees_with_signal >= -self.turn_bigger_angle):
+                self.__quadrant = 4
+            elif(self.slope_degrees_with_signal <= 0 and self.slope_degrees_with_signal >= -90 + self.turn_bigger_angle):
+                self.__quadrant = 2
+        else: # quadrant 4
+            if(self.slope_degrees_with_signal >= 0 and self.slope_degrees_with_signal <= 90 - self.turn_bigger_angle):
+                self.__quadrant = 1
+            elif(self.slope_degrees_with_signal >= 0 and self.slope_degrees_with_signal <= -self.turn_bigger_angle):
+                self.__quadrant = 3
 
+        #origin_point = Point(self.linear_coefficient, 0)
+        #self.__quadrant = self.__calculate_quadrant(origin_point, last_point)
 
-
-
-
-
-
-
-
-#xs, ys = [], []
-
-#xs.append(-54.59671)
-#ys.append(-25.43548)
-#print(-54.59671, -25.43548)
-#
-#new_x, new_y = r.forward()
-#xs.append(new_x)
-#ys.append(new_y)
-#print(new_x, new_y)
-#
-#r.latitude = new_y
-#r.longitude = new_x
-#
-#new_x, new_y = r.forward()
-#xs.append(new_x)
-#ys.append(new_y)
-#print(new_x, new_y)
-#
-#fig = plt.figure()
-#ax = plt.axes()
-#plt.xlabel("LON")
-#plt.ylabel("LAT")
-#
-#plt.scatter(x=xs, y=ys)
-#
-#plt.axvline(x=0, c="red", label="x=0")
-#plt.axhline(y=0, c="yellow", label="y=0")
-#
-#plt.show()
+        
