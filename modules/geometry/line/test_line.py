@@ -50,6 +50,10 @@ class TestLine:
         assert l.quadrant == 4
         l = Line(Point(0, 0), Point(-1, 1))
         assert l.quadrant == 2
+        l = Line(Point(0, 0), Point(1, 0))
+        assert l.quadrant == 6
+        l = Line(Point(0, 0), Point(0, 1))
+        assert l.quadrant == 5
 
     def test_should_calculate_slopes_as_degrees_and_degrees_as_slope(self):
         # Quadrant 1
@@ -99,3 +103,37 @@ class TestLine:
         assert l11.degrees_to_slope(l11.slope_to_degrees()) == -90002.7953341
         assert l12.slope_to_degrees() == -0.000636
         assert l12.degrees_to_slope(l12.slope_to_degrees()) == l12.angular_coefficient
+
+    def test_should_increase_slope_until_complete_lap(self):
+        increment = 15
+        l = Line(Point(0, 0), Point(1, 0.1))
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        l.clockwise_slope(increment)
+        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
+        assert 1 == 2

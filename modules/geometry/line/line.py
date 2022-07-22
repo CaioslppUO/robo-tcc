@@ -25,6 +25,9 @@ class Line:
         delta_y = self.p2.latitude - self.p1.latitude
         delta_x = self.p2.longitude - self.p1.longitude
 
+        if(delta_x == 0):
+            return float("inf")
+
         # Angular Coefficient
         return round(delta_y / delta_x, self.__decimals)
 
@@ -68,7 +71,7 @@ class Line:
 
     def __quadrant(self) -> int:
         """
-        Return which quadrant the line is pointing to.
+        Return which quadrant the line is pointing to. 5 is X axis and 6 is Y axis.
         """
         # Calculating the Difference
         pdf = self.p1.difference(self.p2)
@@ -82,6 +85,11 @@ class Line:
             return 2
         elif(pdf.latitude < 0 and pdf.longitude < 0):
             return 3
+        elif(pdf.latitude == 0 and pdf.longitude != 0):
+            return 5
+        elif(pdf.latitude != 0 and pdf.longitude == 0):
+            return 6
+        print(self.p2.latitude, self.p2.longitude)
         raise Exception("Unknown quadrant in quadrant calculation")
 
     def slope_to_degrees(self, with_signal: bool = True) -> float:
@@ -99,13 +107,36 @@ class Line:
         """
         Convert degrees (with signal) to slope.
         """
-        if(degrees == 90):
+        if(degrees == 90 or degrees == -90):
             return float("inf")
         return round(math.tan(math.radians(degrees)), self.__decimals)
 
-    def increase_slope(self, inc_in_degrees: float) -> None:
+    def clockwise_slope(self, inc_in_degrees: float) -> None:
         """
         Increase the slope with inc_in_degrees (with signal).
         """
-        degree_slope = self.slope_as_degrees()
-        degree_slope += inc_in_degrees
+        # Calculating the new slope
+        degree_slope = self.slope_to_degrees()
+        degree_slope -= inc_in_degrees
+        new_slope = self.degrees_to_slope(degree_slope)
+
+        # Updating the new line equation
+        self.angular_coefficient = new_slope
+        self.linear_coefficient = self.__linear_coefficient()
+
+        # Getting a new P2
+        delta_x = self.p2.longitude - self.p1.longitude
+        delta_y = self.p2.latitude - self.p1.latitude
+        if(delta_x != 0):
+            new_y = self.y_line_equation(abs(delta_x))
+            self.p2 = Point(delta_x, new_y)
+        elif(delta_y != 0):
+            new_x = self.x_line_equation(abs(delta_y))
+            self.p2 = Point(new_x, delta_y)
+        else:
+            raise Exception("Could not get a new P2 because there is not variation in X or Y axis")
+
+        # Getting the new Quadrant
+        self.quadrant = self.__quadrant()
+
+        
