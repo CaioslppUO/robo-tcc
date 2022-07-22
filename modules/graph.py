@@ -111,4 +111,4 @@ def test_func():
     test.new_position_robot((3,1))
     test.run()
 
-test_func()
+# test_func()
