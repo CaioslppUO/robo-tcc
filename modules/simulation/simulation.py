@@ -1,9 +1,6 @@
-from re import A
-from point import Point
-from points import Points
-from path_calculator import PathCalculator
+from auto_mode.geometry.point import Point, Points
+from auto_mode.geometry.path_calculator import PathCalculator
 from graph import plot
-import random
 from robot import Robot
 
 class Simulation:

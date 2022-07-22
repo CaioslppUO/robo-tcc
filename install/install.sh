@@ -221,7 +221,7 @@ echo "    <node pkg='agrobot' type='relay.py' name='relay' args='40' output='scr
 echo "    <node pkg='agrobot' type='lidar.py' name='lidar' output='screen' />" >> run.launch
 echo "    <node pkg='agrobot' type='gps.py' name='gps' output='screen' />" >> run.launch
 echo "    <include file='$LIDAR_LAUNCHER' />" >> run.launch
-#echo "    <node pkg='agrobot' type='auto_mode.py' name='auto_mode' output='screen' />" >> run.launch
+echo "    <node pkg='agrobot' type='auto_mode.py' name='auto_mode' output='screen' />" >> run.launch
 echo "</launch>" >> run.launch
 
 # Post install

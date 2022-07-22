@@ -1,4 +1,4 @@
-from points import Points, Point
+from point import Points, Point
 
 class PathCalculator:
     def __init__(self, start: Point, end: Point, number_of_points: int, decimals: int = 7) -> None:

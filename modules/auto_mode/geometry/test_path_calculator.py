@@ -1,4 +1,4 @@
-from path_calculator import PathCalculator, Point, Points
+from path_calculator import PathCalculator, Point
 
 
 class TestPathCalculator:

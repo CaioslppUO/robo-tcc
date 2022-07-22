@@ -5,9 +5,8 @@ Simulation of the robot itself and its attributes.
 
 import math
 import matplotlib.pyplot as plt
-
-from point import Point
 plt.style.use('seaborn-whitegrid')
+from auto_mode.geometry.point import Point
 
 class Robot:
     def __init__(self, latitude_0: float = 0.0, longitude_0: float = 0.0, latitude_1: float = 0.0, longitude_1: float = 0.0) -> None:

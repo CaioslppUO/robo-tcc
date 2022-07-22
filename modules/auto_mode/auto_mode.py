@@ -12,6 +12,8 @@ from agrobot_services.runtime_log import RuntimeLog
 from agrobot_services.log import Log
 from monitor.monitor_auto_mode import Monitor
 
+from .geometry.point import Point
+
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
 

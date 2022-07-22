@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
-from point import Point
-from points import Points
-
+from auto_mode.geometry.point import Point, Points
 
 fig = plt.figure()
 ax = plt.axes()
