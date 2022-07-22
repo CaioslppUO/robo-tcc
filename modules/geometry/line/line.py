@@ -18,6 +18,12 @@ class Line:
         """
         return self.points[index]
 
+    def get_points(self) -> "list[Point]":
+        """
+        Return the points of the line.
+        """
+        return self.points
+
     def angular_coefficient(self) -> float:
         """
         Calculate the angular coefficient if the line has at least 2 points.
