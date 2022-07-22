@@ -51,39 +51,51 @@ class TestLine:
         l = Line(Point(0, 0), Point(-1, 1))
         assert l.quadrant == 2
 
-    def test_should_calculate_slopes_as_degrees(self):
+    def test_should_calculate_slopes_as_degrees_and_degrees_as_slope(self):
         # Quadrant 1
         l1 = Line(Point(0, 0), Point(1, 1))
         l2 = Line(Point(0, 0), Point(90000, 1))
         l3 = Line(Point(0, 0), Point(1, 90000))
 
-        assert l1.slope_as_degrees() == 45.00
-        assert l2.slope_as_degrees() == 90.00
-        assert l3.slope_as_degrees() == 0.00
+        assert l1.slope_to_degrees() == 45.00
+        assert l1.degrees_to_slope(l1.slope_to_degrees()) == l1.angular_coefficient
+        assert l2.slope_to_degrees() == 89.9993634
+        assert l2.degrees_to_slope(l2.slope_to_degrees()) == 90002.7953341
+        assert l3.slope_to_degrees() == 0.000636
+        assert l3.degrees_to_slope(l3.slope_to_degrees()) == l3.angular_coefficient
 
         # Quadrant 2
         l4 = Line(Point(0, 0), Point(-1, 1))
         l5 = Line(Point(0, 0), Point(-1, 90000))
         l6 = Line(Point(0, 0), Point(-90000, 1))
 
-        assert l4.slope_as_degrees() == -45.00
-        assert l5.slope_as_degrees() == -0.00
-        assert l6.slope_as_degrees() == -90.00
+        assert l4.slope_to_degrees() == -45.00
+        assert l4.degrees_to_slope(l4.slope_to_degrees()) == l4.angular_coefficient
+        assert l5.slope_to_degrees() == -0.000636
+        assert l5.degrees_to_slope(l5.slope_to_degrees()) == l5.angular_coefficient
+        assert l6.slope_to_degrees() == -89.9993634
+        assert l6.degrees_to_slope(l6.slope_to_degrees()) == -90002.7953341
 
         # Quadrant 3
         l7 = Line(Point(0, 0), Point(-1, -1))
         l8 = Line(Point(0, 0), Point(-90000, -1))
         l9 = Line(Point(0, 0), Point(-1, -90000))
 
-        assert l7.slope_as_degrees() == 45.00
-        assert l8.slope_as_degrees() == 90.00
-        assert l9.slope_as_degrees() == 0.00
+        assert l7.slope_to_degrees() == 45.00
+        assert l7.degrees_to_slope(l7.slope_to_degrees()) == l7.angular_coefficient
+        assert l8.slope_to_degrees() == 89.9993634
+        assert l8.degrees_to_slope(l8.slope_to_degrees()) == 90002.7953341
+        assert l9.slope_to_degrees() == 0.000636
+        assert l9.degrees_to_slope(l9.slope_to_degrees()) == l9.angular_coefficient
 
         # Quadrant 4
         l10 = Line(Point(0, 0), Point(1, -1))
         l11 = Line(Point(0, 0), Point(90000, -1))
         l12 = Line(Point(0, 0), Point(1, -90000))
 
-        assert l10.slope_as_degrees() == -45.00
-        assert l11.slope_as_degrees() == -90.00
-        assert l12.slope_as_degrees() == -0.00
+        assert l10.slope_to_degrees() == -45.00
+        assert l10.degrees_to_slope(l10.slope_to_degrees()) == l10.angular_coefficient
+        assert l11.slope_to_degrees() == -89.9993634
+        assert l11.degrees_to_slope(l11.slope_to_degrees()) == -90002.7953341
+        assert l12.slope_to_degrees() == -0.000636
+        assert l12.degrees_to_slope(l12.slope_to_degrees()) == l12.angular_coefficient

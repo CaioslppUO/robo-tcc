@@ -84,13 +84,28 @@ class Line:
             return 3
         raise Exception("Unknown quadrant in quadrant calculation")
 
-    def slope_as_degrees(self, with_signal: bool = True) -> float:
+    def slope_to_degrees(self, with_signal: bool = True) -> float:
         """
         Return the slope as a degree value.
         """
-        degrees_with_signal = round(math.degrees(math.atan(self.angular_coefficient)), 2)
+        degrees_with_signal = round(math.degrees(math.atan(self.angular_coefficient)), self.__decimals)
         
         if(not with_signal and degrees_with_signal < 0):
             return degrees_with_signal + 180
         
         return degrees_with_signal
+
+    def degrees_to_slope(self, degrees: float) -> float:
+        """
+        Convert degrees (with signal) to slope.
+        """
+        if(degrees == 90):
+            return float("inf")
+        return round(math.tan(math.radians(degrees)), self.__decimals)
+
+    def increase_slope(self, inc_in_degrees: float) -> None:
+        """
+        Increase the slope with inc_in_degrees (with signal).
+        """
+        degree_slope = self.slope_as_degrees()
+        degree_slope += inc_in_degrees
