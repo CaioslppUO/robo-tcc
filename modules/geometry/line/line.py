@@ -111,6 +111,24 @@ class Line:
             return float("inf")
         return round(math.tan(math.radians(degrees)), self.__decimals)
 
+    def __quadrant_has_changed(self, old_slope: float, new_slope: float) -> bool:
+        """
+        Return true if the quadrant has changed. Only detect changes under 90 degrees.
+        """
+        if(old_slope > 0 and new_slope > 0):
+            return False
+        if(old_slope > 0 and new_slope < 0):
+            return True
+        if(old_slope < 0 and new_slope > 0):
+            return True
+        return False
+
+    def __get_new_p2(self, quadrant: int) -> None:
+        """
+        Get a new P2 point.
+        """
+        pass
+
     def clockwise_slope(self, inc_in_degrees: float) -> None:
         """
         Increase the slope with inc_in_degrees (with signal).
@@ -121,22 +139,13 @@ class Line:
         new_slope = self.degrees_to_slope(degree_slope)
 
         # Updating the new line equation
+        old_slope = self.angular_coefficient
         self.angular_coefficient = new_slope
         self.linear_coefficient = self.__linear_coefficient()
 
-        # Getting a new P2
-        delta_x = self.p2.longitude - self.p1.longitude
-        delta_y = self.p2.latitude - self.p1.latitude
-        if(delta_x != 0):
-            new_y = self.y_line_equation(abs(delta_x))
-            self.p2 = Point(delta_x, new_y)
-        elif(delta_y != 0):
-            new_x = self.x_line_equation(abs(delta_y))
-            self.p2 = Point(new_x, delta_y)
-        else:
-            raise Exception("Could not get a new P2 because there is not variation in X or Y axis")
-
-        # Getting the new Quadrant
-        self.quadrant = self.__quadrant()
-
-        
+        #if(self.__quadrant_has_changed(old_slope, new_slope)): # Need to get a new P2 in the next quadrant
+        #    if(self.quadrant >= 1 and self.quadrant <= 4):
+        #        new_qd = self.quadrant + 1
+        #    self.__get_new_p2(new_qd)
+        #else: # Need to get a new P2 on the same quadrant
+        #    self.__get_new_p2(self.quadrant)
