@@ -11,7 +11,6 @@ class PathCalculator:
         self.__linear_coefficient = self.__start.get_linear_coefficient(self.__angular_coefficient)
 
         self.__interval = abs(self.__start.get_difference(self.__end).longitude / (number_of_points - 1))
-        self.__quadrant = self.get_mission_quadrant()
 
     def get_interval(self) -> float:
         """

@@ -90,8 +90,6 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
         for r_point in robot_points.get_points():
             plt.plot([r_point.longitude], [r_point.latitude], marker="o", markeredgecolor="green", markerfacecolor="green")
 
-
-
     #if(mission_quadrant != None):
     #    if(mission_quadrant == 1):
     #        plt.legend(loc="upper left")
@@ -106,8 +104,6 @@ def plot(points: Points, robot: Point = None, closest_point: Point = None, corre
 
     fig.show()
     plt.pause(0.5)
-
-
 
 def test() -> None:
     points = Points(10)
