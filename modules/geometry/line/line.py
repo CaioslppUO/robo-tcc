@@ -1,162 +1,77 @@
 from .point import Point
+import math
 
 class Line:
-    def __init__(self, decimals: int = 7) -> None:
-        self.points: "list[Point]" = []
+    def __init__(self, p1: Point, p2: Point, decimals: int = 7) -> None:
         self.__decimals = decimals
 
-    def add(self, point: Point) -> None:
-        """
-        Add a new point to the line.
-        """
-        point.id = len(self.points)
-        self.points.append(point)
+        # Points
+        self.p1 = Point(p1.latitude, p1.longitude)
+        self.p2 = Point(p2.latitude, p2.longitude)
 
-    def get_point(self, index: int) -> Point:
-        """
-        Return the point a index.
-        """
-        return self.points[index]
+        if(p1.equal(p2)):
+            raise Exception("Points must be different to form a line")
 
-    def angular_coefficient(self) -> float:
-        """
-        Calculate the angular coefficient if the line has at least 2 points.
-        """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to calculate the angular coefficient")
+        # Calculations
+        self.angular_coefficient = self.__angular_coefficient()
+        self.linear_coefficient = self.__linear_coefficient()
+        self.quadrant = self.__quadrant()
 
-        # Selecting Points
-        p1 = self.points[0]
-        p2 = self.points[1]
-        
+    def __angular_coefficient(self) -> float:
+        """
+        Calculate the angular coefficient.
+        """
         # Calculating Deltas
-        delta_y = p2.latitude - p1.latitude
-        delta_x = p2.longitude - p1.longitude
+        delta_y = self.p2.latitude - self.p1.latitude
+        delta_x = self.p2.longitude - self.p1.longitude
 
         # Angular Coefficient
         return round(delta_y / delta_x, self.__decimals)
 
-    def linear_coefficient(self) -> float:
+    def __linear_coefficient(self) -> float:
         """
-        Return the linear coefficient if the line has at least 2 points.
+        Return the linear coefficient.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to calculate the linear coefficient")
-
-        # Calculating Angular Coefficient
-        angular_coefficient = self.angular_coefficient()
-
-        # Selecting Point
-        p = self.points[0]
-
-        # Linear Coefficient
-        return round(p.latitude - p.longitude * angular_coefficient, self.__decimals)
-
-    def closest_point(self, test_point: Point) -> Point:
-        """
-        Return the closest point to test_point.
-        """
-        distances: "list[float]" = []
-        min_dist = -1
-        index = 0
-
-        for point in self.points:
-            distances.append(test_point.distance(point))
-
-        for i in range(len(distances)):
-            if(min_dist == -1 or distances[i] < min_dist):
-                min_dist = distances[i]
-                index = i
-        
-        return self.points[index]
+        return round(self.p1.latitude - self.p1.longitude * self.angular_coefficient, self.__decimals)
 
     def y_line_equation(self, x: float) -> float:
         """
-        Return the Y value given the X. The line must have at least 2 points.
+        Return the Y value given the X.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to calculate y given x")
-
-        # Calculating Coefficients
-        angular_coefficient = self.angular_coefficient()
-        linear_coefficient = self.linear_coefficient()
-
-        # Calculating Y
-        y = angular_coefficient * x + linear_coefficient
-
+        y = self.angular_coefficient * x + self.linear_coefficient
         return round(y, self.__decimals)
 
     def x_line_equation(self, y: float) -> float:
         """
-        Return the X value given the Y. The line must have at least 2 points.
+        Return the X value given the Y.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to calculate x given y")
-
-        # Calculating Coefficients
-        angular_coefficient = self.angular_coefficient()
-        linear_coefficient = self.linear_coefficient()
-
-        # Calculating X
-        x = (y - linear_coefficient) / angular_coefficient
-
+        x = (y - self.linear_coefficient) / self.angular_coefficient
         return round(x, self.__decimals)
 
-    def is_above_the_line(self, point: Point) -> bool:
+    def is_above(self, point: Point) -> bool:
         """
-        Return True if the point is above the line. The line must have at least 2 points.
+        Return True if the point is above the line.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to check if the point is above the line")
+        return point.latitude > point.longitude * self.angular_coefficient + self.linear_coefficient
 
-        # Calculating Coefficients
-        angular_coefficient = self.angular_coefficient()
-        linear_coefficient = self.linear_coefficient()
-        
-        # Checking
-        return point.latitude > point.longitude * angular_coefficient + linear_coefficient
-
-    def is_in_the_line(self, point: Point) -> bool:
+    def is_in(self, point: Point) -> bool:
         """
-        Return True if the point is in the line. The line must have at least 2 points.
+        Return True if the point is in the line.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to check if the point is in the line")
+        return point.latitude == point.longitude * self.angular_coefficient + self.linear_coefficient
 
-        # Calculating Coefficients
-        angular_coefficient = self.angular_coefficient()
-        linear_coefficient = self.linear_coefficient()
-        
-        # Checking
-        return point.latitude == point.longitude * angular_coefficient + linear_coefficient
-
-    def is_under_the_line(self, point: Point) -> bool:
+    def is_under(self, point: Point) -> bool:
         """
-        Return True if the point is under the line. The line must have at least 2 points.
+        Return True if the point is under the line.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to check if the point is under the line")
+        return point.latitude < point.longitude * self.angular_coefficient + self.linear_coefficient
 
-        # Calculating Coefficients
-        angular_coefficient = self.angular_coefficient()
-        linear_coefficient = self.linear_coefficient()
-        
-        # Checking
-        return point.latitude < point.longitude * angular_coefficient + linear_coefficient
-
-    def quadrant(self) -> int:
+    def __quadrant(self) -> int:
         """
-        Return which quadrant the line is pointing to. The line must have at least 2 points.
+        Return which quadrant the line is pointing to.
         """
-        if(len(self.points) < 2):
-            raise Exception("At least 2 points are needed to calculate the quadrant")
-
-        # Selecting Points
-        p1 = self.points[0]
-        p2 = self.points[1]
-
         # Calculating the Difference
-        pdf = p1.difference(p2)
+        pdf = self.p1.difference(self.p2)
 
         # Calculating the Quadrant
         if(pdf.latitude > 0 and pdf.longitude > 0):
@@ -169,3 +84,13 @@ class Line:
             return 3
         raise Exception("Unknown quadrant in quadrant calculation")
 
+    def slope_as_degrees(self, with_signal: bool = True) -> float:
+        """
+        Return the slope as a degree value.
+        """
+        degrees_with_signal = round(math.degrees(math.atan(self.angular_coefficient)), 2)
+        
+        if(not with_signal and degrees_with_signal < 0):
+            return degrees_with_signal + 180
+        
+        return degrees_with_signal
