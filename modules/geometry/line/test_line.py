@@ -34,3 +34,18 @@ class TestLine:
         assert l.closest_point(Point(1, 1)).get_point() == (0, 0)
         assert l.closest_point(Point(14, 14)).get_point() == (20, 20)
         assert l.closest_point(Point(-14, -8)).get_point() == (-20, -20)
+
+    def test_should_detect_point_above_line(self):
+        l = Line()
+        l.add(Point(0, 0))
+        l.add(Point(1, 1))
+        assert l.is_above_the_line(Point(-1, -1)) == False
+        assert l.is_above_the_line(Point(0, 0)) == False
+        assert l.is_above_the_line(Point(1, 1)) == False
+        assert l.is_above_the_line(Point(2, 2)) == False
+        assert l.is_above_the_line(Point(3, 2)) == True
+        assert l.is_above_the_line(Point(2, 3)) == False
+        assert l.is_above_the_line(Point(0, 1)) == False
+        assert l.is_above_the_line(Point(1, 0)) == True
+        assert l.is_above_the_line(Point(0, -1)) == True
+        assert l.is_above_the_line(Point(-1, 0)) == False
