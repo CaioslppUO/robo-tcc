@@ -143,3 +143,29 @@ class Line:
         
         # Checking
         return point.latitude < point.longitude * angular_coefficient + linear_coefficient
+
+    def quadrant(self) -> int:
+        """
+        Return which quadrant the line is pointing to. The line must have at least 2 points.
+        """
+        if(len(self.points) < 2):
+            raise Exception("At least 2 points are needed to calculate the quadrant")
+
+        # Selecting Points
+        p1 = self.points[0]
+        p2 = self.points[1]
+
+        # Calculating the Difference
+        pdf = p1.difference(p2)
+
+        # Calculating the Quadrant
+        if(pdf.latitude > 0 and pdf.longitude > 0):
+            return 1
+        elif(pdf.latitude > 0 and pdf.longitude < 0):
+            return 4
+        elif(pdf.latitude < 0 and pdf.longitude > 0):
+            return 2
+        elif(pdf.latitude < 0 and pdf.longitude < 0):
+            return 3
+        raise Exception("Unknown quadrant in quadrant calculation")
+

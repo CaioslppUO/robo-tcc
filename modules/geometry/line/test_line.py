@@ -49,3 +49,40 @@ class TestLine:
         assert l.is_above_the_line(Point(1, 0)) == True
         assert l.is_above_the_line(Point(0, -1)) == True
         assert l.is_above_the_line(Point(-1, 0)) == False
+
+    def test_should_detect_point_in_line(self):
+        l = Line()
+        l.add(Point(0, 0))
+        l.add(Point(1, 1))
+        assert l.is_in_the_line(Point(2, 2)) == True
+        assert l.is_in_the_line(Point(-1, -1)) == True
+        assert l.is_in_the_line(Point(1, 2)) == False
+        assert l.is_in_the_line(Point(2, 1)) == False
+
+    def test_should_detect_point_under_line(self):
+        l = Line()
+        l.add(Point(0, 0))
+        l.add(Point(1, 1))
+        assert l.is_under_the_line(Point(0, 1)) == True
+        assert l.is_under_the_line(Point(1, 0)) == False
+        assert l.is_under_the_line(Point(1, 2)) == True
+        assert l.is_under_the_line(Point(-1, 1)) == True
+        assert l.is_under_the_line(Point(-1, -2)) == False
+
+    def test_should_return_the_quadrants(self):
+        l = Line()
+        l.add(Point(0, 0))
+        l.add(Point(1, 1))
+        assert l.quadrant() == 1
+        l = Line()
+        l.add(Point(1, 1))
+        l.add(Point(0, 0))
+        assert l.quadrant() == 3
+        l = Line()
+        l.add(Point(0, 0))
+        l.add(Point(1, -1))
+        assert l.quadrant() == 4
+        l = Line()
+        l.add(Point(0, 0))
+        l.add(Point(-1, 1))
+        assert l.quadrant() == 2
