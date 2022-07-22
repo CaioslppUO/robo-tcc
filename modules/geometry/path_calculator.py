@@ -32,7 +32,12 @@ class PathCalculator:
         if(mission_quadrant == 1):
             if(above_the_line):
                 if(equal_slope):
-                    return "right"
+                    if(robot_quadrant == 1):
+                        return "right"
+                    elif(robot_quadrant == 3):
+                        return "left"
+                    else:
+                        raise Exception("Robot above the line, slope equal but quadrant is not 1 or 3")
                 if(increasing_slope):
                     if(robot_quadrant == 1):
                         return "right"
@@ -49,7 +54,12 @@ class PathCalculator:
                         raise Exception("Robot above the line, slope negative but quadrant is not 2 or 4")
             if(under_the_line):
                 if(equal_slope):
-                    return "left"
+                    if(robot_quadrant == 1):
+                        return "left"
+                    elif(robot_quadrant == 3):
+                        return "right"
+                    else:
+                        raise Exception("Robot under the line, slope equal but quadrant is not 1 or 3")
                 if(increasing_slope):
                     if(robot_quadrant == 1):
                         return "forward"
