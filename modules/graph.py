@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 plt.style.use('seaborn-whitegrid')
-from geometry import Line,Point
+from geometry import Point
 
 class Graph:
     def __init__(self,interval:int = 2000):
@@ -81,14 +81,14 @@ class Graph:
         """
         self.correction_direction = direction
 
-    def set_straight_from_mission(self,points:Line):
+    def set_straight_from_mission(self,points:"list[Point]"):
         """
         Store mission line points
         """
         if(len(self.straight_from_mission_lon) > 0):
             self.straight_from_mission_lon.clear()
             self.straight_from_mission_lat.clear()
-        for point in points.get_points():
+        for point in points:
             self.straight_from_mission_lat.append(point.get_point()[0])
             self.straight_from_mission_lon.append(point.get_point()[1])
 
@@ -102,11 +102,11 @@ class Graph:
 
 def test_func():
     test = Graph()
-    lineTest = Line(10)
-    lineTest.add(Point(0,0))
-    lineTest.add(Point(1,1))
-    lineTest.add(Point(2,2))
-    lineTest.add(Point(3,3))
+    lineTest = []
+    lineTest.append(Point(0,0))
+    lineTest.append(Point(1,1))
+    lineTest.append(Point(2,2))
+    lineTest.append(Point(3,3))
     test.set_straight_from_mission(lineTest)
     test.new_position_robot((3,1))
     test.run()
