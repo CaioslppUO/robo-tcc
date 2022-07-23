@@ -107,17 +107,31 @@ class TestLine:
     def test_should_increase_slope_until_complete_lap(self):
         increment = 15
         l = Line(Point(0, 0), Point(1, 0.1))
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
         l.clockwise_slope(increment)
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
         l.clockwise_slope(increment)
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
         l.clockwise_slope(increment)
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
         l.clockwise_slope(increment)
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
         l.clockwise_slope(increment)
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
         l.clockwise_slope(increment)
-        print(l.quadrant, l.slope_to_degrees(), (l.p2.latitude, l.p2.longitude))
-        assert 1 == 2
+        assert l.quadrant == 2
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        assert l.quadrant == 3
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        assert l.quadrant == 4
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        assert l.quadrant == 1

@@ -123,11 +123,44 @@ class Line:
             return True
         return False
 
-    def __get_new_p2(self, quadrant: int) -> None:
+    def __get_new_p2(self, quadrant: int, old_slope: float, new_slope: float, clockwise: bool) -> None:
         """
         Get a new P2 point.
         """
-        pass
+        # Updating the quadrant
+        if(self.__quadrant_has_changed(old_slope, new_slope)):
+            if(clockwise):
+                if(quadrant == 4):
+                    new_quadrant = 1
+                else:
+                    new_quadrant = quadrant + 1
+            else:
+                if(quadrant == 1):
+                    new_quadrant = 4
+                else:
+                    new_quadrant = quadrant - 1
+        else:
+            new_quadrant = quadrant
+
+        # Getting a New P2
+        delta_x = abs(self.p2.longitude - self.p1.longitude)
+        delta_y = abs(self.p2.latitude - self.p1.latitude)
+
+        if(delta_x != 0):
+            if(new_quadrant == 1 or new_quadrant == 2):
+                new_x = delta_x
+            else:
+                new_x = -delta_x
+            new_y = self.y_line_equation(new_x)
+        elif(delta_y != 0):
+            if(new_quadrant == 1 or new_quadrant == 4):
+                new_y = delta_y
+            else:
+                new_y = -delta_y
+            new_x = self.x_line_equation(new_y)
+
+        self.p2.longitude = new_x
+        self.p2.latitude = new_y
 
     def clockwise_slope(self, inc_in_degrees: float) -> None:
         """
@@ -143,9 +176,5 @@ class Line:
         self.angular_coefficient = new_slope
         self.linear_coefficient = self.__linear_coefficient()
 
-        #if(self.__quadrant_has_changed(old_slope, new_slope)): # Need to get a new P2 in the next quadrant
-        #    if(self.quadrant >= 1 and self.quadrant <= 4):
-        #        new_qd = self.quadrant + 1
-        #    self.__get_new_p2(new_qd)
-        #else: # Need to get a new P2 on the same quadrant
-        #    self.__get_new_p2(self.quadrant)
+        self.__get_new_p2(self.quadrant, old_slope, new_slope, True)
+        self.quadrant = self.__quadrant()
