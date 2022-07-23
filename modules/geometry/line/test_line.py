@@ -162,3 +162,26 @@ class TestLine:
         l.counter_clockwise_slope(decrement)
         l.counter_clockwise_slope(decrement)
         assert l.quadrant == 1
+
+    def test_should_detect_correct_rotation_direction_mission_quadrant_1(self):
+        mission = Line(Point(0, 0), Point(5, 5))
+
+        # Robot Above The Mission Line
+        robot = Point(0, 1)
+        correction_line = Line(robot, Point(2, 2))
+
+        robot_direction_under_q2 = Line(robot, Point(-2, 3))
+        robot_direction_under_q4 = Line(robot, Point(2, -3))
+        
+        robot_direction_above_q1 = Line(robot, Point(7, 4))
+        robot_direction_above_q3 = Line(robot, Point(-12, -4))
+
+        robot_direction_in_q1 = Line(robot, Point(2, 2))
+        robot_direction_in_q3 = Line(robot, Point(-4, -1))
+        
+        assert robot_direction_under_q2.get_smaller_rotation_direction(correction_line) == "counter_clockwise"
+        assert robot_direction_under_q4.get_smaller_rotation_direction(correction_line) == "clockwise"
+        assert robot_direction_above_q1.get_smaller_rotation_direction(correction_line) == "clockwise"
+        assert robot_direction_above_q3.get_smaller_rotation_direction(correction_line) == "counter_clockwise"
+        assert robot_direction_in_q1.get_smaller_rotation_direction(correction_line) == "none"
+        assert robot_direction_in_q3.get_smaller_rotation_direction(correction_line) == "clockwise"
