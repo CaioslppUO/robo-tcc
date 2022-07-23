@@ -50,14 +50,6 @@ class TestLine:
         assert l.quadrant == 4
         l = Line(Point(0, 0), Point(-1, 1))
         assert l.quadrant == 2
-        l = Line(Point(0, 0), Point(1, 0))
-        assert l.quadrant == 7
-        l = Line(Point(0, 0), Point(-1, 0))
-        assert l.quadrant == 8
-        l = Line(Point(0, 0), Point(0, 1))
-        assert l.quadrant == 5
-        l = Line(Point(0, 0), Point(0, -1))
-        assert l.quadrant == 6
 
     def test_should_calculate_slopes_as_degrees_and_degrees_as_slope(self):
         # Quadrant 1
@@ -110,7 +102,8 @@ class TestLine:
 
     def test_should_increase_slope_until_complete_lap(self):
         increment = 15
-        l = Line(Point(0, 0), Point(1, 0.1))
+        l = Line(Point(0, 0), Point(1, 0))
+        l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
@@ -118,7 +111,6 @@ class TestLine:
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         assert l.quadrant == 2
-        l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
@@ -138,4 +130,35 @@ class TestLine:
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
+        assert l.quadrant == 1
+
+    def test_should_increase_slope_until_complete_lap(self):
+        decrement = 15
+        l = Line(Point(0, 0), Point(1, 0))
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        assert l.quadrant == 4
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        assert l.quadrant == 3
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        assert l.quadrant == 2
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
+        l.counter_clockwise_slope(decrement)
         assert l.quadrant == 1

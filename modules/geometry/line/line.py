@@ -79,22 +79,14 @@ class Line:
         pdf = self.p1.difference(self.p2)
 
         # Calculating the Quadrant
-        if(pdf.latitude > 0 and pdf.longitude > 0):
+        if(pdf.latitude >= 0 and pdf.longitude >= 0):
             return 1
-        elif(pdf.latitude > 0 and pdf.longitude < 0):
+        elif(pdf.latitude >= 0 and pdf.longitude <= 0):
             return 4
-        elif(pdf.latitude < 0 and pdf.longitude > 0):
+        elif(pdf.latitude <= 0 and pdf.longitude >= 0):
             return 2
-        elif(pdf.latitude < 0 and pdf.longitude < 0):
+        elif(pdf.latitude <= 0 and pdf.longitude <= 0):
             return 3
-        elif(pdf.latitude == 0 and pdf.longitude > 0):
-            return 5
-        elif(pdf.latitude == 0 and pdf.longitude < 0):
-            return 6
-        elif(pdf.latitude > 0 and pdf.longitude == 0):
-            return 7
-        elif(pdf.latitude < 0 and pdf.longitude == 0):
-            return 8
         raise Exception("Unknown quadrant in quadrant calculation")
 
     def slope_to_degrees(self, with_signal: bool = True) -> float:
@@ -120,10 +112,6 @@ class Line:
         """
         Return true if the quadrant has changed. Only detect changes under 90 degrees.
         """
-        if(old_slope == float("inf") and new_slope != float("inf")):
-            return True
-        if(old_slope != float("inf") and new_slope == float("inf")):
-            return True
         if(old_slope == 0 and new_slope != 0):
             return True
         if(old_slope != 0 and new_slope == 0):
@@ -143,29 +131,7 @@ class Line:
         # Updating the quadrant
         if(self.__quadrant_has_changed(old_slope, new_slope)):
             if(clockwise):
-                if(new_slope == float("inf")): # Is in an axis
-                    if(quadrant == 1):
-                        new_quadrant = 5
-                    elif(quadrant == 2):
-                        new_quadrant = 8
-                    elif(quadrant == 3):
-                        new_quadrant = 6
-                    elif(quadrant == 4):
-                        new_quadrant = 7
-                    else:
-                        raise Exception("Could not define quadrant for infinite new slope")
-                if(quadrant > 4):
-                    if(quadrant == 5):
-                        new_quadrant = 2
-                    elif(quadrant == 6):
-                        new_quadrant = 4
-                    elif(quadrant == 7):
-                        new_quadrant = 1
-                    elif(quadrant == 8):
-                        new_quadrant = 3
-                    else:
-                        raise Exception("Could not define quadrant bigger than 4")
-                elif(quadrant == 4):
+                if(quadrant == 4):
                     new_quadrant = 1
                 else:
                     new_quadrant = quadrant + 1
@@ -205,7 +171,7 @@ class Line:
         degree_slope = self.slope_to_degrees()
         degree_slope -= inc_in_degrees
         if(degree_slope == 90 or degree_slope == 0 or degree_slope == -90):
-            degree_slope -= 0.01
+            degree_slope -= 0.5
         new_slope = self.degrees_to_slope(degree_slope)
 
         # Updating the new line equation
@@ -214,4 +180,23 @@ class Line:
         self.linear_coefficient = self.__linear_coefficient()
 
         self.__get_new_p2(self.quadrant, old_slope, new_slope, True)
+        self.quadrant = self.__quadrant()
+
+    def counter_clockwise_slope(self, dec_in_degrees: float) -> None:
+        """
+        Decrease the slope with dec_in_degrees (with signal).
+        """
+        # Calculating the new slope
+        degree_slope = self.slope_to_degrees()
+        degree_slope += dec_in_degrees
+        if(degree_slope == 90 or degree_slope == 0 or degree_slope == -90):
+            degree_slope += 0.5
+        new_slope = self.degrees_to_slope(degree_slope)
+
+        # Updating the new line equation
+        old_slope = self.angular_coefficient
+        self.angular_coefficient = new_slope
+        self.linear_coefficient = self.__linear_coefficient()
+
+        self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
