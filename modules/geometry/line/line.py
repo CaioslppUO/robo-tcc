@@ -35,6 +35,8 @@ class Line:
         """
         Return the linear coefficient.
         """
+        if(self.angular_coefficient == float("inf")):
+            return round(self.p1.latitude, self.__decimals)
         return round(self.p1.latitude - self.p1.longitude * self.angular_coefficient, self.__decimals)
 
     def y_line_equation(self, x: float) -> float:
@@ -71,7 +73,7 @@ class Line:
 
     def __quadrant(self) -> int:
         """
-        Return which quadrant the line is pointing to. 5 is X axis and 6 is Y axis.
+        Return which quadrant the line is pointing to. 5,6 is (+X,-X) axis and 7,8 is (+Y,-Y) axis.
         """
         # Calculating the Difference
         pdf = self.p1.difference(self.p2)
@@ -85,10 +87,14 @@ class Line:
             return 2
         elif(pdf.latitude < 0 and pdf.longitude < 0):
             return 3
-        elif(pdf.latitude == 0 and pdf.longitude != 0):
+        elif(pdf.latitude == 0 and pdf.longitude >= 0):
             return 5
-        elif(pdf.latitude != 0 and pdf.longitude == 0):
+        elif(pdf.latitude == 0 and pdf.longitude < 0):
             return 6
+        elif(pdf.latitude >= 0 and pdf.longitude == 0):
+            return 7
+        elif(pdf.latitude < 0 and pdf.longitude == 0):
+            return 8
         print(self.p2.latitude, self.p2.longitude)
         raise Exception("Unknown quadrant in quadrant calculation")
 
@@ -115,6 +121,14 @@ class Line:
         """
         Return true if the quadrant has changed. Only detect changes under 90 degrees.
         """
+        if(old_slope == float("inf") and new_slope != float("inf")):
+            return True
+        if(old_slope != float("inf") and new_slope == float("inf")):
+            return True
+        if(old_slope == 0 and new_slope != 0):
+            return True
+        if(old_slope != 0 and new_slope == 0):
+            return True
         if(old_slope > 0 and new_slope > 0):
             return False
         if(old_slope > 0 and new_slope < 0):
@@ -128,9 +142,33 @@ class Line:
         Get a new P2 point.
         """
         # Updating the quadrant
+        print(old_slope, new_slope)
         if(self.__quadrant_has_changed(old_slope, new_slope)):
             if(clockwise):
-                if(quadrant == 4):
+                if(new_slope == float("inf")): # Is in an axis
+                    if(quadrant == 1):
+                        new_quadrant = 5
+                    elif(quadrant == 2):
+                        new_quadrant = 8
+                    elif(quadrant == 3):
+                        new_quadrant = 6
+                    elif(quadrant == 4):
+                        new_quadrant = 7
+                    else:
+                        raise Exception("Could not define quadrant for infinite new slope")
+                    print("AAAAAAAAAAAAAAAAAAAAA: ",new_quadrant)
+                if(quadrant > 4):
+                    if(quadrant == 5):
+                        new_quadrant = 2
+                    elif(quadrant == 6):
+                        new_quadrant = 4
+                    elif(quadrant == 7):
+                        new_quadrant = 1
+                    elif(quadrant == 8):
+                        new_quadrant = 3
+                    else:
+                        raise Exception("Could not define quadrant bigger than 4")
+                elif(quadrant == 4):
                     new_quadrant = 1
                 else:
                     new_quadrant = quadrant + 1
@@ -147,18 +185,20 @@ class Line:
         delta_y = abs(self.p2.latitude - self.p1.latitude)
 
         if(delta_x != 0):
-            if(new_quadrant == 1 or new_quadrant == 2):
+            if(new_quadrant == 1 or new_quadrant == 2 or new_quadrant == 5):
                 new_x = delta_x
             else:
+                print("Dai pra ca")
                 new_x = -delta_x
             new_y = self.y_line_equation(new_x)
         elif(delta_y != 0):
-            if(new_quadrant == 1 or new_quadrant == 4):
+            if(new_quadrant == 1 or new_quadrant == 4 or new_quadrant == 7):
                 new_y = delta_y
             else:
                 new_y = -delta_y
             new_x = self.x_line_equation(new_y)
 
+        print(new_y, new_x, delta_y, delta_x, new_quadrant, self.angular_coefficient, self.linear_coefficient)
         self.p2.longitude = new_x
         self.p2.latitude = new_y
 

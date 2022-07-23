@@ -51,9 +51,13 @@ class TestLine:
         l = Line(Point(0, 0), Point(-1, 1))
         assert l.quadrant == 2
         l = Line(Point(0, 0), Point(1, 0))
-        assert l.quadrant == 6
+        assert l.quadrant == 7
+        l = Line(Point(0, 0), Point(-1, 0))
+        assert l.quadrant == 8
         l = Line(Point(0, 0), Point(0, 1))
         assert l.quadrant == 5
+        l = Line(Point(0, 0), Point(0, -1))
+        assert l.quadrant == 6
 
     def test_should_calculate_slopes_as_degrees_and_degrees_as_slope(self):
         # Quadrant 1
@@ -135,3 +139,27 @@ class TestLine:
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         assert l.quadrant == 1
+
+    def test_should_increase_slope_until_complete_lap_in_axis(self):
+        increment = 15
+        l = Line(Point(0, 0), Point(1, 0))
+        print("\nAngular: ", l.angular_coefficient)
+        print("Linear: ", l.linear_coefficient)
+        print("Ang. Deg: ", l.slope_to_degrees())
+        print("Quadrant: ", l.quadrant)
+        print("P1: ({:10.10f}, {:10.10f})".format(l.p1.latitude, l.p1.longitude))
+        print("P2: ({:10.10f}, {:10.10f})".format(l.p2.latitude, l.p2.longitude))
+
+        run = True
+        while run:
+            l.clockwise_slope(increment)
+            print("\nAngular: ", l.angular_coefficient)
+            print("Linear: ", l.linear_coefficient)
+            print("Ang. Deg: ", l.slope_to_degrees())
+            print("Quadrant: ", l.quadrant)
+            print("P1: ({:10.10f}, {:10.10f})".format(l.p1.latitude, l.p1.longitude))
+            print("P2: ({:10.10f}, {:10.10f})".format(l.p2.latitude, l.p2.longitude))
+            in_ = input(": ")
+            if(in_ == "stop"):
+                run = False
+        
