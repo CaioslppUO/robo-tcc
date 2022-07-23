@@ -139,26 +139,3 @@ class TestLine:
         l.clockwise_slope(increment)
         l.clockwise_slope(increment)
         assert l.quadrant == 1
-
-    def test_should_increase_slope_until_complete_lap_in_axis(self):
-        increment = 15
-        l = Line(Point(0, 0), Point(1, 0))
-        assert l.quadrant == 7
-        l.clockwise_slope(increment)
-        assert l.quadrant == 1
-
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        assert l.quadrant == 5
-
-        l.clockwise_slope(increment)
-        assert l.quadrant == 2
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        l.clockwise_slope(increment)
-        assert l.p2.longitude == 10
