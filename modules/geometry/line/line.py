@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .point import Point
 import math
 
@@ -200,3 +201,50 @@ class Line:
 
         self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
+
+    def get_smaller_rotation_direction(self, objective_line: Line, mission_quadrant: int) -> str:
+        """
+        Return the smaller rotation direction (clockwise, counter_clockwise) to reach objective_line from self.
+        """
+        common_x = objective_line.p2.longitude
+
+        y_objective = objective_line.y_line_equation(common_x)
+        y_actual = self.y_line_equation(common_x)
+
+        actual_quadrant = self.quadrant
+        objective_quadrant = objective_line.quadrant
+
+        if(y_actual == y_objective):
+            if(actual_quadrant == objective_quadrant):
+                return "none"
+            else:
+                return "clockwise"
+
+        if(mission_quadrant == 1 or mission_quadrant == 2):
+            if(y_actual > y_objective): # Actual above objective
+                if(actual_quadrant == 1):
+                    return "clockwise"
+                elif(actual_quadrant == 3):
+                    return "counter_clockwise"
+                raise Exception("Could not determine rotation direction for actual above objective")
+            else: # Actual under objective
+                if(actual_quadrant == 2):
+                    return "counter_clockwise"
+                elif(actual_quadrant == 4):
+                    return "clockwise"
+                else:
+                    raise Exception("Could not determine rotation direction for actual under objective")
+        else:
+            if(y_actual > y_objective): # Actual above objective
+                if(actual_quadrant == 2):
+                    return "clockwise"
+                elif(actual_quadrant == 4):
+                    return "counter_clockwise"
+                raise Exception("Could not determine rotation direction for actual above objective")
+            else: # Actual under objective
+                if(actual_quadrant == 1):
+                    return "counter_clockwise"
+                elif(actual_quadrant == 3):
+                    return "clockwise"
+                else:
+                    raise Exception("Could not determine rotation direction for actual under objective")
