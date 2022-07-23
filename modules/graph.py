@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import json
+import os
 
 plt.style.use('seaborn-whitegrid')
 from geometry import Point
@@ -15,6 +16,7 @@ class GraphData:
         self.robot_route_lon:"list[float]"  = []
         self.correction_direction:"str" = None
         self.fieldnames = ["straight_from_mission_lon", "straight_from_mission_lat", "robot_position", "closest_point", "robot_route_lat", "robot_route_lon", "correction_direction"]
+        os.system("python3 run_graph.py&")
 
     def __write_to_json(self):
         """
@@ -72,6 +74,7 @@ class GraphData:
 class Graph:
     def __init__(self,interval:int = 2000):
         self.interval:int = interval
+        
         try:
             plt.get_current_fig_manager().window.attributes('-zoomed', True)
         except:
@@ -98,8 +101,8 @@ class Graph:
         plt.ylabel("LAT")
         if data is not None:
             if(len(data["straight_from_mission_lon"]) > 0):
-                plt.xlim(min(data["straight_from_mission_lon"]), max(data["straight_from_mission_lon"]))
-                plt.ylim(min(data["straight_from_mission_lat"]), max(data["straight_from_mission_lat"]))
+                plt.xlim(min(data["straight_from_mission_lon"])-0.00002, max(data["straight_from_mission_lon"])+0.00002)
+                plt.ylim(min(data["straight_from_mission_lat"])-0.00002, max(data["straight_from_mission_lat"])+0.00002)
                 
                 # Plot mission line
                 plt.plot(data["straight_from_mission_lon"], data["straight_from_mission_lat"], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Missão')
@@ -153,11 +156,4 @@ def write_graph():
     gpData.new_position_robot((3,2))
     gpData.new_position_robot((2,2))
 
-def show_graph():
-    """
-    Chamar essa função em um terminal separado
-    """
-    Graph().run()
-
-# Graph().run()
 # write_graph()
