@@ -35,6 +35,8 @@ class Line:
         """
         Return the linear coefficient.
         """
+        if(self.angular_coefficient == float("inf")):
+            return round(self.p1.latitude, self.__decimals)
         return round(self.p1.latitude - self.p1.longitude * self.angular_coefficient, self.__decimals)
 
     def y_line_equation(self, x: float) -> float:
@@ -71,25 +73,20 @@ class Line:
 
     def __quadrant(self) -> int:
         """
-        Return which quadrant the line is pointing to. 5 is X axis and 6 is Y axis.
+        Return which quadrant the line is pointing to. 5,6 is (+X,-X) axis and 7,8 is (+Y,-Y) axis.
         """
         # Calculating the Difference
         pdf = self.p1.difference(self.p2)
 
         # Calculating the Quadrant
-        if(pdf.latitude > 0 and pdf.longitude > 0):
+        if(pdf.latitude >= 0 and pdf.longitude >= 0):
             return 1
-        elif(pdf.latitude > 0 and pdf.longitude < 0):
+        elif(pdf.latitude >= 0 and pdf.longitude <= 0):
             return 4
-        elif(pdf.latitude < 0 and pdf.longitude > 0):
+        elif(pdf.latitude <= 0 and pdf.longitude >= 0):
             return 2
-        elif(pdf.latitude < 0 and pdf.longitude < 0):
+        elif(pdf.latitude <= 0 and pdf.longitude <= 0):
             return 3
-        elif(pdf.latitude == 0 and pdf.longitude != 0):
-            return 5
-        elif(pdf.latitude != 0 and pdf.longitude == 0):
-            return 6
-        print(self.p2.latitude, self.p2.longitude)
         raise Exception("Unknown quadrant in quadrant calculation")
 
     def slope_to_degrees(self, with_signal: bool = True) -> float:
@@ -115,6 +112,10 @@ class Line:
         """
         Return true if the quadrant has changed. Only detect changes under 90 degrees.
         """
+        if(old_slope == 0 and new_slope != 0):
+            return True
+        if(old_slope != 0 and new_slope == 0):
+            return True
         if(old_slope > 0 and new_slope > 0):
             return False
         if(old_slope > 0 and new_slope < 0):
@@ -147,13 +148,13 @@ class Line:
         delta_y = abs(self.p2.latitude - self.p1.latitude)
 
         if(delta_x != 0):
-            if(new_quadrant == 1 or new_quadrant == 2):
+            if(new_quadrant == 1 or new_quadrant == 2 or new_quadrant == 5):
                 new_x = delta_x
             else:
                 new_x = -delta_x
             new_y = self.y_line_equation(new_x)
         elif(delta_y != 0):
-            if(new_quadrant == 1 or new_quadrant == 4):
+            if(new_quadrant == 1 or new_quadrant == 4 or new_quadrant == 7):
                 new_y = delta_y
             else:
                 new_y = -delta_y
@@ -169,6 +170,8 @@ class Line:
         # Calculating the new slope
         degree_slope = self.slope_to_degrees()
         degree_slope -= inc_in_degrees
+        if(degree_slope == 90 or degree_slope == 0 or degree_slope == -90):
+            degree_slope -= 0.5
         new_slope = self.degrees_to_slope(degree_slope)
 
         # Updating the new line equation
@@ -177,4 +180,23 @@ class Line:
         self.linear_coefficient = self.__linear_coefficient()
 
         self.__get_new_p2(self.quadrant, old_slope, new_slope, True)
+        self.quadrant = self.__quadrant()
+
+    def counter_clockwise_slope(self, dec_in_degrees: float) -> None:
+        """
+        Decrease the slope with dec_in_degrees (with signal).
+        """
+        # Calculating the new slope
+        degree_slope = self.slope_to_degrees()
+        degree_slope += dec_in_degrees
+        if(degree_slope == 90 or degree_slope == 0 or degree_slope == -90):
+            degree_slope += 0.5
+        new_slope = self.degrees_to_slope(degree_slope)
+
+        # Updating the new line equation
+        old_slope = self.angular_coefficient
+        self.angular_coefficient = new_slope
+        self.linear_coefficient = self.__linear_coefficient()
+
+        self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
