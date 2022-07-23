@@ -16,7 +16,7 @@ class GraphData:
         self.correction_direction:"str" = None
         self.fieldnames = ["straight_from_mission_lon", "straight_from_mission_lat", "robot_position", "closest_point", "robot_route_lat", "robot_route_lon", "correction_direction"]
 
-    def __write_to_csv(self):
+    def __write_to_json(self):
         """
         Write the data to a csv file
         """
@@ -38,7 +38,7 @@ class GraphData:
         Set the correction direction legend
         """
         self.correction_direction = direction
-        self.__write_to_csv()
+        self.__write_to_json()
 
     def set_straight_from_mission(self,points:"list[Point]"):
         """
@@ -50,7 +50,7 @@ class GraphData:
         for point in points:
             self.straight_from_mission_lat.append(point.get_point()[0])
             self.straight_from_mission_lon.append(point.get_point()[1])
-        self.__write_to_csv()
+        self.__write_to_json()
 
     def new_position_robot(self,position:"tuple[float,float]"):
         """
@@ -59,7 +59,15 @@ class GraphData:
         self.robot_route_lon.append(position[0])
         self.robot_route_lat.append(position[1])
         self.robot_position = position;
-        self.__write_to_csv()
+        self.__write_to_json()
+
+    def clean_robot_route(self):
+        """
+        Reset the robot route
+        """
+        self.robot_route_lon.clear()
+        self.robot_route_lat.clear()
+        self.__write_to_json()
 
 class Graph:
     def __init__(self,interval:int = 2000):
@@ -152,4 +160,4 @@ def show_graph():
     Graph().run()
 
 # Graph().run()
-write_graph()
+# write_graph()
