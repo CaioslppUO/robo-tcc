@@ -143,23 +143,22 @@ class TestLine:
     def test_should_increase_slope_until_complete_lap_in_axis(self):
         increment = 15
         l = Line(Point(0, 0), Point(1, 0))
-        print("\nAngular: ", l.angular_coefficient)
-        print("Linear: ", l.linear_coefficient)
-        print("Ang. Deg: ", l.slope_to_degrees())
-        print("Quadrant: ", l.quadrant)
-        print("P1: ({:10.10f}, {:10.10f})".format(l.p1.latitude, l.p1.longitude))
-        print("P2: ({:10.10f}, {:10.10f})".format(l.p2.latitude, l.p2.longitude))
+        assert l.quadrant == 7
+        l.clockwise_slope(increment)
+        assert l.quadrant == 1
 
-        run = True
-        while run:
-            l.clockwise_slope(increment)
-            print("\nAngular: ", l.angular_coefficient)
-            print("Linear: ", l.linear_coefficient)
-            print("Ang. Deg: ", l.slope_to_degrees())
-            print("Quadrant: ", l.quadrant)
-            print("P1: ({:10.10f}, {:10.10f})".format(l.p1.latitude, l.p1.longitude))
-            print("P2: ({:10.10f}, {:10.10f})".format(l.p2.latitude, l.p2.longitude))
-            in_ = input(": ")
-            if(in_ == "stop"):
-                run = False
-        
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        assert l.quadrant == 5
+
+        l.clockwise_slope(increment)
+        assert l.quadrant == 2
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        l.clockwise_slope(increment)
+        assert l.p2.longitude == 10

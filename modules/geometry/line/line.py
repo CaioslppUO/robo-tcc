@@ -87,15 +87,14 @@ class Line:
             return 2
         elif(pdf.latitude < 0 and pdf.longitude < 0):
             return 3
-        elif(pdf.latitude == 0 and pdf.longitude >= 0):
+        elif(pdf.latitude == 0 and pdf.longitude > 0):
             return 5
         elif(pdf.latitude == 0 and pdf.longitude < 0):
             return 6
-        elif(pdf.latitude >= 0 and pdf.longitude == 0):
+        elif(pdf.latitude > 0 and pdf.longitude == 0):
             return 7
         elif(pdf.latitude < 0 and pdf.longitude == 0):
             return 8
-        print(self.p2.latitude, self.p2.longitude)
         raise Exception("Unknown quadrant in quadrant calculation")
 
     def slope_to_degrees(self, with_signal: bool = True) -> float:
@@ -142,7 +141,6 @@ class Line:
         Get a new P2 point.
         """
         # Updating the quadrant
-        print(old_slope, new_slope)
         if(self.__quadrant_has_changed(old_slope, new_slope)):
             if(clockwise):
                 if(new_slope == float("inf")): # Is in an axis
@@ -156,7 +154,6 @@ class Line:
                         new_quadrant = 7
                     else:
                         raise Exception("Could not define quadrant for infinite new slope")
-                    print("AAAAAAAAAAAAAAAAAAAAA: ",new_quadrant)
                 if(quadrant > 4):
                     if(quadrant == 5):
                         new_quadrant = 2
@@ -188,7 +185,6 @@ class Line:
             if(new_quadrant == 1 or new_quadrant == 2 or new_quadrant == 5):
                 new_x = delta_x
             else:
-                print("Dai pra ca")
                 new_x = -delta_x
             new_y = self.y_line_equation(new_x)
         elif(delta_y != 0):
@@ -198,7 +194,6 @@ class Line:
                 new_y = -delta_y
             new_x = self.x_line_equation(new_y)
 
-        print(new_y, new_x, delta_y, delta_x, new_quadrant, self.angular_coefficient, self.linear_coefficient)
         self.p2.longitude = new_x
         self.p2.latitude = new_y
 
@@ -209,6 +204,8 @@ class Line:
         # Calculating the new slope
         degree_slope = self.slope_to_degrees()
         degree_slope -= inc_in_degrees
+        if(degree_slope == 90 or degree_slope == 0 or degree_slope == -90):
+            degree_slope -= 0.01
         new_slope = self.degrees_to_slope(degree_slope)
 
         # Updating the new line equation
