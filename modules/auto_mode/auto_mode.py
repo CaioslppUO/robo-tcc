@@ -12,13 +12,13 @@ from agrobot_services.runtime_log import RuntimeLog
 from agrobot_services.log import Log
 from monitor.monitor_auto_mode import Monitor
 
-from geometry.point import Point
+# from geometry.point import Point
 
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
 
 # Topic to publish control commands
-pub = rospy.Publisher("/control_robot", Control, queue_size=10)
+pub = rospy.Publisher("/priority_decider", Control, queue_size=10)
 
 time.sleep(1) # Wait for publishers to be registered.
 

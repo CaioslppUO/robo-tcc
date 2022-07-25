@@ -24,7 +24,7 @@ log: Log = Log("lidar.py")
 runtime_log: RuntimeLog = RuntimeLog("lidar.py")
 
 # ControlMovement module
-secure_distance = 0.35 # Minimum distance which the robot must keep from objects in centimeters
+secure_distance = 2.00 # Minimum distance which the robot must keep from objects in centimeters
 control_movement = ControlMovement(secure_distance)
 
 # ProcessLidar module

@@ -5,11 +5,11 @@ import time
 class ControlRobot:
     def __init__(self, pub: rospy.Publisher) -> None:
         self.__pub = pub
-        self.__default_speed = 0.16
-        self.__default_steer = 0.3
+        self.__default_speed = 0.14
+        self.__default_steer = 0.35
         self.__default_wait = 1.0
 
-        self.__speed = self.__default_speed
+        self.__speed = 0.0
         self.__steer = 0.0
         self.__limit = 1.0
 
@@ -63,6 +63,7 @@ class ControlRobot:
         """
         while True:
             self.__send()
+            time.sleep(0.1)
 
     #def run_test(self) -> None:
     #    """

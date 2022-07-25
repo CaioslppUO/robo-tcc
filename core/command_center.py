@@ -21,7 +21,11 @@ rospy.init_node("command_center", anonymous=True)
 
 # Control variables
 pub_control: rospy.Publisher = rospy.Publisher("/control_robot", Control, queue_size=10)
-lidar: bool = False
+lidar: bool = True
+command_stop = Control()
+command_stop.speed = 0.0
+command_stop.steer = 0.0
+command_stop.limit = 0.0
 
 def send_command_to_robot(command: Control) -> None:
     """
@@ -37,8 +41,10 @@ def callback(command: Control) -> None:
     Response to a selected command from priority decider.
     """
     try:
-        if(not lidar):
+        if(lidar):
             send_command_to_robot(command)
+        else:
+            send_command_to_robot(command_stop)
     except Exception as e:
         log.error(traceback.format_exc())
         runtime_log.error("Could not send command to robot")
