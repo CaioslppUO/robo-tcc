@@ -166,6 +166,8 @@ class TestLine:
     def test_should_detect_correct_rotation_direction_mission_quadrant_1(self):
         mission = Line(Point(0, 0), Point(5, 5))
 
+        assert mission.quadrant == 1
+
         # Robot Under The Mission Line
         robot_under_line = Point(0, 1)
         correction_line = Line(robot_under_line, Point(2, 2))
@@ -241,3 +243,46 @@ class TestLine:
         assert robot_above_direction_above_q3.get_smaller_rotation_direction(correction_line_2) == "counter_clockwise"
         assert robot_above_direction_in_q1.get_smaller_rotation_direction(correction_line_2) == "none"
         assert robot_above_direction_in_q3.get_smaller_rotation_direction(correction_line_2) == "clockwise"
+
+    def test_should_detect_correct_rotation_direction_in_mission_quadrant_2(self):
+        mission = Line(Point(0, 0), Point(-5, 5))
+
+        assert mission.quadrant == 2
+
+        # Robot Under the Mission Line
+        robot_under_line = Point(-2, 1)
+        correction_line = Line(robot_under_line, Point(-3, 3))
+
+        robot_under_direction_above_q1 = Line(robot_under_line, Point(0, 3))
+        robot_under_direction_above_q3 = Line(robot_under_line, Point(-3, -1))
+
+        robot_under_direction_under_q2 = Line(robot_under_line, Point(-4, 2))
+        robot_under_direction_under_q4 = Line(robot_under_line, Point(2, -2))
+
+        robot_under_direction_in_q2 = Line(robot_under_line, Point(-3, 3))
+        robot_under_direction_in_q4 = Line(robot_under_line, Point(1, -5))
+
+        # Lines Verifications
+        assert mission.is_under(robot_under_line) == True
+        assert correction_line.quadrant == 2
+        assert correction_line.angular_coefficient < 0
+        assert robot_under_direction_above_q1.quadrant == 1
+        assert robot_under_direction_above_q1.angular_coefficient > correction_line.angular_coefficient
+        assert robot_under_direction_above_q3.quadrant == 3
+        assert robot_under_direction_above_q3.angular_coefficient > correction_line.angular_coefficient
+        assert robot_under_direction_under_q2.quadrant == 2
+        assert robot_under_direction_under_q2.angular_coefficient < correction_line.angular_coefficient
+        assert robot_under_direction_under_q4.quadrant == 4
+        assert robot_under_direction_under_q4.angular_coefficient < correction_line.angular_coefficient
+        assert robot_under_direction_in_q2.quadrant == 2
+        assert robot_under_direction_in_q2.angular_coefficient == correction_line.angular_coefficient
+        assert robot_under_direction_in_q4.quadrant == 4
+        assert robot_under_direction_in_q4.angular_coefficient == correction_line.angular_coefficient
+
+        # Correct Directions
+        assert robot_under_direction_above_q1.get_smaller_rotation_direction(correction_line) == "clockwise"
+        assert robot_under_direction_above_q3.get_smaller_rotation_direction(correction_line) == "counter_clockwise"
+        assert robot_under_direction_under_q2.get_smaller_rotation_direction(correction_line) == "counter_clockwise"
+        assert robot_under_direction_under_q4.get_smaller_rotation_direction(correction_line) == "clockwise"
+        assert robot_under_direction_in_q2.get_smaller_rotation_direction(correction_line) == "none"
+        assert robot_under_direction_in_q4.get_smaller_rotation_direction(correction_line) == "clockwise"
