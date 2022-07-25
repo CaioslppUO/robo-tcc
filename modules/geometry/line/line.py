@@ -202,7 +202,7 @@ class Line:
         self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
 
-    def get_smaller_rotation_direction(self, objective_line: Line, mission_quadrant: int) -> str:
+    def get_smaller_rotation_direction(self, objective_line: Line) -> str:
         """
         Return the smaller rotation direction (clockwise, counter_clockwise) to reach objective_line from self.
         """
@@ -220,8 +220,8 @@ class Line:
             else:
                 return "clockwise"
 
-        if(mission_quadrant == 1 or mission_quadrant == 2):
-            if(y_actual > y_objective): # Actual above objective
+        if(objective_line.quadrant == 1 or objective_line.quadrant == 2):
+            if(y_actual > y_objective and self.angular_coefficient >= objective_line.angular_coefficient): # Actual above objective
                 if(actual_quadrant == 1):
                     return "clockwise"
                 elif(actual_quadrant == 3):
