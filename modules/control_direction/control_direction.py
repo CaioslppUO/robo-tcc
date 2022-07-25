@@ -65,11 +65,15 @@ def _write(msg: str) -> None:
     Write in the serial port.
     Automatically transform to bytes and insert \r\n at the end.
     """
-    if(port):
-        port.write(str('{}\r\n'.format(msg)).encode())
-    else:
-        runtime_log.warning(
-            "Could not send control_direction to robot, but it would send {0}.".format(msg))
+    try:
+        if(port):
+            port.write(str('{}\r\n'.format(msg)).encode())
+        else:
+            runtime_log.warning(
+                "Could not send control_direction to robot, but it would send {0}.".format(msg))
+    except Exception as e:
+        log.error(traceback.format_exc())
+        runtime_log.error("Could not send command through serial to sabertooth. Probabily I/O Error.")
 
 
 def turn_motor(motor: str, speed: int = 0) -> None:
@@ -129,7 +133,7 @@ def move_callback(command: Control) -> None:
                     "Can't turn motor_4 because encoder_4 would be out of range")
     except Exception as e:
         log.error(traceback.format_exc())
-        runtime_log.error(traceback.format_exc())
+        runtime_log.error("Could not move sabertooth")
 
 
 def control_mode_callback(mode) -> None:
