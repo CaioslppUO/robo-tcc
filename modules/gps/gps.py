@@ -14,7 +14,7 @@ from agrobot_services.param import Parameter
 from agrobot.msg import Coords
 import traceback
 
-# Lidar node
+# GPS node
 rospy.init_node('gps', anonymous=True)
 
 # Publication topic of this node.

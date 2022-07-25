@@ -15,6 +15,12 @@ class _Location:
         self.latitude = latitude
         self.longitude = longitude
         self.action = action
+    
+    def get_latitude(self) -> float:
+        return self.latitude
+
+    def get_longitude(self) -> float:
+        return self.longitude
 
 
 class _Mission:

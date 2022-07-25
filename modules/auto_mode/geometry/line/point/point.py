@@ -8,11 +8,30 @@ class Point:
         self.latitude = latitude
         self.id = id
 
+    def set_point(self, latitude: float, longitude: float) -> None:
+        """
+        Set the point to the given latitude and longitude.
+        """
+        self.latitude = latitude
+        self.longitude = longitude
+
     def get_point(self) -> "tuple[float, float]":
         """
         Return the (latitude, longitude).
         """
         return (self.latitude, self.longitude)
+
+    def get_latitude(self) -> float:
+        """
+        Return the latitude.
+        """
+        return self.latitude
+    
+    def get_longitude(self) -> float:
+        """
+        Return the longitude.
+        """
+        return self.longitude
 
     def equal(self, other: Point) -> bool:
         """

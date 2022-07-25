@@ -4,15 +4,18 @@
 Auto mode for the robot. Execute pre-defined missions.
 """
 
-from threading import Thread
+# from threading import Thread
 import rospy, time
 from control.control import ControlRobot
 from agrobot.msg import Control
 from agrobot_services.runtime_log import RuntimeLog
 from agrobot_services.log import Log
 from monitor.monitor_auto_mode import Monitor
+from agrobot.msg import Coords
 
-# from geometry.point import Point
+
+from mission.mission import _Mission,Missions
+from geometry import Point,Line
 
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
@@ -29,25 +32,101 @@ monitor = Monitor()
 log: Log = Log("auto_mode.py")
 runtime_log: RuntimeLog = RuntimeLog("auto_mode.py")
 
+
+current_point = None
+old_point = None
+
+missions = Missions()
+control_robot = ControlRobot(pub)
+
+
+def get_points_between(line_target:Line,number_of_points:int) -> "list[Point]":
+    """
+    Return number_of_points between start and end.
+    """
+    points = []
+    longitude = line_target.p1.longitude
+    for i in range(0, number_of_points - 1):
+        latitude = round(line_target.angular_coefficient * longitude + line_target.linear_coefficient)
+        points.append(Point(longitude,latitude))
+        if(line_target.p2.longitude > line_target.p1.longitude):
+            longitude += line_target.p1.difference(line_target.p2).longitude / (number_of_points - 1)
+        else:
+            longitude -= line_target.p1.difference(line_target.p2).longitude / (number_of_points - 1)
+    points.append(line_target.p2)
+    return points
+
+def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
+    """
+    Return the index of the closest point to the robot.
+    """
+    distances:"list[float]" = []
+    min_dist = -1
+    index = 0
+
+    for point in line_target:
+        distances.append(point.distance(robot))
+    for i in range(len(distances)):
+        if min_dist == -1 or distances[i] < min_dist:
+            min_dist = distances[i]
+            index = i
+    correction_point = index + 5
+    if(correction_point >= len(distances)):
+            correction_point = len(distances)-1
+
+    return correction_point
+
+
+def run():
+    for mission in missions.get_missions():
+        log.info("Executing mission: {}".format(mission.name))
+        for location in mission.get_locations():
+            runtime_log.info("Executing location: {}".format(location))
+            if(current_point is None or old_point is None):
+                runtime_log.info("No GPS data available")
+                continue
+            target_point_location = Point(location.get_longitude(), location.get_latitude())
+            mission_line = get_points_between(Line(current_point, target_point_location),10)
+
+            while True:
+                robot_line = Line(old_point,current_point)
+                idx = get_closest_point(mission_line,current_point)
+                correction_line = Line(current_point,mission_line[idx])
+                if(idx == len(mission_line)-1):
+                    break
+
+                action = robot_line.get_smaller_rotation_direction(correction_line)
+                if(action == "clockwise"):
+                    print("Right")
+                elif(action == "counter_clockwise"):
+                    print("Left")
+                else:
+                    print("Forward")
+
+
+        log.info("Mission {} finished".format(mission.name))
+    log.info("Finished all missions")
+
+
+def callback_gps(data:Coords):
+    global current_point, old_point
+    if(current_point is None or old_point is None):
+        current_point = Point(data.latitude, data.longitude)
+        old_point = Point(data.latitude, data.longitude)
+    else:
+        old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
+        current_point.set_point(data.latitude, data.longitude)
+
 if __name__ == "__main__":
     try:
         control_robot = ControlRobot(pub)
-        Thread(target=control_robot.run).start()
-        #Thread(target=monitor.run).start()
-        #control_robot.run_test()
-        #while not rospy.is_shutdown():
-        #    pass
-        while True:
-            inpt = input("ação: (fd, lt, rt, st)")
-            if(inpt == "fd"):
-                control_robot.forward()
-            elif(inpt == "lt"):
-                control_robot.left()
-            elif(inpt == "rt"):
-                control_robot.right()
-            else:
-                control_robot.stop()
-    except KeyboardInterrupt:
-        exit(0)
+        missions.load_mission_file()
+        
+        while not rospy.is_shutdown():
+            run()
+            time.sleep(1)
+        rospy.Subscriber("/gps", Coords, callback_gps)
+        
+
     except:
         runtime_log.error("Auto Mode died. Check logs file.")

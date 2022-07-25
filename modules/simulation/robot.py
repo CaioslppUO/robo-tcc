@@ -6,7 +6,7 @@ Simulation of the robot itself and its attributes.
 import math
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
-from auto_mode.geometry.point import Point
+from auto_mode.geometry import Point
 
 class Robot:
     def __init__(self, latitude_0: float = 0.0, longitude_0: float = 0.0, latitude_1: float = 0.0, longitude_1: float = 0.0) -> None:
@@ -39,7 +39,7 @@ class Robot:
         else:
             self.slope_degrees = self.slope_degrees_with_signal
 
-    def __calculate_quadrant(self, p1: Point, p2: Point) -> None:
+    def __calculate_quadrant(self, p1: Point, p2: Point) -> int:
         """
         Update the quadrant of the movement.
         """

@@ -4,7 +4,7 @@ import json
 import os
 
 plt.style.use('seaborn-whitegrid')
-from geometry import Point
+from auto_mode.geometry import Point
 
 class GraphData:
     def __init__(self):
