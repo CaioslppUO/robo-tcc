@@ -15,6 +15,7 @@ from agrobot.msg import Coords
 from std_msgs.msg import String
 from threading import Thread
 from graph import GraphData
+from logger import mission_logger
 
 
 from mission.mission import _Mission,Missions
