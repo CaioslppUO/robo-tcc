@@ -14,6 +14,7 @@ from monitor.monitor_auto_mode import Monitor
 from agrobot.msg import Coords
 from std_msgs.msg import String
 from threading import Thread
+from graph import GraphData
 
 
 from mission.mission import _Mission,Missions
@@ -43,6 +44,10 @@ control_robot = ControlRobot(pub)
 Thread(target=control_robot.run).start()
 
 current_mission = None
+
+graph_data = GraphData()
+
+
 
 
 def get_points_between(line_target: Line, number_of_points: int) -> "list[Point]":
@@ -83,7 +88,7 @@ def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
 
 
 def run():
-    global control_robot
+    global control_robot,graph_data
     for mission in missions.get_missions():
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
@@ -92,10 +97,10 @@ def run():
                 control_robot.stop()
                 runtime_log.info("No GPS data available")
                 continue
-
             target_point_location = Point(location.get_longitude(), location.get_latitude())
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
+            # graph_data.set_straight_from_mission(mission_line)
             while True:
                 robot_line = Line(old_point, current_point)
                 idx = get_closest_point(mission_line, current_point)
@@ -117,6 +122,7 @@ def run():
                 else:
                     control_robot.forward()
                     print("Forward")
+                input("Press Enter to continue...")
                     
         runtime_log.info("Mission {} finished".format(mission.name))
         control_robot.stop()
