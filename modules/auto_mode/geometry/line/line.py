@@ -9,7 +9,7 @@ class Line:
         self.p1 = Point(p1.latitude, p1.longitude)
         self.p2 = Point(p2.latitude, p2.longitude)
 
-        if(p1.equal(p2)):
+        if(p1.equal(p2.latitude, p2.longitude)):
             raise Exception("Points must be different to form a line")
 
         # Calculations
@@ -76,16 +76,16 @@ class Line:
         Return which quadrant the line is pointing to. 5,6 is (+X,-X) axis and 7,8 is (+Y,-Y) axis.
         """
         # Calculating the Difference
-        pdf = self.p1.difference(self.p2)
+        pdf_lat, pdf_lon = self.p1.difference(self.p2.latitude, self.p2.longitude)
 
         # Calculating the Quadrant
-        if(pdf.latitude >= 0 and pdf.longitude >= 0):
+        if(pdf_lat >= 0 and pdf_lon >= 0):
             return 1
-        elif(pdf.latitude >= 0 and pdf.longitude <= 0):
+        elif(pdf_lat >= 0 and pdf_lon <= 0):
             return 4
-        elif(pdf.latitude <= 0 and pdf.longitude >= 0):
+        elif(pdf_lat <= 0 and pdf_lon >= 0):
             return 2
-        elif(pdf.latitude <= 0 and pdf.longitude <= 0):
+        elif(pdf_lat <= 0 and pdf_lon <= 0):
             return 3
         raise Exception("Unknown quadrant in quadrant calculation")
 
@@ -226,6 +226,7 @@ class Line:
                     return "clockwise"
                 elif(actual_quadrant == 3):
                     return "counter_clockwise"
+                return "clockwise"
                 raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
                 if(actual_quadrant == 2):
@@ -233,13 +234,15 @@ class Line:
                 elif(actual_quadrant == 4):
                     return "clockwise"
                 else:
-                    raise Exception("Could not determine rotation direction for actual under objective")
+                    return "clockwise"
+                    #raise Exception("Could not determine rotation direction for actual under objective")
         else:
             if(y_actual > y_objective): # Actual above objective
                 if(actual_quadrant == 2):
                     return "clockwise"
                 elif(actual_quadrant == 4):
                     return "counter_clockwise"
+                return "clockwise"
                 raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
                 if(actual_quadrant == 1):
@@ -247,4 +250,5 @@ class Line:
                 elif(actual_quadrant == 3):
                     return "clockwise"
                 else:
+                    return "clockwise"
                     raise Exception("Could not determine rotation direction for actual under objective")

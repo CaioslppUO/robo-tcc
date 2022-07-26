@@ -5,7 +5,7 @@ Auto mode for the robot. Execute pre-defined missions.
 """
 
 # from threading import Thread
-import rospy, time
+import rospy, time, traceback
 from control.control import ControlRobot
 from agrobot.msg import Control
 from agrobot_services.runtime_log import RuntimeLog
@@ -40,6 +40,7 @@ old_point: Point = None
 
 missions = Missions()
 control_robot = ControlRobot(pub)
+Thread(target=control_robot.run).start()
 
 current_mission = None
 
@@ -51,12 +52,12 @@ def get_points_between(line_target: Line, number_of_points: int) -> "list[Point]
     points: "list[Point]" = []
     longitude = line_target.p1.longitude
     for i in range(0, number_of_points - 1):
-        latitude = round(line_target.angular_coefficient * longitude + line_target.linear_coefficient)
-        points.append(Point(longitude,latitude))
+        latitude = round(line_target.angular_coefficient * longitude + line_target.linear_coefficient, 7)
+        points.append(Point(latitude, longitude))
         if(line_target.p2.longitude > line_target.p1.longitude):
-            longitude += line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude).longitude / (number_of_points - 1)
+            longitude += line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1] / (number_of_points - 1)
         else:
-            longitude -= line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude).longitude / (number_of_points - 1)
+            longitude -= line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1] / (number_of_points - 1)
     points.append(line_target.p2)
     return points
 
@@ -82,11 +83,13 @@ def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
 
 
 def run():
+    global control_robot
     for mission in missions.get_missions():
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
             runtime_log.info("Executing location: {}".format(location))
             if(current_point is None or old_point is None or current_point.is_zero() or old_point.is_zero()):
+                control_robot.stop()
                 runtime_log.info("No GPS data available")
                 continue
 
@@ -99,20 +102,26 @@ def run():
                 correction_line = Line(current_point, mission_line[idx])
 
                 if(idx == len(mission_line)-1): # Reached next to the last point
+                    control_robot.stop()
                     runtime_log.info("Location ({:10.10f}, {:10.10f}) finished".format(location.latitude, location.longitude))
                     time.sleep(5)
                     break
 
                 action = robot_line.get_smaller_rotation_direction(correction_line.p1, correction_line.p2)
                 if(action == "clockwise"):
+                    control_robot.right()
                     print("Right")
                 elif(action == "counter_clockwise"):
+                    control_robot.left()
                     print("Left")
                 else:
+                    control_robot.forward()
                     print("Forward")
                     
         runtime_log.info("Mission {} finished".format(mission.name))
+        control_robot.stop()
     runtime_log.info("Finished all missions")
+    control_robot.stop()
 
 def callback_gps(data:Coords):
     """
@@ -120,11 +129,12 @@ def callback_gps(data:Coords):
     """
     global current_point, old_point
     if(current_point is None or old_point is None):
-        current_point = Point(data.latitude, data.longitude)
-        old_point = Point(data.latitude, data.longitude)
+        current_point = Point(round(data.latitude, 5), round(data.longitude, 5))
+        old_point = Point(round(data.latitude, 5), round(data.longitude, 5))
     else:
-        old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
-        current_point.set_point(data.latitude, data.longitude)
+        if(not current_point.equal(round(data.latitude, 5), round(data.longitude, 5))):
+            old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
+            current_point.set_point(round(data.latitude, 5), round(data.longitude, 5))
 
 
 def callback_start_mission(data:String):
@@ -137,6 +147,7 @@ def callback_start_mission(data:String):
         current_mission = Thread(target=run)
         current_mission.start()
     except:
+        log.error(traceback.format_exc())
         runtime_log.error("Could not start mission.")
 
 
@@ -155,7 +166,6 @@ def callback_stop_mission(data:String):
 
 if __name__ == "__main__":
     try:
-        control_robot = ControlRobot(pub)
         rospy.Subscriber("/gps", Coords, callback_gps)
         rospy.Subscriber("/start_mission", String, callback_start_mission)
         rospy.Subscriber("/stop_mission", String, callback_stop_mission)

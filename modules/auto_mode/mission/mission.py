@@ -81,7 +81,7 @@ class Missions:
         pth = ""
         for i in aux:
             pth += i + "/"
-        mission_file = Path(pth).absolute().joinpath("mission.json")
+        mission_file = Path(pth).absolute().joinpath("mission/mission.json")
         with open(mission_file,"r") as f:
             data = json.load(f)
             for entry in data:

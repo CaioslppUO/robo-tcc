@@ -12,6 +12,9 @@ class ControlRobot:
         self.__speed = 0.0
         self.__steer = 0.0
         self.__limit = 1.0
+        self.__left_limit = -10
+        self.__right_limit = 10
+        self.__current_limit = 0
 
     def __send(self) -> None:
         """
@@ -34,9 +37,11 @@ class ControlRobot:
         """
         Turn the robot to the left.
         """
-        self.__speed = self.__default_speed
-        self.__steer = self.__default_steer
-        time.sleep(self.__default_wait)
+        if(self.__current_limit > self.__left_limit):
+            self.__speed = self.__default_speed
+            self.__steer = self.__default_steer
+            time.sleep(self.__default_wait)
+            self.__current_limit -= 1
         self.__speed = self.__default_speed
         self.__steer = 0.0
 
@@ -44,9 +49,11 @@ class ControlRobot:
         """
         Turn the robot to the right.
         """
-        self.__speed = self.__default_speed
-        self.__steer = -self.__default_steer
-        time.sleep(self.__default_wait)
+        if(self.__current_limit < self.__right_limit):
+            self.__speed = self.__default_speed
+            self.__steer = -self.__default_steer
+            time.sleep(self.__default_wait)
+            self.__current_limit += 1
         self.__speed = self.__default_speed
         self.__steer = 0.0
 

@@ -156,7 +156,7 @@ def setup_mission_changed(mission) -> None:
     for i in aux:
         pth += i + "/"
     mission_file = Path(pth).absolute().joinpath(
-        "modules/mission/mission.json")
+        "modules/auto_mode/mission/mission.json")
     with open(mission_file, "w") as file:
         json.dump(mission, file)
     
