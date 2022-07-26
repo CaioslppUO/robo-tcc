@@ -205,6 +205,7 @@ class Line:
         """
         Return the smaller rotation direction (clockwise, counter_clockwise) to reach objective_line from self.
         """
+        error = 0.000001
         objective_line = Line(objective_line_p1, obejctive_line_p2)
         common_x = objective_line.p2.longitude
 
@@ -214,7 +215,7 @@ class Line:
         actual_quadrant = self.quadrant
         objective_quadrant = objective_line.quadrant
 
-        if(y_actual == y_objective):
+        if(y_actual >= y_objective - error or y_actual <= y_objective + error):
             if(actual_quadrant == objective_quadrant):
                 return "none"
             else:

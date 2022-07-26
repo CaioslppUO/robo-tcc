@@ -18,7 +18,7 @@ from graph import GraphData
 from logger.mission_logger import MissionLogger
 
 
-from mission.mission import _Mission,Missions
+from mission.mission import _Mission, Missions
 from geometry import Point, Line, PathCalculator
 
 # Auto Mode node
@@ -50,10 +50,12 @@ Thread(target=control_robot.run).start()
 current_mission = None
 
 graph_data = GraphData()
+graph_data.clean_robot_route()
 
 def run():
     global control_robot , graph_data
     for mission in missions.get_missions():
+        print(len(missions.get_missions()))
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
             control_robot.begin = True
@@ -64,7 +66,7 @@ def run():
                 runtime_log.info("No GPS data available")
 
             target_point_location = Point(location.get_latitude(), location.get_longitude())
-            mission_line = path_calcs.get_points_between(Line(current_point, target_point_location),10)
+            mission_line = path_calcs.get_points_between(Line(current_point, target_point_location), 10)
 
             mission_logger.update_mission_line(current_point.latitude, current_point.longitude, target_point_location.latitude, target_point_location.longitude)
             mission_logger.update_mission_points(mission_line)
@@ -75,8 +77,8 @@ def run():
                 graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
 
                 robot_line = Line(old_point, current_point)
-                idx = path_calcs.get_closest_point(mission_line, current_point)
-                correction_line = Line(current_point, mission_line[idx])
+                idx_correction, idx_closest = path_calcs.get_closest_point(mission_line, current_point)
+                correction_line = Line(current_point, mission_line[idx_correction])
 
                 mission_logger.update_robot_direction(
                     robot_line.p1.latitude, robot_line.p1.longitude,
@@ -88,9 +90,11 @@ def run():
                     correction_line.p2.latitude, correction_line.p2.longitude
                 )
 
-                if(idx == len(mission_line)-1): # Reached next to the last point
+                if(idx_closest == len(mission_line)-1): # Reached next to the last point
                     control_robot.stop()
                     runtime_log.info("Location ({:10.10f}, {:10.10f}) finished".format(location.latitude, location.longitude))
+                    runtime_log.info("Robot End Location ({:10.10f}, {:10.10f})".format(current_point.latitude, current_point.longitude))
+                    runtime_log.info("Mission comparation Location ({:10.10f}, {:10.10f})".format(mission_line[idx_closest].latitude, mission_line[idx_closest].longitude))
                     mission_logger.update_correction_direction("Reached Point")
                     mission_logger.do_log()
                     time.sleep(5)
@@ -124,20 +128,22 @@ def callback_gps(data:Coords):
     Update the current and old point.
     """
     global current_point, old_point , graph_data
+    round_to = 7
     if(current_point is None or old_point is None):
-        current_point = Point(round(data.latitude, 5), round(data.longitude, 5))
-        old_point = Point(round(data.latitude, 5), round(data.longitude, 5))
+        current_point = Point(round(data.latitude, round_to), round(data.longitude, round_to))
+        old_point = Point(round(data.latitude, round_to), round(data.longitude, round_to))
     else:
-        if(not current_point.equal(round(data.latitude, 5), round(data.longitude, 5))):
+        if(not current_point.equal(round(data.latitude, round_to), round(data.longitude, round_to))):
             old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
-            current_point.set_point(round(data.latitude, 5), round(data.longitude, 5))
+            current_point.set_point(round(data.latitude, round_to), round(data.longitude, round_to))
 
-def callback_start_mission(data:String):
+def callback_start_mission(data: String):
     """
     Start the current mission.
     """
-    global current_mission,missions
+    global current_mission, missions
     try:
+        missions = Missions()
         missions.load_mission_file()
         current_mission = Thread(target=run)
         current_mission.start()

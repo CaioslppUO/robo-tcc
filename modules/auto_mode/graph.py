@@ -33,7 +33,6 @@ class GraphData:
                 "correction_direction": self.correction_direction
             }
             outfile.write(json.dumps(info))
-            print(json.dumps(info))
 
     def set_correction_direction_legend(self,direction:str):
         """
@@ -127,7 +126,7 @@ class Graph:
                 plt.plot(data["closest_point"][0], data["closest_point"][1], marker='o', markerfacecolor='black', markersize=6, color='black', label='Ponto mais próximo')
 
             if(data["correction_direction"] is not None): # Add correction_direction to the legend
-                plt.plot([0], [0], markersize=0.1 , marker="o", markeredgecolor="green", markerfacecolor="blue", label="Direção de correção: {}".format(self.correction_direction))
+                plt.plot([0], [0], markersize=0.1 , marker="o", markeredgecolor="green", markerfacecolor="blue", label="Direção de correção: {}".format(data["correction_direction"]))
                 # Plotting correction direction
                 plt.annotate("",
                     xy=(0, data["straight_from_mission_lat"][-1]),

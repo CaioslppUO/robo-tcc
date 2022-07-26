@@ -3,7 +3,7 @@
 @package mission.py
 Mission class.
 """
-import json,sys
+import json, sys, time
 from pathlib import Path
 
 class _Location:
@@ -82,7 +82,7 @@ class Missions:
         for i in aux:
             pth += i + "/"
         mission_file = Path(pth).absolute().joinpath("mission/mission.json")
-        with open(mission_file,"r") as f:
+        with open(mission_file, "r") as f:
             data = json.load(f)
             for entry in data:
                 mission_name = entry["name"]

@@ -4,8 +4,7 @@ class PathCalculator:
     def __init__(self) -> None:
         pass
 
-
-    def get_points_between(self,line_target: Line, number_of_points: int) -> "list[Point]":
+    def get_points_between(self, line_target: Line, number_of_points: int) -> "list[Point]":
         """
         Return number_of_points between start and end.
         """
@@ -14,10 +13,11 @@ class PathCalculator:
         for i in range(0, number_of_points - 1):
             latitude = round(line_target.angular_coefficient * longitude + line_target.linear_coefficient, 7)
             points.append(Point(latitude, longitude))
+
             if(line_target.p2.longitude > line_target.p1.longitude):
-                longitude += line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1] / (number_of_points - 1)
+                longitude += abs(line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1]) / (number_of_points - 1)
             else:
-                longitude -= line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1] / (number_of_points - 1)
+                longitude -= abs(line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1]) / (number_of_points - 1)
         points.append(line_target.p2)
         return points
 
@@ -40,4 +40,4 @@ class PathCalculator:
         if(correction_point >= len(distances)):
                 correction_point = len(distances)-1
 
-        return correction_point
+        return correction_point, index
