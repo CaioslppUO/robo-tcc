@@ -226,6 +226,10 @@ class Line:
                     return "clockwise"
                 elif(actual_quadrant == 3):
                     return "counter_clockwise"
+                elif(actual_quadrant == 2):
+                    return "counter_clockwise"
+                elif(actual_quadrant == 4):
+                    return "clockwise"
                 return "nao deveria ter caido aqui"
                 raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
@@ -233,6 +237,10 @@ class Line:
                     return "counter_clockwise"
                 elif(actual_quadrant == 4):
                     return "clockwise"
+                elif(actual_quadrant == 1):
+                    return "clockwise"
+                elif(actual_quadrant == 3):
+                    return "counter_clockwise"
                 else:
                     return "nao deveria ter caido aqui"
                     #raise Exception("Could not determine rotation direction for actual under objective")
@@ -242,12 +250,20 @@ class Line:
                     return "clockwise"
                 elif(actual_quadrant == 4):
                     return "counter_clockwise"
+                elif(actual_quadrant == 1):
+                    return "counter_clockwise"
+                elif(actual_quadrant == 3):
+                    return "clockwise"
                 return "nao deveria ter caido aqui"
                 raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
                 if(actual_quadrant == 1):
                     return "counter_clockwise"
                 elif(actual_quadrant == 3):
+                    return "clockwise"
+                elif(actual_quadrant == 4):
+                    return "counter_clockwise"
+                elif(actual_quadrant == 2):
                     return "clockwise"
                 else:
                     return "nao deveria ter caido aqui"
