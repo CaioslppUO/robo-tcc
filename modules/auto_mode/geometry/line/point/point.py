@@ -1,4 +1,3 @@
-from __future__ import annotations
 from math import sqrt
 
 class Point:
@@ -33,24 +32,24 @@ class Point:
         """
         return self.longitude
 
-    def equal(self, other: Point) -> bool:
+    def equal(self, other_lat: float, other_long: float) -> bool:
         """
         Return ture if other is the same as self.
         """
-        return self.latitude == other.latitude and self.longitude == other.longitude
+        return self.latitude == other_lat and self.longitude == other_long
 
-    def difference(self, other: Point) -> Point:
+    def difference(self, other_lat: float, other_lon: float) -> "tuple[float, float]":
         """
         Return a point with the difference (other.lat - self.lat, other.lon - self.lon).
         """ 
-        return Point(other.latitude - self.latitude, other.longitude - self.longitude)
+        return (other_lat - self.latitude, other_lon - self.longitude)
 
-    def distance(self, other: Point) -> float:
+    def distance(self,  other_lat: float, other_lon: float) -> float:
         """
         Return the distance between two points.
         """
-        a1 = (other.latitude - self.latitude) ** 2
-        a2 = (other.longitude - self.longitude) ** 2
+        a1 = (other_lat - self.latitude) ** 2
+        a2 = (other_lon - self.longitude) ** 2
         return round(sqrt(a1 + a2), self.__decimals)
     
     def is_zero(self) -> bool:

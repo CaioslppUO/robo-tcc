@@ -1,4 +1,3 @@
-from __future__ import annotations
 from .point import Point
 import math
 
@@ -202,10 +201,11 @@ class Line:
         self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
 
-    def get_smaller_rotation_direction(self, objective_line: Line) -> str:
+    def get_smaller_rotation_direction(self, objective_line_p1: Point, obejctive_line_p2: Point) -> str:
         """
         Return the smaller rotation direction (clockwise, counter_clockwise) to reach objective_line from self.
         """
+        objective_line = Line(objective_line_p1, obejctive_line_p2)
         common_x = objective_line.p2.longitude
 
         y_objective = objective_line.y_line_equation(common_x)

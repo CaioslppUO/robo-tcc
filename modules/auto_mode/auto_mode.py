@@ -17,7 +17,7 @@ from threading import Thread
 
 
 from mission.mission import _Mission,Missions
-from geometry import Point,Line
+from geometry import Point, Line
 
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
@@ -35,8 +35,8 @@ log: Log = Log("auto_mode.py")
 runtime_log: RuntimeLog = RuntimeLog("auto_mode.py")
 
 
-current_point = None
-old_point = None
+current_point: Point = None
+old_point: Point = None
 
 missions = Missions()
 control_robot = ControlRobot(pub)
@@ -44,19 +44,19 @@ control_robot = ControlRobot(pub)
 current_mission = None
 
 
-def get_points_between(line_target:Line,number_of_points:int) -> "list[Point]":
+def get_points_between(line_target: Line, number_of_points: int) -> "list[Point]":
     """
     Return number_of_points between start and end.
     """
-    points = []
+    points: "list[Point]" = []
     longitude = line_target.p1.longitude
     for i in range(0, number_of_points - 1):
         latitude = round(line_target.angular_coefficient * longitude + line_target.linear_coefficient)
         points.append(Point(longitude,latitude))
         if(line_target.p2.longitude > line_target.p1.longitude):
-            longitude += line_target.p1.difference(line_target.p2).longitude / (number_of_points - 1)
+            longitude += line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude).longitude / (number_of_points - 1)
         else:
-            longitude -= line_target.p1.difference(line_target.p2).longitude / (number_of_points - 1)
+            longitude -= line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude).longitude / (number_of_points - 1)
     points.append(line_target.p2)
     return points
 
@@ -69,7 +69,7 @@ def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
     index = 0
 
     for point in line_target:
-        distances.append(point.distance(robot))
+        distances.append(point.distance(robot.latitude, robot.longitude))
     for i in range(len(distances)):
         if min_dist == -1 or distances[i] < min_dist:
             min_dist = distances[i]
@@ -103,7 +103,7 @@ def run():
                     time.sleep(5)
                     break
 
-                action = robot_line.get_smaller_rotation_direction(correction_line)
+                action = robot_line.get_smaller_rotation_direction(correction_line.p1, correction_line.p2)
                 if(action == "clockwise"):
                     print("Right")
                 elif(action == "counter_clockwise"):
