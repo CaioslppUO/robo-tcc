@@ -47,7 +47,7 @@ Thread(target=control_robot.run).start()
 
 current_mission = None
 
-graph_data = GraphData()
+# graph_data = GraphData()
 
 def get_points_between(line_target: Line, number_of_points: int) -> "list[Point]":
     """
@@ -87,7 +87,7 @@ def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
 
 
 def run():
-    global control_robot, graph_data
+    global control_robot#, graph_data
     for mission in missions.get_missions():
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
@@ -101,11 +101,11 @@ def run():
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
             mission_logger.update_mission_points(mission_line)
-            graph_data.set_straight_from_mission(mission_line)
+            # graph_data.set_straight_from_mission(mission_line)
             
             while True:
                 mission_logger.update_robot_location(current_point.latitude, current_point.longitude)
-                graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
+                # graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
 
                 robot_line = Line(old_point, current_point)
                 idx = get_closest_point(mission_line, current_point)
@@ -133,7 +133,7 @@ def run():
                 
                 mission_logger.update_correction_direction(action)
                 mission_logger.do_log()
-                graph_data.set_correction_direction_legend(action)
+                # graph_data.set_correction_direction_legend(action)
                 if(action == "clockwise"):
                     control_robot.right()
                     print("Right")
@@ -154,7 +154,7 @@ def callback_gps(data:Coords):
     """
     Update the current and old point.
     """
-    global current_point, old_point, graph_data
+    global current_point, old_point#, graph_data
     if(current_point is None or old_point is None):
         current_point = Point(round(data.latitude, 5), round(data.longitude, 5))
         old_point = Point(round(data.latitude, 5), round(data.longitude, 5))
