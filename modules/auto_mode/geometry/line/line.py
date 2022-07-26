@@ -226,7 +226,7 @@ class Line:
                     return "clockwise"
                 elif(actual_quadrant == 3):
                     return "counter_clockwise"
-                return "clockwise"
+                return "none"
                 raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
                 if(actual_quadrant == 2):
@@ -234,7 +234,7 @@ class Line:
                 elif(actual_quadrant == 4):
                     return "clockwise"
                 else:
-                    return "clockwise"
+                    return "none"
                     #raise Exception("Could not determine rotation direction for actual under objective")
         else:
             if(y_actual > y_objective): # Actual above objective
@@ -242,7 +242,7 @@ class Line:
                     return "clockwise"
                 elif(actual_quadrant == 4):
                     return "counter_clockwise"
-                return "clockwise"
+                return "none"
                 raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
                 if(actual_quadrant == 1):
@@ -250,5 +250,5 @@ class Line:
                 elif(actual_quadrant == 3):
                     return "clockwise"
                 else:
-                    return "clockwise"
+                    return "none"
                     raise Exception("Could not determine rotation direction for actual under objective")
