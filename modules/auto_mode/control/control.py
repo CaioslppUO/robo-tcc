@@ -6,15 +6,16 @@ class ControlRobot:
     def __init__(self, pub: rospy.Publisher) -> None:
         self.__pub = pub
         self.__default_speed = 0.14
-        self.__default_steer = 0.35
+        self.__default_steer = 0.15
         self.__default_wait = 1.0
 
         self.__speed = 0.0
         self.__steer = 0.0
         self.__limit = 1.0
-        self.__left_limit = -10
-        self.__right_limit = 10
+        self.__left_limit = -6
+        self.__right_limit = 6
         self.__current_limit = 0
+        self.begin = False
 
     def __send(self) -> None:
         """
@@ -69,8 +70,9 @@ class ControlRobot:
         Start the control module by always going forward.
         """
         while True:
-            self.__send()
-            time.sleep(0.1)
+            if(self.begin):
+                self.__send()
+                time.sleep(0.1)
 
     #def run_test(self) -> None:
     #    """

@@ -14,7 +14,7 @@ from monitor.monitor_auto_mode import Monitor
 from agrobot.msg import Coords
 from std_msgs.msg import String
 from threading import Thread
-from graph import GraphData
+#from graph import GraphData
 from logger.mission_logger import MissionLogger
 
 
@@ -87,17 +87,18 @@ def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
 
 
 def run():
-    global control_robot#, graph_data
+    global control_robot #, graph_data
     for mission in missions.get_missions():
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
+            control_robot.begin = True
             runtime_log.info("Executing location: {}".format(location))
-            if(current_point is None or old_point is None or current_point.is_zero() or old_point.is_zero()):
+
+            while(current_point is None or old_point is None or current_point.is_zero() or old_point.is_zero() or current_point.equal(old_point.latitude, old_point.longitude)):
                 control_robot.stop()
                 runtime_log.info("No GPS data available")
-                continue
 
-            target_point_location = Point(location.get_longitude(), location.get_latitude())
+            target_point_location = Point(location.get_latitude(), location.get_longitude())
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
             mission_logger.update_mission_line(current_point.latitude, current_point.longitude, target_point_location.latitude, target_point_location.longitude)
@@ -157,7 +158,7 @@ def callback_gps(data:Coords):
     """
     Update the current and old point.
     """
-    global current_point, old_point#, graph_data
+    global current_point, old_point #, graph_data
     if(current_point is None or old_point is None):
         current_point = Point(round(data.latitude, 5), round(data.longitude, 5))
         old_point = Point(round(data.latitude, 5), round(data.longitude, 5))
@@ -184,13 +185,15 @@ def callback_stop_mission(data:String):
     """
     Stop the current mission.
     """
-    global current_mission
-    if(current_mission is not None):
-        runtime_log.info("Canceled mission with callback stop mission.")
-        current_mission.join()
-        current_mission = None
-    else:
-        runtime_log.warning("Could not canceled mission with callback stop mission.")
+    global control_robot
+    control_robot.begin = False
+    #global current_mission
+    #if(current_mission is not None):
+    #    runtime_log.info("Canceled mission with callback stop mission.")
+    #    current_mission.join()
+    #    current_mission = None
+    #else:
+    #    runtime_log.warning("Could not canceled mission with callback stop mission.")
 
 
 if __name__ == "__main__":

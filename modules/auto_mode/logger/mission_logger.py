@@ -73,7 +73,7 @@ class MissionLogger:
     def update_mission_points(self, points: list) -> None:
         self.mission_points = []
         for p in points:
-            self.mission_points.append(p.latitude, p.longitude)
+            self.mission_points.append((p.latitude, p.longitude))
 
     def update_correction_direction(self, correction_direction: str) -> None:
         self.correction_direction = correction_direction
