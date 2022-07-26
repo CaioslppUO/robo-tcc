@@ -101,7 +101,8 @@ def run():
             target_point_location = Point(location.get_longitude(), location.get_latitude())
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
-            # graph_data.set_straight_from_mission(mission_line)
+            graph_data.set_straight_from_mission(mission_line)
+            
             while True:
                 robot_line = Line(old_point, current_point)
                 idx = get_closest_point(mission_line, current_point)
@@ -114,6 +115,7 @@ def run():
                     break
 
                 action = robot_line.get_smaller_rotation_direction(correction_line.p1, correction_line.p2)
+                graph_data.set_correction_direction_legend(action)
                 if(action == "clockwise"):
                     control_robot.right()
                     print("Right")
@@ -134,7 +136,7 @@ def callback_gps(data:Coords):
     """
     Update the current and old point.
     """
-    global current_point, old_point
+    global current_point, old_point, graph_data
     if(current_point is None or old_point is None):
         current_point = Point(round(data.latitude, 5), round(data.longitude, 5))
         old_point = Point(round(data.latitude, 5), round(data.longitude, 5))
@@ -142,6 +144,7 @@ def callback_gps(data:Coords):
         if(not current_point.equal(round(data.latitude, 5), round(data.longitude, 5))):
             old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
             current_point.set_point(round(data.latitude, 5), round(data.longitude, 5))
+            graph_data.new_position_robot((round(data.longitude, 5), round(data.latitude, 5)))
 
 
 def callback_start_mission(data:String):
