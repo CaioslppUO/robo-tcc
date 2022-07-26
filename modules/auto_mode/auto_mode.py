@@ -19,7 +19,7 @@ from logger.mission_logger import MissionLogger
 
 
 from mission.mission import _Mission,Missions
-from geometry import Point, Line
+from geometry import Point, Line, PathCalculator
 
 # Auto Mode node
 rospy.init_node('auto_mode', anonymous=True)
@@ -42,49 +42,14 @@ current_point: Point = None
 old_point: Point = None
 
 missions = Missions()
+path_calcs = PathCalculator()
+
 control_robot = ControlRobot(pub)
 Thread(target=control_robot.run).start()
 
 current_mission = None
 
 # graph_data = GraphData()
-
-def get_points_between(line_target: Line, number_of_points: int) -> "list[Point]":
-    """
-    Return number_of_points between start and end.
-    """
-    points: "list[Point]" = []
-    longitude = line_target.p1.longitude
-    for i in range(0, number_of_points - 1):
-        latitude = round(line_target.angular_coefficient * longitude + line_target.linear_coefficient, 7)
-        points.append(Point(latitude, longitude))
-        if(line_target.p2.longitude > line_target.p1.longitude):
-            longitude += line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1] / (number_of_points - 1)
-        else:
-            longitude -= line_target.p1.difference(line_target.p2.latitude, line_target.p2.longitude)[1] / (number_of_points - 1)
-    points.append(line_target.p2)
-    return points
-
-def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
-    """
-    Return the index of the closest point to the robot.
-    """
-    distances:"list[float]" = []
-    min_dist = -1
-    index = 0
-
-    for point in line_target:
-        distances.append(point.distance(robot.latitude, robot.longitude))
-    for i in range(len(distances)):
-        if min_dist == -1 or distances[i] < min_dist:
-            min_dist = distances[i]
-            index = i
-    correction_point = index + 5
-    if(correction_point >= len(distances)):
-            correction_point = len(distances)-1
-
-    return correction_point
-
 
 def run():
     global control_robot #, graph_data
@@ -99,7 +64,7 @@ def run():
                 runtime_log.info("No GPS data available")
 
             target_point_location = Point(location.get_latitude(), location.get_longitude())
-            mission_line = get_points_between(Line(current_point, target_point_location),10)
+            mission_line = path_calcs.get_points_between(Line(current_point, target_point_location),10)
 
             mission_logger.update_mission_line(current_point.latitude, current_point.longitude, target_point_location.latitude, target_point_location.longitude)
             mission_logger.update_mission_points(mission_line)
@@ -110,7 +75,7 @@ def run():
                 # graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
 
                 robot_line = Line(old_point, current_point)
-                idx = get_closest_point(mission_line, current_point)
+                idx = path_calcs.get_closest_point(mission_line, current_point)
                 correction_line = Line(current_point, mission_line[idx])
 
                 mission_logger.update_robot_direction(
