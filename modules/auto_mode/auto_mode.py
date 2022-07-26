@@ -12,6 +12,8 @@ from agrobot_services.runtime_log import RuntimeLog
 from agrobot_services.log import Log
 from monitor.monitor_auto_mode import Monitor
 from agrobot.msg import Coords
+from std_msgs.msg import String
+from threading import Thread
 
 
 from mission.mission import _Mission,Missions
@@ -38,6 +40,8 @@ old_point = None
 
 missions = Missions()
 control_robot = ControlRobot(pub)
+
+current_mission = None
 
 
 def get_points_between(line_target:Line,number_of_points:int) -> "list[Point]":
@@ -102,13 +106,14 @@ def run():
                     print("Left")
                 else:
                     print("Forward")
-
-
         log.info("Mission {} finished".format(mission.name))
     log.info("Finished all missions")
 
 
 def callback_gps(data:Coords):
+    """
+    Update the current and old point.
+    """
     global current_point, old_point
     if(current_point is None or old_point is None):
         current_point = Point(data.latitude, data.longitude)
@@ -117,16 +122,39 @@ def callback_gps(data:Coords):
         old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
         current_point.set_point(data.latitude, data.longitude)
 
+
+def callback_start_mission(data:String):
+    """
+    Start the current mission.
+    """
+    global current_mission,missions
+    try:
+        missions.load_mission_file()
+        current_mission = Thread(target=run)
+        current_mission.start()
+    except:
+        runtime_log.error("Could not start mission.")
+
+
+def callback_stop_mission(data:String):
+    """
+    Stop the current mission.
+    """
+    global current_mission
+    if(current_mission is not None):
+        runtime_log.info("Canceled mission with callback stop mission.")
+        current_mission.join()
+        current_mission = None
+    else:
+        runtime_log.warning("Could not canceled mission with callback stop mission.")
+
+
 if __name__ == "__main__":
     try:
         control_robot = ControlRobot(pub)
-        missions.load_mission_file()
-        
-        while not rospy.is_shutdown():
-            run()
-            time.sleep(1)
         rospy.Subscriber("/gps", Coords, callback_gps)
-        
-
+        rospy.Subscriber("/start_mission", String, callback_start_mission)
+        rospy.Subscriber("/stop_mission", String, callback_stop_mission)
+        rospy.spin()
     except:
         runtime_log.error("Auto Mode died. Check logs file.")
