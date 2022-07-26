@@ -35,7 +35,7 @@ class GraphData:
             outfile.write(json.dumps(info))
             print(json.dumps(info))
 
-    def set_corretion_direction_legend(self,direction:str):
+    def set_correction_direction_legend(self,direction:str):
         """
         Set the correction direction legend
         """
