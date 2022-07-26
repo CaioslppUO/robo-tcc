@@ -82,17 +82,21 @@ def run():
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
             runtime_log.info("Executing location: {}".format(location))
-            if(current_point is None or old_point is None):
+            if(current_point is None or old_point is None or current_point.is_zero() or old_point.is_zero()):
                 runtime_log.info("No GPS data available")
                 continue
+
             target_point_location = Point(location.get_longitude(), location.get_latitude())
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
             while True:
-                robot_line = Line(old_point,current_point)
-                idx = get_closest_point(mission_line,current_point)
-                correction_line = Line(current_point,mission_line[idx])
-                if(idx == len(mission_line)-1):
+                robot_line = Line(old_point, current_point)
+                idx = get_closest_point(mission_line, current_point)
+                correction_line = Line(current_point, mission_line[idx])
+
+                if(idx == len(mission_line)-1): # Reached next to the last point
+                    runtime_log.info("Location ({:10.10f}, {:10.10f}) finished".format(location.latitude, location.longitude))
+                    time.sleep(5)
                     break
 
                 action = robot_line.get_smaller_rotation_direction(correction_line)
@@ -102,11 +106,9 @@ def run():
                     print("Left")
                 else:
                     print("Forward")
-
-
-        log.info("Mission {} finished".format(mission.name))
-    log.info("Finished all missions")
-
+                    
+        runtime_log.info("Mission {} finished".format(mission.name))
+    runtime_log.info("Finished all missions")
 
 def callback_gps(data:Coords):
     global current_point, old_point

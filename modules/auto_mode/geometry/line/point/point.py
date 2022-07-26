@@ -52,3 +52,9 @@ class Point:
         a1 = (other.latitude - self.latitude) ** 2
         a2 = (other.longitude - self.longitude) ** 2
         return round(sqrt(a1 + a2), self.__decimals)
+    
+    def is_zero(self) -> bool:
+        """
+        Return True if a point is (0,0).
+        """
+        return self.latitude == 0 and self.longitude == 0
