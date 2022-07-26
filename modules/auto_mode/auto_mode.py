@@ -100,6 +100,7 @@ def run():
             target_point_location = Point(location.get_longitude(), location.get_latitude())
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
+            mission_logger.update_mission_line(current_point.latitude, current_point.longitude, target_point_location.latitude, target_point_location.longitude)
             mission_logger.update_mission_points(mission_line)
             # graph_data.set_straight_from_mission(mission_line)
             
@@ -140,10 +141,12 @@ def run():
                 elif(action == "counter_clockwise"):
                     control_robot.left()
                     print("Left")
-                else:
+                elif(action == "none"):
                     control_robot.forward()
                     print("Forward")
-                input("Press Enter to continue...")
+                else:
+                    print("Deu Ruim")
+                #input("Press Enter to continue...")
                     
         runtime_log.info("Mission {} finished".format(mission.name))
         control_robot.stop()

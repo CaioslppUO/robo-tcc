@@ -64,7 +64,7 @@ class MissionLogger:
         self.correction_line_p2_latitude = p2_lat
         self.correction_line_p2_longitude = p2_lon
 
-    def update_mission_direction(self, p1_lat: float, p1_lon: float, p2_lat: float, p2_lon: float) -> None:
+    def update_mission_line(self, p1_lat: float, p1_lon: float, p2_lat: float, p2_lon: float) -> None:
         self.mission_line_p1_latitude = p1_lat
         self.mission_line_p1_longitude = p1_lon
         self.mission_line_p2_latitude = p2_lat
