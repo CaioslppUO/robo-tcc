@@ -15,7 +15,7 @@ from agrobot.msg import Coords
 from std_msgs.msg import String
 from threading import Thread
 from graph import GraphData
-from logger import mission_logger
+from logger.mission_logger import MissionLogger
 
 
 from mission.mission import _Mission,Missions
@@ -36,6 +36,7 @@ monitor = Monitor()
 log: Log = Log("auto_mode.py")
 runtime_log: RuntimeLog = RuntimeLog("auto_mode.py")
 
+mission_logger = MissionLogger()
 
 current_point: Point = None
 old_point: Point = None
@@ -47,9 +48,6 @@ Thread(target=control_robot.run).start()
 current_mission = None
 
 graph_data = GraphData()
-
-
-
 
 def get_points_between(line_target: Line, number_of_points: int) -> "list[Point]":
     """
@@ -89,7 +87,7 @@ def get_closest_point(line_target:"list[Point]", robot:Point) -> int:
 
 
 def run():
-    global control_robot,graph_data
+    global control_robot, graph_data
     for mission in missions.get_missions():
         log.info("Executing mission: {}".format(mission.name))
         for location in mission.get_locations():
@@ -98,23 +96,43 @@ def run():
                 control_robot.stop()
                 runtime_log.info("No GPS data available")
                 continue
+
             target_point_location = Point(location.get_longitude(), location.get_latitude())
             mission_line = get_points_between(Line(current_point, target_point_location),10)
 
+            mission_logger.update_mission_points(mission_line)
             graph_data.set_straight_from_mission(mission_line)
             
             while True:
+                mission_logger.update_robot_location(current_point.latitude, current_point.longitude)
+                graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
+
                 robot_line = Line(old_point, current_point)
                 idx = get_closest_point(mission_line, current_point)
                 correction_line = Line(current_point, mission_line[idx])
 
+                mission_logger.update_robot_direction(
+                    robot_line.p1.latitude, robot_line.p1.longitude,
+                    robot_line.p2.latitude, robot_line.p2.longitude
+                )
+
+                mission_logger.update_correction_line(
+                    correction_line.p1.latitude, correction_line.p1.longitude,
+                    correction_line.p2.latitude, correction_line.p2.longitude
+                )
+
                 if(idx == len(mission_line)-1): # Reached next to the last point
                     control_robot.stop()
                     runtime_log.info("Location ({:10.10f}, {:10.10f}) finished".format(location.latitude, location.longitude))
+                    mission_logger.update_correction_direction("Reached Point")
+                    mission_logger.do_log()
                     time.sleep(5)
                     break
 
                 action = robot_line.get_smaller_rotation_direction(correction_line.p1, correction_line.p2)
+                
+                mission_logger.update_correction_direction(action)
+                mission_logger.do_log()
                 graph_data.set_correction_direction_legend(action)
                 if(action == "clockwise"):
                     control_robot.right()
@@ -144,8 +162,6 @@ def callback_gps(data:Coords):
         if(not current_point.equal(round(data.latitude, 5), round(data.longitude, 5))):
             old_point.set_point(current_point.get_latitude(), current_point.get_longitude())
             current_point.set_point(round(data.latitude, 5), round(data.longitude, 5))
-            graph_data.new_position_robot((round(data.longitude, 5), round(data.latitude, 5)))
-
 
 def callback_start_mission(data:String):
     """

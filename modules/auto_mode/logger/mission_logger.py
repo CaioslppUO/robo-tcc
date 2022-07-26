@@ -48,6 +48,36 @@ class MissionLogger:
         # Correction Direction
         self.correction_direction = ""
 
+    def update_robot_location(self, latitude: float, longitude: float) -> None:
+        self.current_robot_latitude = latitude
+        self.current_robot_longitude = longitude
+
+    def update_robot_direction(self, p1_lat: float, p1_lon: float, p2_lat: float, p2_lon: float) -> None:
+        self.current_robot_direction_p1_latitude = p1_lat
+        self.current_robot_direction_p1_longitude = p1_lon
+        self.current_robot_direction_p2_latitude = p2_lat
+        self.current_robot_direction_p2_longitude = p2_lon
+
+    def update_correction_line(self, p1_lat: float, p1_lon: float, p2_lat: float, p2_lon: float) -> None:
+        self.correction_line_p1_latitude = p1_lat
+        self.correction_line_p1_longitude = p1_lon
+        self.correction_line_p2_latitude = p2_lat
+        self.correction_line_p2_longitude = p2_lon
+
+    def update_mission_direction(self, p1_lat: float, p1_lon: float, p2_lat: float, p2_lon: float) -> None:
+        self.mission_line_p1_latitude = p1_lat
+        self.mission_line_p1_longitude = p1_lon
+        self.mission_line_p2_latitude = p2_lat
+        self.mission_line_p2_longitude = p2_lon
+
+    def update_mission_points(self, points: list) -> None:
+        self.mission_points = []
+        for p in points:
+            self.mission_points.append(p.latitude, p.longitude)
+
+    def update_correction_direction(self, correction_direction: str) -> None:
+        self.correction_direction = correction_direction
+    
     def do_log(self) -> None:
         """
         Append log to the logs file.
