@@ -5,7 +5,7 @@ Auto mode for the robot. Execute pre-defined missions.
 """
 
 # from threading import Thread
-import rospy, time, traceback
+import rospy, time, traceback, sys
 from control.control import ControlRobot
 from agrobot.msg import Control
 from agrobot_services.runtime_log import RuntimeLog
@@ -14,9 +14,18 @@ from monitor.monitor_auto_mode import Monitor
 from agrobot.msg import Coords
 from std_msgs.msg import String
 from threading import Thread
-from graph import GraphData
 from logger.mission_logger import MissionLogger
 
+try:
+    if(sys.argv[1] == "graph"):
+        ENABLE_GRAPH = True
+    else:
+        ENABLE_GRAPH = False
+except:
+    ENABLE_GRAPH = False
+
+if(ENABLE_GRAPH):
+    from graph import GraphData
 
 from mission.mission import _Mission, Missions
 from geometry import Point, Line, PathCalculator
@@ -49,11 +58,14 @@ Thread(target=control_robot.run).start()
 
 current_mission = None
 
-graph_data = GraphData()
-graph_data.clean_robot_route()
+if(ENABLE_GRAPH):
+    graph_data = GraphData()
+    graph_data.clean_robot_route()
 
 def run():
-    global control_robot , graph_data
+    global control_robot
+    if(ENABLE_GRAPH):
+        global graph_data
     for mission in missions.get_missions():
         print(len(missions.get_missions()))
         log.info("Executing mission: {}".format(mission.name))
@@ -70,11 +82,13 @@ def run():
 
             mission_logger.update_mission_line(current_point.latitude, current_point.longitude, target_point_location.latitude, target_point_location.longitude)
             mission_logger.update_mission_points(mission_line)
-            graph_data.set_straight_from_mission(mission_line)
+            if(ENABLE_GRAPH):
+                graph_data.set_straight_from_mission(mission_line)
             
             while True:
                 mission_logger.update_robot_location(current_point.latitude, current_point.longitude)
-                graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
+                if(ENABLE_GRAPH):
+                    graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
 
                 robot_line = Line(old_point, current_point)
                 idx_correction, idx_closest = path_calcs.get_closest_point(mission_line, current_point)
@@ -104,7 +118,8 @@ def run():
                 
                 mission_logger.update_correction_direction(action)
                 mission_logger.do_log()
-                graph_data.set_correction_direction_legend(action)
+                if(ENABLE_GRAPH):
+                    graph_data.set_correction_direction_legend(action)
                 if(action == "clockwise"):
                     control_robot.right()
                     print("Right")
@@ -127,7 +142,7 @@ def callback_gps(data:Coords):
     """
     Update the current and old point.
     """
-    global current_point, old_point , graph_data
+    global current_point, old_point
     round_to = 7
     if(current_point is None or old_point is None):
         current_point = Point(round(data.latitude, round_to), round(data.longitude, round_to))
