@@ -17,6 +17,9 @@ class MissionLogger:
         with open(self.mission_log_file, "w") as file: # Clean the log files
             file.write("[\n]")
         
+        # Mission Name
+        self.mission_name = ""
+
         # Robot Position
         self.current_robot_latitude = 0.0
         self.current_robot_longitude = 0.0
@@ -77,6 +80,9 @@ class MissionLogger:
 
     def update_correction_direction(self, correction_direction: str) -> None:
         self.correction_direction = correction_direction
+
+    def update_mission_name(self, name: str) -> None:
+        self.mission_name = name
     
     def do_log(self) -> None:
         """
@@ -90,6 +96,7 @@ class MissionLogger:
             "Robot Direction": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.current_robot_direction_p1_latitude, self.current_robot_direction_p1_longitude, self.current_robot_direction_p2_latitude, self.current_robot_direction_p2_longitude),
             "Correction Line": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.correction_line_p1_latitude, self.correction_line_p1_longitude, self.correction_line_p2_latitude, self.correction_line_p2_longitude),
             "Correction Direction": "{}".format(self.correction_direction),
+            "Mission Name:": "{}".format(self.mission_name),
             "Mission Line": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.mission_line_p1_latitude, self.mission_line_p1_longitude, self.mission_line_p2_latitude, self.mission_line_p2_longitude),
             "Mission Points": "{}".format(self.mission_points)
         })

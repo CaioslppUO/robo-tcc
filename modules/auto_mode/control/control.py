@@ -12,8 +12,8 @@ class ControlRobot:
         self.__speed = 0.0
         self.__steer = 0.0
         self.__limit = 1.0
-        self.__left_limit = -6
-        self.__right_limit = 6
+        self.__left_limit = -2
+        self.__right_limit = 2
         self.__current_limit = 0
         self.begin = False
 

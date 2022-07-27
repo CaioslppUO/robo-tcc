@@ -69,6 +69,8 @@ def run():
     for mission in missions.get_missions():
         print(len(missions.get_missions()))
         log.info("Executing mission: {}".format(mission.name))
+        mission_logger.update_mission_name(mission.name)
+        time.sleep(3)
         for location in mission.get_locations():
             control_robot.begin = True
             runtime_log.info("Executing location: {}".format(location))
@@ -143,7 +145,7 @@ def callback_gps(data:Coords):
     Update the current and old point.
     """
     global current_point, old_point
-    round_to = 7
+    round_to = 6
     if(current_point is None or old_point is None):
         current_point = Point(round(data.latitude, round_to), round(data.longitude, round_to))
         old_point = Point(round(data.latitude, round_to), round(data.longitude, round_to))

@@ -1,4 +1,4 @@
-from auto_mode.graph import Graph
+from graph import Graph
 
 
 Graph().run()
