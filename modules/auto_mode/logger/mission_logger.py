@@ -8,11 +8,8 @@ import sys, json
 
 class MissionLogger:
     def __init__(self) -> None:
-        aux = sys.argv[0].split("/")[0:-1]
-        pth = ""
-        for i in aux:
-            pth += i + "/"
-        self.mission_log_file = Path(pth).absolute().joinpath("logger/mission_log.json")
+        self.mission_log_file = Path(__file__).parent.resolve()
+        self.mission_log_file = self.mission_log_file.joinpath("mission_log.json")
 
         with open(self.mission_log_file, "w") as file: # Clean the log files
             file.write("[\n]")

@@ -77,11 +77,8 @@ class Missions:
             print("\n")
 
     def load_mission_file(self) -> None:
-        aux = sys.argv[0].split("/")[0:-1]
-        pth = ""
-        for i in aux:
-            pth += i + "/"
-        mission_file = Path(pth).absolute().joinpath("mission/mission.json")
+        mission_file = Path(__file__).parent.resolve()
+        mission_file = mission_file.joinpath("mission.json")
         with open(mission_file, "r") as f:
             data = json.load(f)
             for entry in data:
