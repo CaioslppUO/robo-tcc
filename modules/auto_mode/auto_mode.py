@@ -35,6 +35,7 @@ rospy.init_node('auto_mode', anonymous=True)
 
 # Topic to publish control commands
 pub = rospy.Publisher("/priority_decider", Control, queue_size=10)
+pub_log = rospy.Publisher("/auto_mode_log", String, queue_size=10)
 
 time.sleep(1) # Wait for publishers to be registered.
 
@@ -67,8 +68,8 @@ def run():
     if(ENABLE_GRAPH):
         global graph_data
     for mission in missions.get_missions():
-        print(len(missions.get_missions()))
-        log.info("Executing mission: {}".format(mission.name))
+        pub_log.publish("Mission Length: {}".format(len(missions.get_missions())))
+        pub_log.publish("Executing mission: {}".format(mission.name))
         mission_logger.update_mission_name(mission.name)
         time.sleep(3)
         for location in mission.get_locations():
@@ -77,7 +78,7 @@ def run():
 
             while(current_point is None or old_point is None or current_point.is_zero() or old_point.is_zero() or current_point.equal(old_point.latitude, old_point.longitude)):
                 control_robot.stop()
-                runtime_log.info("No GPS data available")
+                pub_log.publish("No GPS data available")
 
             target_point_location = Point(location.get_latitude(), location.get_longitude())
             mission_line = path_calcs.get_points_between(Line(current_point, target_point_location), 10)
@@ -124,16 +125,15 @@ def run():
                     graph_data.set_correction_direction_legend(action)
                 if(action == "clockwise"):
                     control_robot.right()
-                    print("Right")
+                    pub_log.publish("Right")
                 elif(action == "counter_clockwise"):
                     control_robot.left()
-                    print("Left")
+                    pub_log.publish("Left")
                 elif(action == "none"):
                     control_robot.forward()
-                    print("Forward")
+                    pub_log.publish("Forward")
                 else:
-                    print("Deu Ruim")
-                #input("Press Enter to continue...")
+                    pub_log.publish("Deu Ruim")
                     
         runtime_log.info("Mission {} finished".format(mission.name))
         control_robot.stop()

@@ -48,6 +48,9 @@ class MissionLogger:
         # Mission Points (Calculated)
         self.mission_points: "list[float, float]" = []
 
+        # Iteration
+        self.iteration = 0
+
         # Correction Direction
         self.correction_direction = ""
 
@@ -83,6 +86,9 @@ class MissionLogger:
 
     def update_mission_name(self, name: str) -> None:
         self.mission_name = name
+
+    def update_iteration(self, iteration: int) -> None:
+        self.iteration = iteration
     
     def do_log(self) -> None:
         """
@@ -92,11 +98,12 @@ class MissionLogger:
             list_obj = json.load(file)
 
         list_obj.append({
+            "Iteration:": "{}".format(self.iteration),
+            "Mission Name:": "{}".format(self.mission_name),
             "Robot Location": "({:10.7f}, {:10.7f})".format(self.current_robot_latitude, self.current_robot_longitude),
             "Robot Direction": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.current_robot_direction_p1_latitude, self.current_robot_direction_p1_longitude, self.current_robot_direction_p2_latitude, self.current_robot_direction_p2_longitude),
             "Correction Line": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.correction_line_p1_latitude, self.correction_line_p1_longitude, self.correction_line_p2_latitude, self.correction_line_p2_longitude),
             "Correction Direction": "{}".format(self.correction_direction),
-            "Mission Name:": "{}".format(self.mission_name),
             "Mission Line": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.mission_line_p1_latitude, self.mission_line_p1_longitude, self.mission_line_p2_latitude, self.mission_line_p2_longitude),
             "Mission Points": "{}".format(self.mission_points)
         })

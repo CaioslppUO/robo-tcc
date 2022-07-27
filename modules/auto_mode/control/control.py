@@ -31,6 +31,10 @@ class ControlRobot:
         """
         Move the robot forward.
         """
+        if(self.__current_limit > 0):
+            self.left()
+        elif(self.__current_limit < 0):
+            self.right()
         self.__speed = self.__default_speed
         self.__steer = 0.0
 
@@ -67,25 +71,10 @@ class ControlRobot:
 
     def run(self) -> None:
         """
-        Start the control module by always going forward.
+        Start the control module.
         """
         while True:
             if(self.begin):
                 self.__send()
                 time.sleep(0.1)
-
-    #def run_test(self) -> None:
-    #    """
-    #    Run a sequence of commands to test the robot.
-    #    """
-    #    print("Going forward...")
-    #    self.forward()
-    #    print("Turning left...")
-    #    self.left()
-    #    print("Turning right...")
-    #    self.right()
-    #    print("Going forward...")
-    #    self.forward()
-    #    print("Stopping")
-    #    self.stop()
         
