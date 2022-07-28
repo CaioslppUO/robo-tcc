@@ -133,7 +133,9 @@ class MissionDataAnalyzer:
             dir_r_p1_y, dir_r_p1_x = dir_r_p1
             dir_r_p2_y, dir_r_p2_x = dir_r_p2
 
-            plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='orange', markersize=6, color='orange', label='Linha de direção do robô - Correção: {}'.format(self.records[r].correction.direction))
+            y_a_y_o = dir_r_p2_y - dir_c_p2_y
+
+            plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='orange', markersize=6, color='orange', label='Linha de direção do robô - Correção: {} - Y_A - Y_O: {:8.7f}'.format(self.records[r].correction.direction, y_a_y_o))
 
             y_r, x_r = self.records[r].robot.robot_pos
             plt.plot(x_r, y_r, marker='o', markerfacecolor='black', markersize=6, color='black', label='Posição atual do robô {:8.7f}, {:8.7f}'.format(y_r, x_r))
@@ -158,6 +160,6 @@ class MissionDataAnalyzer:
     def size(self) -> int:
         return len(self.records)
         
-m = MissionDataAnalyzer("/home/caioslpp/Downloads/errodeveriaviraresquerda.json")
+m = MissionDataAnalyzer("/home/caioslpp/Downloads/primeiraMissaoLog.json")
 m.clean_duplicated()
 m.plot_read_data()
