@@ -51,6 +51,10 @@ class MissionLogger:
         # Correction Direction
         self.correction_direction = ""
 
+        # Forward error
+        self.forward_error: float = 0
+        self.correction_chooser: int = -2
+
     def update_robot_location(self, latitude: float, longitude: float) -> None:
         self.current_robot_latitude = latitude
         self.current_robot_longitude = longitude
@@ -86,6 +90,12 @@ class MissionLogger:
 
     def update_iteration(self, iteration: int) -> None:
         self.iteration = iteration
+
+    def update_forward_error(self, error: float) -> None:
+        self.forward_error = error
+
+    def update_correction_chooser(self, correction_chooser: int) -> None:
+        self.correction_chooser = correction_chooser
     
     def do_log(self) -> None:
         """
@@ -95,12 +105,14 @@ class MissionLogger:
             list_obj = json.load(file)
 
         list_obj.append({
-            "Iteration:": "{}".format(self.iteration),
-            "Mission Name:": "{}".format(self.mission_name),
+            "Iteration": "{}".format(self.iteration),
+            "Mission Name": "{}".format(self.mission_name),
             "Robot Location": "({:10.7f}, {:10.7f})".format(self.current_robot_latitude, self.current_robot_longitude),
             "Robot Direction": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.current_robot_direction_p1_latitude, self.current_robot_direction_p1_longitude, self.current_robot_direction_p2_latitude, self.current_robot_direction_p2_longitude),
             "Correction Line": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.correction_line_p1_latitude, self.correction_line_p1_longitude, self.correction_line_p2_latitude, self.correction_line_p2_longitude),
             "Correction Direction": "{}".format(self.correction_direction),
+            "Forward Error":  "{}".format(self.forward_error),
+            "Correction Chooser": "{}".format(self.correction_chooser),
             "Mission Line": "({:10.7f}, {:10.7f}) -> ({:10.7f}, {:10.7f})".format(self.mission_line_p1_latitude, self.mission_line_p1_longitude, self.mission_line_p2_latitude, self.mission_line_p2_longitude),
             "Mission Points": "{}".format(self.mission_points)
         })

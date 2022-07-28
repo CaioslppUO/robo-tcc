@@ -67,6 +67,7 @@ def run():
     global control_robot
     if(ENABLE_GRAPH):
         global graph_data
+    index = 0
     for mission in missions.get_missions():
         pub_log.publish("Mission Length: {}".format(len(missions.get_missions())))
         pub_log.publish("Executing mission: {}".format(mission.name))
@@ -117,9 +118,12 @@ def run():
                     time.sleep(5)
                     break
 
-                action = robot_line.get_smaller_rotation_direction(correction_line.p1, correction_line.p2)
+                action, chooser, error = robot_line.get_smaller_rotation_direction(correction_line.p1, correction_line.p2)
                 
                 mission_logger.update_correction_direction(action)
+                mission_logger.update_iteration(index)
+                mission_logger.update_forward_error(error)
+                mission_logger.update_correction_chooser(chooser)
                 mission_logger.do_log()
                 if(ENABLE_GRAPH):
                     graph_data.set_correction_direction_legend(action)
@@ -134,6 +138,8 @@ def run():
                     pub_log.publish("Forward")
                 else:
                     pub_log.publish("Deu Ruim")
+                 
+                index += 1
                     
         runtime_log.info("Mission {} finished".format(mission.name))
         control_robot.stop()

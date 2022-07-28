@@ -201,7 +201,7 @@ class Line:
         self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
 
-    def get_smaller_rotation_direction(self, objective_line_p1: Point, obejctive_line_p2: Point) -> str:
+    def get_smaller_rotation_direction(self, objective_line_p1: Point, obejctive_line_p2: Point) -> "tuple[str, int, float]":
         """
         Return the smaller rotation direction (clockwise, counter_clockwise) to reach objective_line from self.
         """
@@ -215,57 +215,55 @@ class Line:
         actual_quadrant = self.quadrant
         objective_quadrant = objective_line.quadrant
 
+        choosed = -1
+
         if(y_actual >= y_objective - error or y_actual <= y_objective + error):
             if(actual_quadrant == objective_quadrant):
-                return "none"
+                return "none", 0, error
             else:
-                return "clockwise"
+                return "clockwise", 1, error
 
         if(objective_line.quadrant == 1 or objective_line.quadrant == 2):
             if(y_actual > y_objective and self.angular_coefficient >= objective_line.angular_coefficient): # Actual above objective
                 if(actual_quadrant == 1):
-                    return "clockwise"
+                    return "clockwise", 2, error
                 elif(actual_quadrant == 3):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 3, error
                 elif(actual_quadrant == 2):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 4, error
                 elif(actual_quadrant == 4):
-                    return "clockwise"
+                    return "clockwise", 5, error
                 return "nao deveria ter caido aqui"
-                raise Exception("Could not determine rotation direction for actual above objective")
             else: # Actual under objective
                 if(actual_quadrant == 2):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 6, error
                 elif(actual_quadrant == 4):
-                    return "clockwise"
+                    return "clockwise", 7, error
                 elif(actual_quadrant == 1):
-                    return "clockwise"
+                    return "clockwise", 8, error
                 elif(actual_quadrant == 3):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 9, error
                 else:
-                    return "nao deveria ter caido aqui"
-                    #raise Exception("Could not determine rotation direction for actual under objective")
+                    return "nao deveria ter caido aqui", -1, error
         else:
             if(y_actual > y_objective): # Actual above objective
                 if(actual_quadrant == 2):
-                    return "clockwise"
+                    return "clockwise", 10, error
                 elif(actual_quadrant == 4):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 11, error
                 elif(actual_quadrant == 1):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 12, error
                 elif(actual_quadrant == 3):
-                    return "clockwise"
-                return "nao deveria ter caido aqui"
-                raise Exception("Could not determine rotation direction for actual above objective")
+                    return "clockwise", 13, error
+                return "nao deveria ter caido aqui", -1, error
             else: # Actual under objective
                 if(actual_quadrant == 1):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 14, error
                 elif(actual_quadrant == 3):
-                    return "clockwise"
+                    return "clockwise", 15, error
                 elif(actual_quadrant == 4):
-                    return "counter_clockwise"
+                    return "counter_clockwise", 16, error
                 elif(actual_quadrant == 2):
-                    return "clockwise"
+                    return "clockwise", 17, error
                 else:
-                    return "nao deveria ter caido aqui"
-                    raise Exception("Could not determine rotation direction for actual under objective")
+                    return "nao deveria ter caido aqui", -1, error
