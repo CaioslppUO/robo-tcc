@@ -3,7 +3,7 @@
 Able to read mission_log.json files and plot what happened to the robot.
 """
 
-import json
+import json, sys
 import matplotlib.pyplot as plt
 
 class Mission:
@@ -33,6 +33,7 @@ class MissionDataAnalyzer:
     def __init__(self, logs_file_path: str) -> None:
         self.logs_file = logs_file_path
         self.records: "list[MissionRecord]" = []
+        self.total_records = 0
         self.__organize_file()
         self.__load_data()
 
@@ -60,6 +61,8 @@ class MissionDataAnalyzer:
     def __load_data(self) -> None:
         with open(self.logs_file, "r") as f:
             data = json.load(f)
+            i = 0
+            self.total_records = 0
             for entry in data:
                 # Mission Data
                 mission_name = entry["Mission Name:"]
@@ -91,28 +94,48 @@ class MissionDataAnalyzer:
 
                 mission_record = MissionRecord(iteration, mission, correction, robot)
                 self.records.append(mission_record)
+                self.total_records += 1
+
+    def __remove_dup(self, lat: float, lon: float, start: int) -> None:
+        j = start
+        i = 0
+        for r in self.records[:]:
+            if(i >= j):
+                if(r.robot.robot_pos == (lat, lon)):
+                    self.records.remove(r)
+            i += 1
+
+    def clean_duplicated(self) -> None:
+        i = 0
+        for r in self.records[:]:
+            self.__remove_dup(r.robot.robot_pos[0], r.robot.robot_pos[1], i+1)
+            i += 1
 
     def plot_read_data(self) -> None:
-        for r in self.records:
-            dir_c_p1, dir_c_p2 = r.correction.line
+        if(len(sys.argv) == 2):
+            step = int(sys.argv[1])
+        else:
+            step = 1
+        for r in range(0, len(self.records), step):
+            dir_c_p1, dir_c_p2 = self.records[r].correction.line
             dir_c_p1_y, dir_c_p1_x = dir_c_p1
             dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-            plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Linha de correção - iteração: {}/{}'.format(r.iteration, len(self.records)-1))
+            plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Linha de correção - iteração: {}/{}'.format(self.records[r].iteration, self.total_records-1))
 
-            dir_m_p1, dir_m_p2 = r.mission.line
+            dir_m_p1, dir_m_p2 = self.records[r].mission.line
             dir_m_p1_y, dir_m_p1_x = dir_m_p1
             dir_m_p2_y, dir_m_p2_x = dir_m_p2
 
             plt.plot([dir_m_p1_x, dir_m_p2_x], [dir_m_p1_y, dir_m_p2_y], marker='o', markerfacecolor='purple', markersize=6, color='purple', label='Linha da missão')
 
-            dir_r_p1, dir_r_p2 = r.robot.direction_line
+            dir_r_p1, dir_r_p2 = self.records[r].robot.direction_line
             dir_r_p1_y, dir_r_p1_x = dir_r_p1
             dir_r_p2_y, dir_r_p2_x = dir_r_p2
 
-            plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='orange', markersize=6, color='orange', label='Linha de direção do robô - Correção: {}'.format(r.correction.direction))
+            plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='orange', markersize=6, color='orange', label='Linha de direção do robô - Correção: {}'.format(self.records[r].correction.direction))
 
-            y_r, x_r = r.robot.robot_pos
+            y_r, x_r = self.records[r].robot.robot_pos
             plt.plot(x_r, y_r, marker='o', markerfacecolor='black', markersize=6, color='black', label='Posição atual do robô {:8.7f}, {:8.7f}'.format(y_r, x_r))
 
             plt.legend()
@@ -131,7 +154,10 @@ class MissionDataAnalyzer:
             print("Correction Direction: ", r.correction.direction)
             print("Correction Line: ", r.correction.line)
             print("_" * 150)
+
+    def size(self) -> int:
+        return len(self.records)
         
-m = MissionDataAnalyzer("/home/caioslpp/Downloads/erro2virardireita.json")
-#m.print_record_data()
+m = MissionDataAnalyzer("/home/caioslpp/Downloads/errodeveriaviraresquerda.json")
+m.clean_duplicated()
 m.plot_read_data()
