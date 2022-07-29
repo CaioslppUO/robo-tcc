@@ -201,12 +201,12 @@ class Line:
         self.__get_new_p2(self.quadrant, old_slope, new_slope, False)
         self.quadrant = self.__quadrant()
 
-    def get_smaller_rotation_direction(self, objective_line_p1: Point, obejctive_line_p2: Point) -> "tuple[str, int, float]":
+    def get_smaller_rotation_direction(self, objective_line_p1: Point, objective_line_p2: Point) -> "tuple[str, int, float]":
         """
         Return the smaller rotation direction (clockwise, counter_clockwise) to reach objective_line from self.
         """
         error = 0.000001
-        objective_line = Line(objective_line_p1, obejctive_line_p2)
+        objective_line = Line(objective_line_p1, objective_line_p2)
         common_x = objective_line.p2.longitude
 
         y_objective = objective_line.y_line_equation(common_x)
@@ -215,9 +215,7 @@ class Line:
         actual_quadrant = self.quadrant
         objective_quadrant = objective_line.quadrant
 
-        choosed = -1
-
-        if(y_actual >= y_objective - error or y_actual <= y_objective + error):
+        if(y_actual >= y_objective - error and y_actual <= y_objective + error):
             if(actual_quadrant == objective_quadrant):
                 return "none", 0, error
             else:
@@ -230,9 +228,9 @@ class Line:
                 elif(actual_quadrant == 3):
                     return "counter_clockwise", 3, error
                 elif(actual_quadrant == 2):
-                    return "counter_clockwise", 4, error
+                    return "clockwise", 4, error
                 elif(actual_quadrant == 4):
-                    return "clockwise", 5, error
+                    return "counter_clockwise", 5, error
                 return "nao deveria ter caido aqui"
             else: # Actual under objective
                 if(actual_quadrant == 2):
@@ -240,9 +238,9 @@ class Line:
                 elif(actual_quadrant == 4):
                     return "clockwise", 7, error
                 elif(actual_quadrant == 1):
-                    return "clockwise", 8, error
+                    return "counter_clockwise", 8, error
                 elif(actual_quadrant == 3):
-                    return "counter_clockwise", 9, error
+                    return "clockwise", 9, error
                 else:
                     return "nao deveria ter caido aqui", -1, error
         else:
