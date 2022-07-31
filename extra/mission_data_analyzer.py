@@ -147,6 +147,8 @@ class MissionDataAnalyzer:
         """
         try:
             import matplotlib.pyplot as plt
+            import seaborn as sns  
+            sns.set_style("whitegrid")
         except:
             print(traceback.format_exc())
         try:
@@ -163,16 +165,20 @@ class MissionDataAnalyzer:
 
                 plt.plot([dir_m_p1_x, dir_m_p2_x], [dir_m_p1_y, dir_m_p2_y], marker='o', markerfacecolor='red', markersize=6, color='red', label='Vetor da missão')
 
-                dir_r_p1, dir_r_p2 = self.records[r].robot.direction_line
-                dir_r_p1_y, dir_r_p1_x = dir_r_p1
-                dir_r_p2_y, dir_r_p2_x = dir_r_p2
+                plt.annotate("",
+                        xy=(dir_m_p2_x, dir_m_p2_y),
+                        xytext=(dir_m_p1_x, dir_m_p1_y),
+                        va="center",
+                        ha="right",
+                        arrowprops={"arrowstyle": "-|>", "lw": 1, "color": "red"}, 
+                        color="red")
 
                 # Correction Line
                 dir_c_p1, dir_c_p2 = self.records[r].correction.line
                 dir_c_p1_y, dir_c_p1_x = dir_c_p1
                 dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor de correção - iteração: {}/{}'.format(index, self.total_records-1, self.records[r].correction.error))
+                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor de correção'.format(index, self.total_records-1, self.records[r].correction.error))
 
                 plt.annotate("",
                         xy=(dir_c_p2_x, dir_c_p2_y),
@@ -183,10 +189,18 @@ class MissionDataAnalyzer:
                         color="blue")
 
                 # Robot Direction Line
+
+                ## Robot Position
+                y_r, x_r = self.records[r].robot.robot_pos
+
+                dir_r_p1, dir_r_p2 = self.records[r].robot.direction_line
+                dir_r_p1_y, dir_r_p1_x = dir_r_p1
+                dir_r_p2_y, dir_r_p2_x = dir_r_p2
+
                 if(self.records[r].correction.direction == "clockwise"):
-                    correction_direction = "horário"
+                    correction_direction = "direita"
                 elif(self.records[r].correction.direction == "counter_clockwise"):
-                    correction_direction = "anti horário"
+                    correction_direction = "esquerda"
                 elif(self.records[r].correction.direction == "none"):
                     correction_direction = "reto"
                 elif(self.records[r].correction.direction == "Reached Point"):
@@ -197,21 +211,23 @@ class MissionDataAnalyzer:
                 dif_x = (dir_r_p2_x - dir_r_p1_x) * 4
                 dif_y = (dir_r_p2_y - dir_r_p1_y) * 4
 
-
-                plt.plot([dir_r_p1_x, dir_r_p2_x + dif_x*0.94], [dir_r_p1_y, dir_r_p2_y + dif_y*0.94], marker='o', markerfacecolor='green', markersize=0, color='green', label='Vetor de direção do robô - Correção: {}'.format(correction_direction))
+                plt.plot([x_r, dir_r_p2_x + dif_x*0.94], [y_r, dir_r_p2_y + dif_y*0.94], marker='o', markerfacecolor='green', markersize=0, color='green', label='Vetor de direção do robô - Correção: {}'.format(correction_direction))
 
                 plt.annotate("",
                         xy=(dir_r_p2_x + dif_x, dir_r_p2_y + dif_y),
-                        xytext=(dir_r_p1_x, dir_r_p1_y),
+                        xytext=(x_r, y_r),
                         va="center",
                         ha="right",
                         arrowprops={"arrowstyle": "-|>", "lw": 2, "color": "green"},
                         color="green")
 
-                # Robot Position
-                y_r, x_r = self.records[r].robot.robot_pos
                 plt.plot(x_r, y_r, marker='o', markerfacecolor='black', markersize=6, color='black', label='Posição atual do robô {:8.7f}, {:8.7f}'.format(y_r, x_r))
+                plt.ticklabel_format(useOffset=False)
 
+                plt.title("Simulação de Controle Autônomo com Pontos Reais de GPS", fontsize=18)
+
+                plt.ylabel("Latitude", fontsize=16)
+                plt.xlabel("Longitude", fontsize=16)
                 plt.legend()
                 plt.show()
                 index += 1
