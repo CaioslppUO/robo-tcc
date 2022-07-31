@@ -163,7 +163,7 @@ class MissionDataAnalyzer:
                 dir_m_p1_y, dir_m_p1_x = dir_m_p1
                 dir_m_p2_y, dir_m_p2_x = dir_m_p2
 
-                plt.plot([dir_m_p1_x, dir_m_p2_x], [dir_m_p1_y, dir_m_p2_y], marker='o', markerfacecolor='red', markersize=6, color='red', label='Vetor da missão')
+                plt.plot([dir_m_p1_x, dir_m_p2_x], [dir_m_p1_y, dir_m_p2_y], marker='o', markerfacecolor='red', markersize=6, color='red', label='Vetor da Missão')
 
                 plt.annotate("",
                         xy=(dir_m_p2_x, dir_m_p2_y),
@@ -178,7 +178,7 @@ class MissionDataAnalyzer:
                 dir_c_p1_y, dir_c_p1_x = dir_c_p1
                 dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor de correção'.format(index, self.total_records-1, self.records[r].correction.error))
+                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor do Ponto de Correção'.format(index, self.total_records-1, self.records[r].correction.error))
 
                 plt.annotate("",
                         xy=(dir_c_p2_x, dir_c_p2_y),
@@ -186,13 +186,13 @@ class MissionDataAnalyzer:
                         va="center",
                         ha="right",
                         arrowprops={"arrowstyle": "-|>", "lw": 1, "color": "blue"}, 
-                        color="blue")
-
-                # Robot Direction Line
+                        color="blue",
+                        textcoords='data')
 
                 ## Robot Position
                 y_r, x_r = self.records[r].robot.robot_pos
 
+                # Robot Direction Line
                 dir_r_p1, dir_r_p2 = self.records[r].robot.direction_line
                 dir_r_p1_y, dir_r_p1_x = dir_r_p1
                 dir_r_p2_y, dir_r_p2_x = dir_r_p2
@@ -211,7 +211,7 @@ class MissionDataAnalyzer:
                 dif_x = (dir_r_p2_x - dir_r_p1_x) * 4
                 dif_y = (dir_r_p2_y - dir_r_p1_y) * 4
 
-                plt.plot([x_r, dir_r_p2_x + dif_x*0.94], [y_r, dir_r_p2_y + dif_y*0.94], marker='o', markerfacecolor='green', markersize=0, color='green', label='Vetor de direção do robô - Correção: {}'.format(correction_direction))
+                plt.plot([x_r, dir_r_p2_x + dif_x*0.94], [y_r, dir_r_p2_y + dif_y*0.94], marker='o', markerfacecolor='green', markersize=0, color='green', label='Vetor de Direção do Robô - Correção: {}'.format(correction_direction))
 
                 plt.annotate("",
                         xy=(dir_r_p2_x + dif_x, dir_r_p2_y + dif_y),
@@ -221,7 +221,7 @@ class MissionDataAnalyzer:
                         arrowprops={"arrowstyle": "-|>", "lw": 2, "color": "green"},
                         color="green")
 
-                plt.plot(x_r, y_r, marker='o', markerfacecolor='black', markersize=6, color='black', label='Posição atual do robô {:8.7f}, {:8.7f}'.format(y_r, x_r))
+                plt.plot(x_r, y_r, marker='o', markerfacecolor='black', markersize=6, color='black', label='Posição Atual do Robô {:8.7f}, {:8.7f}'.format(y_r, x_r))
                 plt.ticklabel_format(useOffset=False)
 
                 plt.title("Simulação de Controle Autônomo com Pontos Reais de GPS", fontsize=18)
