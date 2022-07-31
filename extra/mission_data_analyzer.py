@@ -133,8 +133,9 @@ class MissionDataAnalyzer:
         """
         clean_records: "list[MissionRecord]" = []
         for r in self.records:
-            if(not self.__is_in(r.robot.robot_pos, clean_records)):
+            if(not self.__is_in(r.robot.robot_pos, clean_records) or r.correction.direction == "Reached Point"):
                 clean_records.append(r)
+
         self.records = clean_records
 
         # Update total elements
@@ -171,10 +172,10 @@ class MissionDataAnalyzer:
                 dir_c_p1_y, dir_c_p1_x = dir_c_p1
                 dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor de correção - iteração: {}/{}'.format(index, self.total_records, self.records[r].correction.error))
+                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor de correção - iteração: {}/{}'.format(index, self.total_records-1, self.records[r].correction.error))
 
                 plt.annotate("",
-                        xy=( dir_c_p2_x, dir_c_p2_y),
+                        xy=(dir_c_p2_x, dir_c_p2_y),
                         xytext=(dir_c_p1_x, dir_c_p1_y),
                         va="center",
                         ha="right",
@@ -188,15 +189,23 @@ class MissionDataAnalyzer:
                     correction_direction = "anti horário"
                 elif(self.records[r].correction.direction == "none"):
                     correction_direction = "reto"
+                elif(self.records[r].correction.direction == "Reached Point"):
+                    correction_direction = "chegou ao destino"
+                else:
+                    correction_direction = "unknown"
 
-                plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='green', markersize=6, color='green', label='Vetor de direção do robô - Correção: {}'.format(correction_direction))
+                dif_x = (dir_r_p2_x - dir_r_p1_x) * 4
+                dif_y = (dir_r_p2_y - dir_r_p1_y) * 4
+
+
+                plt.plot([dir_r_p1_x, dir_r_p2_x + dif_x*0.94], [dir_r_p1_y, dir_r_p2_y + dif_y*0.94], marker='o', markerfacecolor='green', markersize=0, color='green', label='Vetor de direção do robô - Correção: {}'.format(correction_direction))
 
                 plt.annotate("",
-                        xy=( dir_r_p2_x, dir_r_p2_y),
+                        xy=(dir_r_p2_x + dif_x, dir_r_p2_y + dif_y),
                         xytext=(dir_r_p1_x, dir_r_p1_y),
                         va="center",
                         ha="right",
-                        arrowprops={"arrowstyle": "-|>", "lw": 1, "color": "green"},
+                        arrowprops={"arrowstyle": "-|>", "lw": 2, "color": "green"},
                         color="green")
 
                 # Robot Position
