@@ -15,6 +15,7 @@ try:
     rospy.init_node("gps_simulation", anonymous=True)
     pub = rospy.Publisher("/gps", Coords, queue_size=10)
     pub_stop = rospy.Publisher("/stop_mission", String, queue_size=10)
+    pub_start = rospy.Publisher("/start_mission", String, queue_size=10)
 except:
     print(traceback.format_exc())
 
@@ -27,6 +28,8 @@ class GPSSimulation:
         Read a mission log file, extract robot_gps positions and publish to the ROS, simulating the real robot.
         """
         gps_points = self.mission_analyzer.get_gps_robot_positions()
+        pub_start.publish("start")
+        time.sleep(3)
         for g in gps_points:
             c = Coords()
             c.latitude = g[0]

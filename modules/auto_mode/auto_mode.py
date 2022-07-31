@@ -188,6 +188,7 @@ def callback_start_mission(data: String):
     """
     global current_mission, missions
     try:
+        pub_log.publish("{} - Starting a new Mission.".format(datetime.datetime.now()))
         missions = Missions()
         missions.load_mission_file()
         current_mission = Thread(target=run)
@@ -197,13 +198,15 @@ def callback_start_mission(data: String):
         runtime_log.error("Could not start mission.")
 
 
-def callback_stop_mission(data:String):
+def callback_stop_mission(data: String):
     """
     Stop the current mission.
     """
-    global control_robot
+    global control_robot, current_mission
     control_robot.begin = False
     pub_log.publish("{} - Mission Stopped By stop_mission callback".format(datetime.datetime.now()))
+    if(current_mission != None):
+        current_mission.join()
 
 if __name__ == "__main__":
     try:
