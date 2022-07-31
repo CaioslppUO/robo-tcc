@@ -4,12 +4,7 @@ Able to read mission_log.json files and analyze what happened.
 """
 
 import json, sys, traceback, time
-from .mission_data import Correction, Mission, MissionRecord, Robot
-
-try:
-    import matplotlib.pyplot as plt
-except:
-    print(traceback.format_exc())
+from mission_data import Correction, Mission, MissionRecord, Robot
 
 class MissionDataAnalyzer:
     def __init__(self, logs_file_path: str, clean_duplicated: bool = True) -> None:
@@ -56,7 +51,7 @@ class MissionDataAnalyzer:
             for entry in data:
                 # Mission Data
                 try:
-                    mission_name = entry["Mission Name"]
+                    mission_name = entry["Mission Name:"]
                     mission_line = entry["Mission Line"]
                     mission_line = [(mission_line[0].split(",")), (mission_line[1].split(","))]
                     mission_line = [(float(mission_line[0][0].split("(")[1]), float(mission_line[0][1].split(")")[0])), (float(mission_line[1][0].split("(")[1]), float(mission_line[1][1].split(")")[0]))]
@@ -70,7 +65,7 @@ class MissionDataAnalyzer:
 
                 # Iteration
                 try:
-                    iteration = entry["Iteration"]
+                    iteration = entry["Iteration:"]
                 except:
                     if(success_iteration):
                         success_iteration = False
@@ -138,6 +133,10 @@ class MissionDataAnalyzer:
         """
         Plot the read data from the log file.
         """
+        try:
+            import matplotlib.pyplot as plt
+        except:
+            print(traceback.format_exc())
         try:
             if(len(sys.argv) == 2):
                 step = int(sys.argv[1])

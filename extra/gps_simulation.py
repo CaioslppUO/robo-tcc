@@ -1,16 +1,18 @@
+#!/usr/bin/env python
+
 """
 @package gps_simulation.py
 Emulate a GPS by publishing to ROS real data extracted from a mission log file of the robot.
 """
 
-import traceback, time
-from .mission_data_analyzer import MissionDataAnalyzer
+import traceback, time, sys
+from mission_data_analyzer import MissionDataAnalyzer
 
 try:
     from agrobot.msg import Coords
     import rospy
     from std_msgs.msg import String
-    rospy.init_node("mission_data_analyzer", anonymous=True)
+    rospy.init_node("gps_simulation", anonymous=True)
     pub = rospy.Publisher("/gps", Coords, queue_size=10)
     pub_stop = rospy.Publisher("/stop_mission", String, queue_size=10)
 except:
@@ -32,3 +34,11 @@ class GPSSimulation:
             pub.publish(c)
             time.sleep(0.1)
         pub_stop.publish("stop")
+
+if __name__ == "__main__":
+    try:
+        file = sys.argv[1]
+        gp = GPSSimulation(file)
+        gp.publish_fake_gps_data()
+    except:
+        print(traceback.format_exc())

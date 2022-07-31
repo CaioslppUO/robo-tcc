@@ -48,6 +48,7 @@ BASHRC=$HOME/.bashrc
 ZSHRC=$HOME/.zshrc
 ## Virtualenv
 AGROBOT_FOLDER=$HOME/Agrobot
+AGROBOT_MISSION_LOGS_FOLDER=$AGROBOT_FOLDER/mission_logs
 AGROBOT_ENV=$AGROBOT_FOLDER/agrobot_env
 AGROBOT_ENV_BIN=$AGROBOT_ENV/bin
 ## Catkin
@@ -64,6 +65,7 @@ LIDAR_LAUNCHER=$LIDAR/launch/rplidar.launch
 # Folders
 rm -rf $AGROBOT_FOLDER
 mkdir $AGROBOT_FOLDER/
+mkdir $AGROBOT_MISSION_LOGS_FOLDER/
 
 mkdir $AGROBOT_ENV
 mkdir -p $CATKIN/src/

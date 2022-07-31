@@ -5,7 +5,7 @@ Auto mode for the robot. Execute pre-defined missions.
 """
 
 # from threading import Thread
-import rospy, time, traceback, sys
+import rospy, time, traceback, sys, datetime
 from control.control import ControlRobot
 from agrobot.msg import Control
 from agrobot_services.runtime_log import RuntimeLog
@@ -69,17 +69,24 @@ def run():
         global graph_data
     index = 0
     for mission in missions.get_missions():
-        pub_log.publish("Mission Length: {}".format(len(missions.get_missions())))
-        pub_log.publish("Executing mission: {}".format(mission.name))
+        pub_log.publish("{} - Executing mission: {}".format(datetime.datetime.now(), mission.name))
         mission_logger.update_mission_name(mission.name)
         time.sleep(3)
         for location in mission.get_locations():
             control_robot.begin = True
-            runtime_log.info("Executing location: {}".format(location))
+            pub_log.publish("{} - Executing location: {}".format(datetime.datetime.now(), location))
+
+            # Log Control Variable
+            no_gps_data_available = False
+            left_command = False
+            right_command = False
+            forward_command = False
 
             while(current_point is None or old_point is None or current_point.is_zero() or old_point.is_zero() or current_point.equal(old_point.latitude, old_point.longitude)):
                 control_robot.stop()
-                pub_log.publish("No GPS data available")
+                if(no_gps_data_available == False):
+                    no_gps_data_available = True
+                    pub_log.publish("{} - No GPS data available".format(datetime.datetime.now()))
 
             target_point_location = Point(location.get_latitude(), location.get_longitude())
             mission_line = path_calcs.get_points_between(Line(current_point, target_point_location), 10)
@@ -110,11 +117,13 @@ def run():
 
                 if(idx_closest == len(mission_line)-1): # Reached next to the last point
                     control_robot.stop()
-                    runtime_log.info("Location ({:10.10f}, {:10.10f}) finished".format(location.latitude, location.longitude))
-                    runtime_log.info("Robot End Location ({:10.10f}, {:10.10f})".format(current_point.latitude, current_point.longitude))
-                    runtime_log.info("Mission comparation Location ({:10.10f}, {:10.10f})".format(mission_line[idx_closest].latitude, mission_line[idx_closest].longitude))
+                    pub_log.publish("{} - Location ({:10.10f}, {:10.10f}) finished".format(datetime.datetime.now(), location.latitude, location.longitude))
+                    pub_log.publish("{} - Robot End Location ({:10.10f}, {:10.10f})".format(datetime.datetime.now(), current_point.latitude, current_point.longitude))
+                    pub_log.publish("{} - Mission Comparison Location ({:10.10f}, {:10.10f})".format(datetime.datetime.now(), mission_line[idx_closest].latitude, mission_line[idx_closest].longitude))
                     mission_logger.update_correction_direction("Reached Point")
-                    mission_logger.do_log()
+                    mission_logger.update_iteration(index)
+                    log_file = mission_logger.do_log()
+                    pub_log.publish("{} - Mission Log Write to {})".format(datetime.datetime.now(), log_file))
                     time.sleep(5)
                     break
 
@@ -129,21 +138,34 @@ def run():
                     graph_data.set_correction_direction_legend(action)
                 if(action == "clockwise"):
                     control_robot.right()
-                    pub_log.publish("Right")
+                    if(right_command == False):
+                        left_command = False
+                        right_command = True
+                        forward_command = False
+                        pub_log.publish("{} - Right".format(datetime.datetime.now()))
                 elif(action == "counter_clockwise"):
                     control_robot.left()
-                    pub_log.publish("Left")
+                    if(left_command == False):
+                        left_command = True
+                        right_command = False
+                        forward_command = False
+                        pub_log.publish("{} - Left".format(datetime.datetime.now()))
                 elif(action == "none"):
                     control_robot.forward()
-                    pub_log.publish("Forward")
+                    if(forward_command == False):
+                        left_command = False
+                        right_command = False
+                        forward_command = True
+                        pub_log.publish("{} - Forward".format(datetime.datetime.now()))
                 else:
-                    pub_log.publish("Deu Ruim")
+                    pub_log.publish("{} - Deu Ruim".format(datetime.datetime.now()))
                  
                 index += 1
                     
-        runtime_log.info("Mission {} finished".format(mission.name))
+        #runtime_log.info("Mission {} finished".format(mission.name))
+        pub_log.publish("{} - Mission {} finished".format(datetime.datetime.now(), mission.name))
         control_robot.stop()
-    runtime_log.info("Finished all missions")
+    pub_log.publish("{} - Finished all missions".format(datetime.datetime.now()))
     control_robot.stop()
 
 def callback_gps(data:Coords):
@@ -181,14 +203,7 @@ def callback_stop_mission(data:String):
     """
     global control_robot
     control_robot.begin = False
-    #global current_mission
-    #if(current_mission is not None):
-    #    runtime_log.info("Canceled mission with callback stop mission.")
-    #    current_mission.join()
-    #    current_mission = None
-    #else:
-    #    runtime_log.warning("Could not canceled mission with callback stop mission.")
-
+    pub_log.publish("{} - Mission Stopped By stop_mission callback".format(datetime.datetime.now()))
 
 if __name__ == "__main__":
     try:

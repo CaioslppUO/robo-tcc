@@ -92,4 +92,3 @@ class Missions:
                     location_order = location["order"]
                     action = location["action"]
                     self.get_mission(mission_order).add_location(latitude, longitude, location_order, action)
-        print("Carregou o arquivo")

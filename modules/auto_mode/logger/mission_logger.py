@@ -4,15 +4,13 @@ Register the last executed mission in a log file.
 """
 
 from pathlib import Path
-import sys, json
+import json, os.path
+import datetime
 
 class MissionLogger:
     def __init__(self) -> None:
-        self.mission_log_file = Path(__file__).parent.resolve()
-        self.mission_log_file = self.mission_log_file.joinpath("mission_log.json")
-
-        with open(self.mission_log_file, "w") as file: # Clean the log files
-            file.write("[\n]")
+        self.mission_log_file = Path.home().joinpath("Agrobot/mission_logs")
+        self.date_no_spaces = str(datetime.datetime.now()).replace(" ", "_")
         
         # Mission Name
         self.mission_name = ""
@@ -97,11 +95,19 @@ class MissionLogger:
     def update_correction_chooser(self, correction_chooser: int) -> None:
         self.correction_chooser = correction_chooser
     
-    def do_log(self) -> None:
+    def do_log(self) -> str:
         """
-        Append log to the logs file.
+        Append log to the logs file. Return the mission file name.
         """
-        with open(self.mission_log_file) as file:
+        no_space_mission_name = self.mission_name.replace(" ", "_")
+        mission_log_file = self.mission_log_file.joinpath("{}-{}_log_file.json".format(no_space_mission_name, self.date_no_spaces))
+
+        # Create file if not exists.
+        if(not os.path.isfile(mission_log_file)):
+            with open(mission_log_file, "w") as file:
+                file.write("[\n]")
+
+        with open(mission_log_file) as file:
             list_obj = json.load(file)
 
         list_obj.append({
@@ -117,6 +123,7 @@ class MissionLogger:
             "Mission Points": "{}".format(self.mission_points)
         })
 
-        with open(self.mission_log_file, "w") as file:
+        with open(mission_log_file, "w") as file:
             json.dump(list_obj, file, indent=4, separators=(',', ': '))
     
+        return mission_log_file
