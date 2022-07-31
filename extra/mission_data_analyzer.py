@@ -3,7 +3,7 @@
 Able to read mission_log.json files and analyze what happened.
 """
 
-import json, sys, traceback, time
+import json, sys, traceback
 from mission_data import Correction, Mission, MissionRecord, Robot
 
 class MissionDataAnalyzer:
@@ -58,19 +58,30 @@ class MissionDataAnalyzer:
                     mission_points = entry["Mission Points"]
                     mission = Mission(mission_name, mission_line, mission_points)
                 except:
-                    if(success_mission):
-                        success_mission = False
-                        print(traceback.format_exc())
-                    mission = Mission(None, None, None)
+                    try:
+                        mission_name = entry["Mission Name"]
+                        mission_line = entry["Mission Line"]
+                        mission_line = [(mission_line[0].split(",")), (mission_line[1].split(","))]
+                        mission_line = [(float(mission_line[0][0].split("(")[1]), float(mission_line[0][1].split(")")[0])), (float(mission_line[1][0].split("(")[1]), float(mission_line[1][1].split(")")[0]))]
+                        mission_points = entry["Mission Points"]
+                        mission = Mission(mission_name, mission_line, mission_points)
+                    except:
+                        if(success_mission):
+                            success_mission = False
+                            print(traceback.format_exc())
+                        mission = Mission(None, None, None)
 
                 # Iteration
                 try:
                     iteration = entry["Iteration:"]
                 except:
-                    if(success_iteration):
-                        success_iteration = False
-                        print(traceback.format_exc())
-                    iteration = None
+                    try:
+                        iteration = entry["Iteration"]
+                    except:
+                        if(success_iteration):
+                            success_iteration = False
+                            print(traceback.format_exc())
+                        iteration = None
 
                 # Robot Data
                 try:
@@ -138,18 +149,29 @@ class MissionDataAnalyzer:
         except:
             print(traceback.format_exc())
         try:
-            if(len(sys.argv) == 2):
-                step = int(sys.argv[1])
+            if(len(sys.argv) == 3):
+                step = int(sys.argv[2])
             else:
                 step = 1
             index = 0
             for r in range(0, len(self.records), step):
+                # Mission Line
+                dir_m_p1, dir_m_p2 = self.records[r].mission.line
+                dir_m_p1_y, dir_m_p1_x = dir_m_p1
+                dir_m_p2_y, dir_m_p2_x = dir_m_p2
+
+                plt.plot([dir_m_p1_x, dir_m_p2_x], [dir_m_p1_y, dir_m_p2_y], marker='o', markerfacecolor='red', markersize=6, color='red', label='Vetor da missão')
+
+                dir_r_p1, dir_r_p2 = self.records[r].robot.direction_line
+                dir_r_p1_y, dir_r_p1_x = dir_r_p1
+                dir_r_p2_y, dir_r_p2_x = dir_r_p2
+
                 # Correction Line
                 dir_c_p1, dir_c_p2 = self.records[r].correction.line
                 dir_c_p1_y, dir_c_p1_x = dir_c_p1
                 dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Linha de correção - iteração: {}/{}'.format(index, self.total_records, self.records[r].correction.error))
+                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor de correção - iteração: {}/{}'.format(index, self.total_records, self.records[r].correction.error))
 
                 plt.annotate("",
                         xy=( dir_c_p2_x, dir_c_p2_y),
@@ -159,17 +181,6 @@ class MissionDataAnalyzer:
                         arrowprops={"arrowstyle": "-|>", "lw": 1, "color": "blue"}, 
                         color="blue")
 
-                # Mission Line
-                dir_m_p1, dir_m_p2 = self.records[r].mission.line
-                dir_m_p1_y, dir_m_p1_x = dir_m_p1
-                dir_m_p2_y, dir_m_p2_x = dir_m_p2
-
-                plt.plot([dir_m_p1_x, dir_m_p2_x], [dir_m_p1_y, dir_m_p2_y], marker='o', markerfacecolor='red', markersize=6, color='red', label='Linha da missão')
-
-                dir_r_p1, dir_r_p2 = self.records[r].robot.direction_line
-                dir_r_p1_y, dir_r_p1_x = dir_r_p1
-                dir_r_p2_y, dir_r_p2_x = dir_r_p2
-
                 # Robot Direction Line
                 if(self.records[r].correction.direction == "clockwise"):
                     correction_direction = "horário"
@@ -178,7 +189,7 @@ class MissionDataAnalyzer:
                 elif(self.records[r].correction.direction == "none"):
                     correction_direction = "reto"
 
-                plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='green', markersize=6, color='green', label='Linha de direção do robô - Correção: {}'.format(correction_direction))
+                plt.plot([dir_r_p1_x, dir_r_p2_x], [dir_r_p1_y, dir_r_p2_y], marker='o', markerfacecolor='green', markersize=6, color='green', label='Vetor de direção do robô - Correção: {}'.format(correction_direction))
 
                 plt.annotate("",
                         xy=( dir_r_p2_x, dir_r_p2_y),
@@ -231,3 +242,11 @@ class MissionDataAnalyzer:
         Return the amount of read records.
         """
         return len(self.records)
+
+if __name__ == "__main__":
+    try:
+        file = sys.argv[1]
+        m = MissionDataAnalyzer(file)
+        m.plot_read_data()
+    except:
+        print(traceback.format_exc())
