@@ -6,14 +6,14 @@ class ControlRobot:
     def __init__(self, pub: rospy.Publisher) -> None:
         self.__pub = pub
         self.__default_speed = 0.14
-        self.__default_steer = 0.15
+        self.__default_steer = 0.20
         self.__default_wait = 1.0
 
         self.__speed = 0.0
         self.__steer = 0.0
         self.__limit = 1.0
-        self.__left_limit = -2
-        self.__right_limit = 2
+        self.__left_limit = -4
+        self.__right_limit = 4
         self.__current_limit = 0
         self.begin = False
 

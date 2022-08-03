@@ -1,11 +1,11 @@
 [
   {
-    "name": "Estacionamento rua minicidade",
+    "name": "Primeira missão mini cidade",
     "order": 0,
     "locations": [
       {
-        "latitude": -25.4358877,
-        "longitude": -54.593749,
+        "latitude": -25.4357036,
+        "longitude": -54.5934642,
         "order": 0,
         "action": "nenhuma"
       }

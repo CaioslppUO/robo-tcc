@@ -237,14 +237,23 @@ class Line:
                     return "counter_clockwise", 6, error
                 elif(actual_quadrant == 4):
                     return "clockwise", 7, error
-                elif(actual_quadrant == 1):
-                    return "counter_clockwise", 8, error
-                elif(actual_quadrant == 3):
-                    return "clockwise", 9, error
                 else:
-                    return "nao deveria ter caido aqui", -1, error
+                    if(y_actual > y_objective):
+                        if(actual_quadrant == 1):
+                            return "clockwise", 8, error
+                        elif(actual_quadrant == 3):
+                            return "counter_clockwise", 9, error
+                        else:
+                            return "nao deveria ter caido aqui", -1, error
+                    else:
+                        if(actual_quadrant == 1):
+                            return "counter_clockwise", 82, error
+                        elif(actual_quadrant == 3):
+                            return "clockwise", 92, error
+                        else:
+                            return "nao deveria ter caido aqui", -1, error
         else:
-            if(y_actual > y_objective): # Actual above objective
+            if(y_actual > y_objective and self.angular_coefficient >= objective_line.angular_coefficient): # Actual above objective
                 if(actual_quadrant == 2):
                     return "clockwise", 10, error
                 elif(actual_quadrant == 4):
@@ -259,9 +268,17 @@ class Line:
                     return "counter_clockwise", 14, error
                 elif(actual_quadrant == 3):
                     return "clockwise", 15, error
-                elif(actual_quadrant == 4):
-                    return "counter_clockwise", 16, error
-                elif(actual_quadrant == 2):
-                    return "clockwise", 17, error
+                if(y_actual > y_objective):
+                    if(actual_quadrant == 4):
+                        return "counter_clockwise", 16, error
+                    elif(actual_quadrant == 2):
+                        return "clockwise", 17, error
+                    else:
+                        return "nao deveria ter caido aqui", -1, error
                 else:
-                    return "nao deveria ter caido aqui", -1, error
+                    if(actual_quadrant == 4):
+                        return "clockwise", 162, error
+                    elif(actual_quadrant == 2):
+                        return "counter_clockwise", 172, error
+                    else:
+                        return "nao deveria ter caido aqui", -1, error

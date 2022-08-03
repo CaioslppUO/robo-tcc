@@ -3,6 +3,7 @@
 Able to read mission_log.json files and analyze what happened.
 """
 
+from cProfile import label
 import json, sys, traceback
 from mission_data import Correction, Mission, MissionRecord, Robot
 
@@ -178,7 +179,7 @@ class MissionDataAnalyzer:
                 dir_c_p1_y, dir_c_p1_x = dir_c_p1
                 dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor do Ponto de Correção'.format(index, self.total_records-1, self.records[r].correction.error))
+                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor do Ponto de Correção - {} - Iteração {}/{}'.format(self.records[r].correction.chooser,index,self.total_records))
 
                 plt.annotate("",
                         xy=(dir_c_p2_x, dir_c_p2_y),
