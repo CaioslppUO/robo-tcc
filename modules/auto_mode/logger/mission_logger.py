@@ -94,6 +94,14 @@ class MissionLogger:
 
     def update_correction_chooser(self, correction_chooser: int) -> None:
         self.correction_chooser = correction_chooser
+
+    def get_log_file(self) -> str:
+        """
+        Return the log file location.
+        """
+        no_space_mission_name = self.mission_name.replace(" ", "_")
+        mission_log_file = self.mission_log_file.joinpath("{}-{}_log_file.json".format(no_space_mission_name, self.date_no_spaces))
+        return mission_log_file
     
     def do_log(self) -> str:
         """

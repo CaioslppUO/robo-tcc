@@ -16,6 +16,7 @@ try:
     pub = rospy.Publisher("/gps", Coords, queue_size=10)
     pub_stop = rospy.Publisher("/stop_mission", String, queue_size=10)
     pub_start = rospy.Publisher("/start_mission", String, queue_size=10)
+    time.sleep(1)
 except:
     print(traceback.format_exc())
 
@@ -29,7 +30,7 @@ class GPSSimulation:
         """
         gps_points = self.mission_analyzer.get_gps_robot_positions()
         pub_start.publish("start")
-        time.sleep(3)
+        time.sleep(2)
         for g in gps_points:
             c = Coords()
             c.latitude = g[0]

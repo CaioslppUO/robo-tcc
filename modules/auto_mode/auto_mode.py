@@ -57,6 +57,7 @@ path_calcs = PathCalculator()
 control_robot = ControlRobot(pub)
 Thread(target=control_robot.run).start()
 
+stop_mission = False
 current_mission = None
 
 if(ENABLE_GRAPH):
@@ -74,7 +75,7 @@ def run():
         time.sleep(3)
         for location in mission.get_locations():
             control_robot.begin = True
-            pub_log.publish("{} - Executing location: {}".format(datetime.datetime.now(), location))
+            pub_log.publish("{} - Executing location: ({:8.7f}, {:8.7f})".format(datetime.datetime.now(), location.latitude, location.longitude))
 
             # Log Control Variable
             no_gps_data_available = False
@@ -97,6 +98,8 @@ def run():
                 graph_data.set_straight_from_mission(mission_line)
             
             while True:
+                if(stop_mission):
+                    return
                 mission_logger.update_robot_location(current_point.latitude, current_point.longitude)
                 if(ENABLE_GRAPH):
                     graph_data.new_position_robot((round(current_point.longitude, 5), round(current_point.latitude, 5)))
@@ -122,8 +125,8 @@ def run():
                     pub_log.publish("{} - Mission Comparison Location ({:10.10f}, {:10.10f})".format(datetime.datetime.now(), mission_line[idx_closest].latitude, mission_line[idx_closest].longitude))
                     mission_logger.update_correction_direction("Reached Point")
                     mission_logger.update_iteration(index)
-                    log_file = mission_logger.do_log()
-                    pub_log.publish("{} - Mission Log Write to {})".format(datetime.datetime.now(), log_file))
+                    mission_logger.do_log()
+                    pub_log.publish("{} - Mission Log Write to {})".format(datetime.datetime.now(), mission_logger.get_log_file()))
                     time.sleep(5)
                     break
 
@@ -186,25 +189,32 @@ def callback_start_mission(data: String):
     """
     Start the current mission.
     """
-    global current_mission, missions
+    global current_mission, missions, mission_logger, current_point, old_point, path_calcs, stop_mission
+    print("CAIU NO START MISSION - AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     try:
         pub_log.publish("{} - Starting a new Mission.".format(datetime.datetime.now()))
+        stop_mission = False
         missions = Missions()
         missions.load_mission_file()
+        mission_logger = MissionLogger()
+        current_point = None
+        old_point = None
+        path_calcs = PathCalculator()
         current_mission = Thread(target=run)
         current_mission.start()
     except:
         log.error(traceback.format_exc())
         runtime_log.error("Could not start mission.")
 
-
 def callback_stop_mission(data: String):
     """
     Stop the current mission.
     """
-    global control_robot, current_mission
+    global control_robot, current_mission, stop_mission
+    stop_mission = True
     control_robot.begin = False
     pub_log.publish("{} - Mission Stopped By stop_mission callback".format(datetime.datetime.now()))
+    pub_log.publish("{} - Mission Log Write to {})".format(datetime.datetime.now(), mission_logger.get_log_file()))
     if(current_mission != None):
         current_mission.join()
 

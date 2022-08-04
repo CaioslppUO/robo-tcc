@@ -179,7 +179,7 @@ class MissionDataAnalyzer:
                 dir_c_p1_y, dir_c_p1_x = dir_c_p1
                 dir_c_p2_y, dir_c_p2_x = dir_c_p2
 
-                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor do Ponto de Correção - {} - Iteração {}/{}'.format(self.records[r].correction.chooser,index,self.total_records))
+                plt.plot([dir_c_p1_x, dir_c_p2_x], [dir_c_p1_y, dir_c_p2_y], marker='o', markerfacecolor='blue', markersize=6, color='blue', label='Vetor do Ponto de Correção - {} - Iteração {}/{}'.format(self.records[r].correction.chooser, index,self.total_records-1))
 
                 plt.annotate("",
                         xy=(dir_c_p2_x, dir_c_p2_y),
