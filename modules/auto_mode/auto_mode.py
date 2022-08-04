@@ -190,7 +190,6 @@ def callback_start_mission(data: String):
     Start the current mission.
     """
     global current_mission, missions, mission_logger, current_point, old_point, path_calcs, stop_mission
-    print("CAIU NO START MISSION - AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     try:
         pub_log.publish("{} - Starting a new Mission.".format(datetime.datetime.now()))
         stop_mission = False
