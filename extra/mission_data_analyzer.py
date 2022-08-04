@@ -133,6 +133,7 @@ class MissionDataAnalyzer:
         Remove duplicated elements (robot latitude and longitude) in the records.
         """
         clean_records: "list[MissionRecord]" = []
+        print(self.records[-1].correction.direction)
         for r in self.records:
             if(not self.__is_in(r.robot.robot_pos, clean_records) or r.correction.direction == "Reached Point"):
                 clean_records.append(r)

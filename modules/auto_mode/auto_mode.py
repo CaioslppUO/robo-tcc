@@ -210,9 +210,10 @@ def callback_stop_mission(data: String):
     Stop the current mission.
     """
     global control_robot, current_mission, stop_mission
+    pub_log.publish("{} - Mission Stopped By stop_mission callback".format(datetime.datetime.now()))
+    time.sleep(5)
     stop_mission = True
     control_robot.begin = False
-    pub_log.publish("{} - Mission Stopped By stop_mission callback".format(datetime.datetime.now()))
     pub_log.publish("{} - Mission Log Write to {})".format(datetime.datetime.now(), mission_logger.get_log_file()))
     if(current_mission != None):
         current_mission.join()
