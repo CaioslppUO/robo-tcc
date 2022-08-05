@@ -30,7 +30,7 @@ except Exception as e:
 # Nó do relé.
 rospy.init_node("relay")
 
-## Envia o sinal para o relé que liga ou desliga o módulo extra..
+## Envia o sinal para o relé que liga ou desliga o módulo extra.
 def power_control_callback(data: Bool) -> None:
     pinout: int = int(sys.argv[1])        
     try:
